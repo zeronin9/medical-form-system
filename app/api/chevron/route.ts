@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const { formData } = await request.json();
 
     // Pastikan nama file ini 100% sama dengan yang ada di folder public/templates Anda
-    const fileName = 'Chevron Medical Form_updated_2.docx'; 
+    const fileName = 'Chevron Medical Form_updated.docx'; 
     
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
     const content = fs.readFileSync(templatePath, 'binary');
