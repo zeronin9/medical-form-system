@@ -26,9 +26,10 @@ export async function POST(request: Request) {
       }
     });
 
-    // Helper Fungsi untuk Chevron (Biasanya menggunakan silang 'X' atau kosong)
-    const cCheck = (value: any, expected: string | boolean) => value === expected ? 'X' : ''; 
-    const checkNormal = (value: any, expected: string) => value === expected ? 'X' : '';
+    // Helper Fungsi
+    const cCheck = (value: any, expected: string | boolean) => value === expected ? 'X' : ''; // Untuk 43 Pertanyaan Chevron
+    const checkNormal = (value: any, expected: string) => value === expected ? 'X' : ''; // Untuk pemeriksaan fisik
+    const checkBox = (value: any, expected: string | boolean) => value === expected ? '☑' : '☐'; // Untuk checkbox khusus gaya hidup
 
     doc.render({
       // ==========================================
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
       emp_id: formData.idPassport || "",
       personal_id: formData.idPassport || "",
       position: formData.position || "",
+      job_title: formData.position || "", // Menghubungkan {{job_title}} dengan Posisi/Jabatan
       company: formData.company || "",
       employer: formData.company || "",
       work_location: formData.workLocation || "",
@@ -65,15 +67,18 @@ export async function POST(request: Request) {
       blood_g: formData.bloodGroupType || "",
 
       // ==========================================
-      // SECTION 3: GAYA HIDUP (LIFESTYLE)
+      // SECTION 3: GAYA HIDUP (LIFESTYLE) - CHECKBOX
       // ==========================================
-      alcohol: formData.q_alcohol === 'Yes' ? formData.q_alcohol_text || "Yes" : "No",
-      n_smoker: cCheck(formData.q_smoke, 'No'), 
-      smoker: cCheck(formData.q_smoke, 'Yes'),
+      alcohol_w: formData.q_alcohol === 'Yes' ? formData.q_alcohol_text || "" : "",
+      
+      // Menggunakan simbol Checkbox untuk Status Merokok
+      n_smoker: checkBox(formData.q_smoke, 'No'), 
+      smoker: checkBox(formData.q_smoke, 'Yes'),
       smoker_y: formData.q_smoke === 'Yes' ? formData.q_smoke_freq || "" : "",
       smoker_d: formData.q_smoke === 'Yes' ? formData.q_smoke_freq || "" : "",
-      smoker_q: formData.q_smoke === 'No' ? 'X' : '', 
-      smoker_s_y: formData.q_smoke === 'No' ? "N/A" : "",
+      
+      smoker_q: checkBox(formData.smoker_q, 'Yes'), // Checkbox untuk Quit
+      smoker_q_y: formData.smoker_s_y || "",
 
       // ==========================================
       // SECTION 4: KUESIONER (44 PERTANYAAN MAPPING DARI QATAR)
@@ -165,7 +170,7 @@ export async function POST(request: Request) {
       // Audiometri
       l05: formData.l05 || "", l1: formData.l1 || "", l2: formData.l2 || "", l3: formData.l3 || "", l4: formData.l4 || "", l6: formData.l6 || "", l8: formData.l8 || "",
       r05: formData.r05 || "", r1: formData.r1 || "", r2: formData.r2 || "", r3: formData.r3 || "", r4: formData.r4 || "", r6: formData.r6 || "", r8: formData.r8 || "",
-      oht_result: formData.oht_result || "", 
+      oth_result: formData.oht_result || "", // Diubah menjadi oth_result sesuai dengan screenshot sebelumnya
       
       // EKG
       rate: formData.rate || "", rhyt: formData.rhyt || "", axis: formData.axis || "",
@@ -197,7 +202,7 @@ export async function POST(request: Request) {
       only_cg: formData.only_cg || "", 
       detail_af: formData.detail_af || "",
       date_xray: formData.date_xray || "", 
-      nor: checkNormal(formData.xrey, 'Normal'), abnor: checkNormal(formData.xrey, 'Abnormal'), 
+      nor: checkNormal(formData.xray, 'Normal'), abnor: checkNormal(formData.xray, 'Abnormal'), 
       des_abnor: formData.des_abnor || "",
       
       // ==========================================

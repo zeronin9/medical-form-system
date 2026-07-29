@@ -175,43 +175,43 @@ export default function Home() {
               <div className="space-y-4 animate-fade-in">
                 <h2 className="text-xl font-bold text-white bg-blue-700 px-4 py-3 rounded-md shadow">BAGIAN 1: Identitas Diri & Pekerjaan</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 p-5 border border-gray-300 rounded-lg bg-white shadow-sm">
-                  {/* Shared Info */}
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nama Depan</label><input type="text" name="firstName" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Budi" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nama Belakang / Marga</label><input type="text" name="familyName" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Santoso" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">No. KTP / Paspor</label><input type="text" name="idPassport" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Tgl Lahir (DD/MM/YYYY)</label><input type="text" name="dob" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: 15/08/1990" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nama Depan</label><input type="text" name="firstName" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" placeholder="Contoh: Budi" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nama Belakang / Marga</label><input type="text" name="familyName" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" placeholder="Contoh: Santoso" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">No. KTP / Paspor</label><input type="text" name="idPassport" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Tgl Lahir (DD/MM/YYYY)</label><input type="text" name="dob" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" placeholder="Contoh: 15/08/1990" /></div>
+                  
                   <div>
                     <label className="block text-sm font-bold mb-1 text-gray-900">Jenis Kelamin</label>
-                    <select name="gender" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="gender" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                       <option value="">-- Pilih --</option>
-                      <option value="Male">Pria</option><option value="Female">Wanita</option>
+                      <option value="Male">Laki-Laki</option><option value="Female">Perempuan</option>
                     </select>
                   </div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Posisi / Jabatan</label><input type="text" name="position" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nama Perusahaan</label><input type="text" name="company" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Lokasi Kerja</label><input type="text" name="workLocation" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">No. Telepon / HP</label><input type="text" name="contactNumber" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                  <div className="md:col-span-3 lg:col-span-3"><label className="block text-sm font-bold mb-1 text-gray-900">Alamat Lengkap</label><input type="text" name="address" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Posisi / Jabatan</label><input type="text" name="position" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nama Perusahaan</label><input type="text" name="company" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Lokasi Kerja</label><input type="text" name="workLocation" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">No. Telepon / HP</label><input type="text" name="contactNumber" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                  <div className="md:col-span-3 lg:col-span-3"><label className="block text-sm font-bold mb-1 text-gray-900">Alamat Lengkap</label><input type="text" name="address" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
 
-                  {/* Khusus Chevron */}
+                  {/* KHUSUS CHEVRON ONLY */}
                   {isChevron && (
                     <>
-                      <div><label className="block text-sm font-bold mb-1 text-teal-700">Tanggal Mulai Kerja (Service Date)</label><input type="text" name="serviceDate" onChange={handleInputChange} className="w-full border border-teal-400 p-2.5 rounded text-sm text-black font-semibold bg-teal-50 outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                      <div><label className="block text-sm font-bold mb-1 text-teal-700">No. Rekam Medis (Chevron)</label><input type="text" name="medNo" onChange={handleInputChange} className="w-full border border-teal-400 p-2.5 rounded text-sm text-black font-semibold bg-teal-50 outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                      <div><label className="block text-sm font-bold mb-1 text-teal-700">Tanggal Mulai Kerja (Service Date)</label><input type="text" name="serviceDate" onChange={handleInputChange} className="w-full border border-teal-400 p-2.5 rounded text-sm text-black font-semibold bg-white outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                      <div><label className="block text-sm font-bold mb-1 text-teal-700">No. Rekam Medis (Chevron)</label><input type="text" name="medNo" onChange={handleInputChange} className="w-full border border-teal-400 p-2.5 rounded text-sm text-black font-semibold bg-white outline-none focus:ring-2 focus:ring-teal-500" /></div>
                     </>
                   )}
 
-                  {/* Khusus Qatar */}
+                  {/* KHUSUS QATAR ONLY */}
                   {isQatar && (
                     <>
-                      <div><label className="block text-sm font-bold mb-1 text-orange-700">Kewarganegaraan</label><input type="text" name="nationality" onChange={handleInputChange} className="w-full border border-orange-400 p-2.5 rounded text-sm text-black font-semibold bg-orange-50 outline-none focus:ring-2 focus:ring-orange-500" /></div>
-                      <div><label className="block text-sm font-bold mb-1 text-orange-700">Departemen</label><input type="text" name="department" onChange={handleInputChange} className="w-full border border-orange-400 p-2.5 rounded text-sm text-black font-semibold bg-orange-50 outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                      <div><label className="block text-sm font-bold mb-1 text-orange-700">Kewarganegaraan</label><input type="text" name="nationality" onChange={handleInputChange} className="w-full border border-orange-400 p-2.5 rounded text-sm text-black font-semibold bg-white outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                      <div><label className="block text-sm font-bold mb-1 text-orange-700">Departemen</label><input type="text" name="department" onChange={handleInputChange} className="w-full border border-orange-400 p-2.5 rounded text-sm text-black font-semibold bg-white outline-none focus:ring-2 focus:ring-orange-500" /></div>
                     </>
                   )}
                 </div>
               </div>
 
-              {/* BAGIAN 2: KUESIONER MEDIS (SHARED / SSOT) */}
+              {/* BAGIAN 2: KUESIONER MEDIS */}
               <div className="space-y-6">
                 <div className="p-6 border-2 border-indigo-300 rounded-xl bg-indigo-50 space-y-8 shadow-sm animate-fade-in">
                   <h2 className="text-xl font-extrabold text-indigo-900 border-b-2 border-indigo-300 pb-2">BAGIAN 2: Kuisioner Medis & Riwayat Penyakit</h2>
@@ -228,12 +228,12 @@ export default function Home() {
                       ))}
                       <div className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col md:flex-row md:items-center gap-3 mt-2">
                         <span className="text-sm font-bold text-gray-900">Lainnya (Sebutkan):</span>
-                        <input type="text" name="nw_others" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full md:w-2/3 text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <input type="text" name="nw_others" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full md:w-2/3 text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-indigo-500 bg-white" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Vaksinasi (HANYA MUNCUL JIKA QATAR DIPILIH) */}
+                  {/* Vaksinasi (QATAR ONLY) */}
                   {isQatar && (
                     <div className="bg-orange-50 p-4 border border-orange-200 rounded-lg">
                       <label className="block text-base font-bold text-orange-900 mb-3 border-b border-orange-200 pb-1">Riwayat Vaksinasi (Khusus QatarEnergy):</label>
@@ -267,12 +267,12 @@ export default function Home() {
                       ))}
                       <div className="col-span-1 lg:col-span-2 flex flex-col md:flex-row md:items-center gap-3">
                         <span className="text-sm font-bold text-gray-900">Penyakit Lainnya:</span>
-                        <input type="text" name="mh_others" onChange={handleInputChange} className="border border-gray-400 p-2 rounded flex-1 text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-indigo-500" />
+                        <input type="text" name="mh_others" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded flex-1 text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Sebutkan jika ada riwayat penyakit lain..." />
                       </div>
                     </div>
                   </div>
 
-                  {/* Riwayat Medis Keluarga (HANYA MUNCUL JIKA QATAR DIPILIH) */}
+                  {/* Riwayat Medis Keluarga (QATAR ONLY) */}
                   {isQatar && (
                     <div className="bg-orange-50 p-4 border border-orange-200 rounded-lg">
                       <label className="block text-base font-bold text-orange-900 mb-3 border-b border-orange-200 pb-1">Riwayat Penyakit Keluarga (Khusus QatarEnergy):</label>
@@ -288,7 +288,7 @@ export default function Home() {
                         ))}
                         <div className="col-span-1 lg:col-span-2 flex flex-col md:flex-row md:items-center gap-3">
                           <span className="text-sm font-bold text-gray-900">Penyakit Keluarga Lainnya:</span>
-                          <input type="text" name="fm_others" onChange={handleInputChange} className="border border-gray-400 p-2 rounded flex-1 text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-indigo-500" />
+                          <input type="text" name="fm_others" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded flex-1 text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-indigo-500 bg-white" />
                         </div>
                       </div>
                     </div>
@@ -317,21 +317,37 @@ export default function Home() {
                             <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_meds" value="No" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Tidak</label>
                           </div>
                         </div>
-                        {formData.q_meds === 'Yes' && <input type="text" name="q_meds_text" placeholder="Sebutkan nama obat, dosis, dan frekuensi..." onChange={handleInputChange} className="border border-gray-400 p-2.5 mt-3 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" />}
+                        {formData.q_meds === 'Yes' && <input type="text" name="q_meds_text" placeholder="Sebutkan nama obat, dosis, dan frekuensi..." onChange={handleInputChange} className="border border-gray-400 p-2.5 mt-3 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold bg-white" />}
                       </div>
 
                       <div className="flex flex-col bg-white p-4 border border-gray-300 rounded shadow-sm text-sm text-gray-900">
                         <div className="flex flex-col md:flex-row md:items-center justify-between font-bold">
                           <span className="mb-2 md:mb-0">3. Apakah Anda merokok?</span>
-                          <div className="flex gap-4">
+                          <div className="flex gap-4 items-center">
                             <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_smoke" value="Yes" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Ya</label>
                             <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_smoke" value="No" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Tidak</label>
+                            
+                            {isChevron && (
+                              <label className="cursor-pointer flex items-center gap-1 ml-4 border-l pl-4 border-gray-300 text-teal-700">
+                                <input type="checkbox" name="smoker_q" onChange={(e) => setFormData({...formData, smoker_q: e.target.checked ? 'Yes' : 'No'})} className="w-4 h-4 accent-teal-600" /> Sudah Berhenti (Quit)
+                              </label>
+                            )}
                           </div>
                         </div>
+                        
                         {formData.q_smoke === 'Yes' && (
-                          <div className="flex flex-col md:flex-row gap-3 mt-3">
-                            <input type="text" name="q_smoke_text" placeholder="Jenis (Rokok, Vape)..." onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full md:w-1/2 outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" />
-                            <input type="text" name="q_smoke_freq" placeholder="Berapa lama & batang/hari..." onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full md:w-1/2 outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                            <input type="text" name="q_smoke_text" placeholder="Jenis (Rokok, Vape)..." onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold bg-white" />
+                            <input type="text" name="q_smoke_freq" placeholder="Berapa lama & batang/hari (Untuk Qatar)..." onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold bg-white" />
+                            
+                            {isChevron && <input type="number" name="smoker_y" placeholder="Berapa tahun merokok? (Khusus Chevron)" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full outline-none focus:ring-2 focus:ring-teal-500 font-semibold bg-white" />}
+                            {isChevron && <input type="number" name="smoker_d" placeholder="Jml batang/hari? (Khusus Chevron)" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full outline-none focus:ring-2 focus:ring-teal-500 font-semibold bg-white" />}
+                          </div>
+                        )}
+
+                        {formData.smoker_q === 'Yes' && isChevron && (
+                          <div className="flex mt-3">
+                            <input type="number" name="smoker_s_y" placeholder="Sudah berhenti berapa tahun? (Khusus Chevron)" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full md:w-1/2 outline-none focus:ring-2 focus:ring-teal-500 font-semibold bg-white" />
                           </div>
                         )}
                       </div>
@@ -344,7 +360,7 @@ export default function Home() {
                             <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_alcohol" value="No" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Tidak</label>
                           </div>
                         </div>
-                        {formData.q_alcohol === 'Yes' && <input type="text" name="q_alcohol_text" placeholder="Jenis apa, frekuensi, dan seberapa banyak per minggu..." onChange={handleInputChange} className="border border-gray-400 p-2.5 mt-3 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" />}
+                        {formData.q_alcohol === 'Yes' && <input type="text" name="q_alcohol_text" placeholder="Jenis apa, frekuensi, dan seberapa banyak per minggu..." onChange={handleInputChange} className="border border-gray-400 p-2.5 mt-3 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold bg-white" />}
                       </div>
 
                       {/* Khusus Qatar Only Questions */}
@@ -359,7 +375,7 @@ export default function Home() {
                               <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_medevac" value="No" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Tidak</label>
                             </div>
                           </div>
-                          {formData.q_medevac === 'Yes' && <input type="text" name="q_medevac_text" placeholder="Jika Ya, jelaskan alasannya..." onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" />}
+                          {formData.q_medevac === 'Yes' && <input type="text" name="q_medevac_text" placeholder="Jika Ya, jelaskan alasannya..." onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold bg-white" />}
 
                           <div className="flex flex-col md:flex-row md:items-center justify-between bg-white p-3 border border-gray-300 rounded text-sm text-gray-900 font-bold">
                             <span className="mb-2 md:mb-0">Merasa bugar dan sehat saat ini?</span>
@@ -389,7 +405,7 @@ export default function Home() {
                             <span className="mb-2 md:mb-0">Apakah hidup Anda penuh tekanan? (Skala 1-10)</span>
                             <div className="flex gap-4 items-center">
                               {formData.q_stressful === 'Yes' && (
-                                <input type="number" name="q_stress_score" min="1" max="10" placeholder="Skor" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-20 text-center outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" />
+                                <input type="number" name="q_stress_score" min="1" max="10" placeholder="Skor" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-20 text-center outline-none focus:ring-2 focus:ring-indigo-500 font-semibold bg-white" />
                               )}
                               <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_stressful" value="Yes" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Ya</label>
                               <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_stressful" value="No" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Tidak</label>
@@ -404,7 +420,7 @@ export default function Home() {
                                 <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_omfc" value="No" onChange={handleInputChange} className="w-4 h-4 accent-indigo-600" /> Tidak</label>
                               </div>
                             </div>
-                            {formData.q_omfc === 'Yes' && <input type="text" name="q_omfc_text" placeholder="Jika Ya, apa alasannya..." onChange={handleInputChange} className="border border-gray-400 p-2.5 mt-3 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" />}
+                            {formData.q_omfc === 'Yes' && <input type="text" name="q_omfc_text" placeholder="Jika Ya, apa alasannya..." onChange={handleInputChange} className="border border-gray-400 p-2.5 mt-3 rounded w-full outline-none focus:ring-2 focus:ring-indigo-500 font-semibold bg-white" />}
                           </div>
                         </div>
                       )}
@@ -415,13 +431,12 @@ export default function Home() {
 
               {/* BAGIAN 3: PEMERIKSAAN DOKTER UMUM (SHARED) */}
               <div className="p-6 border-2 border-red-400 rounded-xl bg-red-50 space-y-6 shadow-sm animate-fade-in">
-                <h2 className="text-xl font-extrabold text-red-900 border-b-2 border-red-300 pb-2">BAGIAN 3: Pemeriksaan Dokter (Fisik & Laporan Lab Umum)</h2>
+                <h2 className="text-xl font-extrabold text-red-900 border-b-2 border-red-300 pb-2">BAGIAN 3: Pemeriksaan Dokter Umum (Fisik)</h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Pemeriksaan Fisik (Shared) */}
-                  <div>
-                    <h3 className="text-lg font-black text-gray-900 mb-4 bg-red-200 inline-block px-3 py-1 rounded">PEMERIKSAAN FISIK UMUM</h3>
-                    <div className="space-y-3">
+                  <div className="lg:col-span-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
                       {physicalExams.map(p => (
                         <div key={p.id} className="bg-white p-3 border border-red-300 rounded flex flex-col gap-2 shadow-sm">
                           <span className="text-sm font-bold text-gray-900">{p.label}</span>
@@ -430,40 +445,40 @@ export default function Home() {
                               <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={p.id} value="Normal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Normal</label>
                               <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={p.id} value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Abnormal</label>
                             </div>
-                            <input type="text" name={`${p.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2 w-full text-sm outline-none focus:ring-2 focus:ring-red-500 font-semibold" />
+                            <input type="text" name={`${p.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2.5 w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-red-500 bg-white" />
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
-
-                  {/* Laporan Lab Umum (HANYA MUNCUL JIKA QATAR DIPILIH) */}
-                  {isQatar && (
-                    <div className="bg-orange-50 p-4 border border-orange-200 rounded-lg">
-                      <h3 className="text-lg font-black text-orange-900 mb-4 border-b border-orange-300 pb-1">STATUS LABORATORIUM (Khusus QatarEnergy)</h3>
-                      <div className="space-y-3">
-                        {labReports.map(l => (
-                          <div key={l.id} className="bg-white p-3 border border-red-300 rounded flex flex-col gap-2 shadow-sm">
-                            <span className="text-sm font-bold text-gray-900">{l.label}</span>
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                              <div className="flex gap-4 text-sm font-bold text-gray-900 shrink-0">
-                                <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Normal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Normal</label>
-                                <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Abnormal</label>
-                              </div>
-                              <input type="text" name={`${l.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2 w-full text-sm outline-none focus:ring-2 focus:ring-red-500 font-semibold" />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
-              {/* BAGIAN 4: HASIL LAB KHUSUS CHEVRON (HANYA MUNCUL JIKA CHEVRON DIPILIH) */}
+              {/* BAGIAN 4A: HASIL LAB KHUSUS QATARENERGY */}
+              {isQatar && (
+                <div className="p-6 border-2 border-orange-400 rounded-xl bg-orange-50 space-y-6 shadow-sm animate-fade-in">
+                  <h2 className="text-xl font-extrabold text-orange-900 border-b-2 border-orange-300 pb-2">BAGIAN 4A: Status Laboratorium (Khusus QatarEnergy)</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                    {labReports.map(l => (
+                      <div key={l.id} className="bg-white p-3 border border-orange-300 rounded flex flex-col gap-2 shadow-sm">
+                        <span className="text-sm font-bold text-gray-900">{l.label}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex gap-4 text-sm font-bold text-gray-900 shrink-0">
+                            <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Normal" onChange={handleInputChange} className="w-4 h-4 accent-orange-600" /> Normal</label>
+                            <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-orange-600" /> Abnormal</label>
+                          </div>
+                          <input type="text" name={`${l.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2.5 w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-orange-500 bg-white" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* BAGIAN 4B: HASIL LAB KHUSUS CHEVRON */}
               {isChevron && (
-                <div className="p-6 border-2 border-teal-400 rounded-xl bg-teal-50 space-y-6 shadow-sm mt-6 animate-fade-in">
-                  <h2 className="text-xl font-extrabold text-teal-900 border-b-2 border-teal-300 pb-2">BAGIAN 4: Detail Hasil Lab (Khusus Chevron)</h2>
+                <div className="p-6 border-2 border-teal-400 rounded-xl bg-teal-50 space-y-6 shadow-sm animate-fade-in">
+                  <h2 className="text-xl font-extrabold text-teal-900 border-b-2 border-teal-300 pb-2">BAGIAN 4B: Detail Angka Laboratorium (Khusus Chevron)</h2>
                   
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Spirometri & Audiometri & EKG */}
@@ -471,53 +486,53 @@ export default function Home() {
                       <div className="bg-white p-4 border border-teal-300 rounded shadow-sm">
                         <h3 className="font-bold text-sm text-teal-900 mb-3 border-b pb-1">Spirometri (Fungsi Paru)</h3>
                         <div className="grid grid-cols-2 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">FVC</label><input type="text" name="ft_fvc" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">% Predicted FVC</label><input type="text" name="pre_fvc" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">FVC</label><input type="text" name="ft_fvc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">% Predicted FVC</label><input type="text" name="pre_fvc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
                         <div className="grid grid-cols-2 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">FEV1</label><input type="text" name="ft_fev1" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">% Predicted FEV1</label><input type="text" name="pre_fev1" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">FEV1</label><input type="text" name="ft_fev1" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">% Predicted FEV1</label><input type="text" name="pre_fev1" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
-                        <div><label className="text-xs font-bold text-gray-700">FEV1 / FVC (%)</label><input type="text" name="ev1_vc" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div><label className="text-xs font-bold text-gray-700">FEV1 / FVC (%)</label><input type="text" name="ev1_vc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                       </div>
 
                       <div className="bg-white p-4 border border-teal-300 rounded shadow-sm">
                         <h3 className="font-bold text-sm text-teal-900 mb-3 border-b pb-1">Audiometri (Telinga Kiri - Left Ear dB)</h3>
-                        <div className="grid grid-cols-7 gap-1">
-                          <div><label className="text-xs font-bold">0.5</label><input type="text" name="l05" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">1.0</label><input type="text" name="l1" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">2.0</label><input type="text" name="l2" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">3.0</label><input type="text" name="l3" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">4.0</label><input type="text" name="l4" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">6.0</label><input type="text" name="l6" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">8.0</label><input type="text" name="l8" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div className="grid grid-cols-7 gap-2">
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">0.5</label><input type="text" name="l05" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">1.0</label><input type="text" name="l1" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">2.0</label><input type="text" name="l2" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">3.0</label><input type="text" name="l3" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">4.0</label><input type="text" name="l4" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">6.0</label><input type="text" name="l6" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">8.0</label><input type="text" name="l8" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
                         <h3 className="font-bold text-sm text-teal-900 mt-4 mb-3 border-b pb-1">Audiometri (Telinga Kanan - Right Ear dB)</h3>
-                        <div className="grid grid-cols-7 gap-1">
-                          <div><label className="text-xs font-bold">0.5</label><input type="text" name="r05" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">1.0</label><input type="text" name="r1" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">2.0</label><input type="text" name="r2" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">3.0</label><input type="text" name="r3" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">4.0</label><input type="text" name="r4" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">6.0</label><input type="text" name="r6" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold">8.0</label><input type="text" name="r8" onChange={handleInputChange} className="border p-1 rounded w-full text-xs text-center outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div className="grid grid-cols-7 gap-2">
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">0.5</label><input type="text" name="r05" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">1.0</label><input type="text" name="r1" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">2.0</label><input type="text" name="r2" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">3.0</label><input type="text" name="r3" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">4.0</label><input type="text" name="r4" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">6.0</label><input type="text" name="r6" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700 block text-center">8.0</label><input type="text" name="r8" onChange={handleInputChange} className="border border-gray-400 p-1.5 rounded w-full text-sm text-center text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
-                        <div className="mt-3"><label className="text-xs font-bold text-gray-700 block">Hasil Akhir Audiometri</label><input type="text" name="oht_result" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div className="mt-3"><label className="text-xs font-bold text-gray-700 block">Hasil Akhir Audiometri</label><input type="text" name="oht_result" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                       </div>
 
                       <div className="bg-white p-4 border border-teal-300 rounded shadow-sm">
-                        <h3 className="font-bold text-sm text-teal-900 mb-3 border-b pb-1">{"EKG (>35 Tahun)"}</h3>
+                        <h3 className="font-bold text-sm text-teal-900 mb-3 border-b pb-1">EKG (&gt;35 Tahun)</h3>
                         <div className="grid grid-cols-3 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">Rate</label><input type="text" name="rate" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">Rhythm</label><input type="text" name="rhyt" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">Axis</label><input type="text" name="axis" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Rate</label><input type="text" name="rate" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Rhythm</label><input type="text" name="rhyt" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Axis</label><input type="text" name="axis" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
                         <div className="grid grid-cols-3 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">P-R interval</label><input type="text" name="pr" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">QRS</label><input type="text" name="qrs" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">T wave</label><input type="text" name="twv" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">P-R interval</label><input type="text" name="pr" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">QRS</label><input type="text" name="qrs" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">T wave</label><input type="text" name="twv" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
-                        <div><label className="text-xs font-bold text-gray-700">Diagnosis EKG</label><input type="text" name="diag" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div><label className="text-xs font-bold text-gray-700">Diagnosis EKG</label><input type="text" name="diag" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                       </div>
                       
                       <div className="bg-white p-4 border border-teal-300 rounded shadow-sm">
@@ -527,8 +542,8 @@ export default function Home() {
                            <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="xray" value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-teal-600" /> Abnormal</label>
                         </div>
                         <div className="grid grid-cols-2 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">Tanggal X-Ray</label><input type="text" name="date_xray" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div className="col-span-2"><label className="text-xs font-bold text-gray-700">Describe Abnormalities</label><input type="text" name="des_abnor" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Tanggal X-Ray</label><input type="text" name="date_xray" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div className="col-span-2"><label className="text-xs font-bold text-gray-700">Describe Abnormalities</label><input type="text" name="des_abnor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
                       </div>
                     </div>
@@ -538,52 +553,71 @@ export default function Home() {
                       <div className="bg-white p-4 border border-teal-300 rounded shadow-sm">
                         <h3 className="font-bold text-sm text-teal-900 mb-3 border-b pb-1">Darah Lengkap (Hematologi)</h3>
                         <div className="grid grid-cols-2 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">Hb</label><input type="text" name="lab_hb" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">Hct</label><input type="text" name="lab_hct" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Hb</label><input type="text" name="lab_hb" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Hct</label><input type="text" name="lab_hct" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
-                        <div className="mb-2"><label className="text-xs font-bold text-gray-700">RBC Morphology</label><input type="text" name="rbc_m" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div className="mb-2"><label className="text-xs font-bold text-gray-700">RBC Morphology</label><input type="text" name="rbc_m" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         <div className="grid grid-cols-3 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">WBC</label><input type="text" name="lab_wbc" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">PMN</label><input type="text" name="pmn" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">LYMPH</label><input type="text" name="lymph" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">WBC</label><input type="text" name="lab_wbc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">PMN</label><input type="text" name="pmn" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">LYMPH</label><input type="text" name="lymph" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
-                          <div><label className="text-xs font-bold text-gray-700">MONO</label><input type="text" name="mono" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">EOS</label><input type="text" name="eos" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">BASO / BAND</label><input type="text" name="baso" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">MONO</label><input type="text" name="mono" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">EOS</label><input type="text" name="eos" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">BASO</label><input type="text" name="baso" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
-                        <div className="mt-2"><label className="text-xs font-bold text-gray-700">Platelets</label><input type="text" name="lab_platelet" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div className="mt-2"><label className="text-xs font-bold text-gray-700">BAND</label><input type="text" name="band" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                        <div className="mt-2"><label className="text-xs font-bold text-gray-700">Platelets</label><input type="text" name="lab_platelet" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                       </div>
 
                       <div className="bg-white p-4 border border-teal-300 rounded shadow-sm">
                         <h3 className="font-bold text-sm text-teal-900 mb-3 border-b pb-1">Urinalisis & Kimia Darah</h3>
                         <div className="grid grid-cols-3 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">Albumin</label><input type="text" name="albumin" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">Sugar</label><input type="text" name="ur_sugar" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">Blood</label><input type="text" name="urin_b" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Albumin</label><input type="text" name="albumin" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Sugar (Urine)</label><input type="text" name="ur_sugar" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Blood</label><input type="text" name="urin_b" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
                         <div className="grid grid-cols-3 gap-3 mb-2">
-                          <div><label className="text-xs font-bold text-gray-700">WBC</label><input type="text" name="wbc" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">RBC</label><input type="text" name="rbc" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">Casts</label><input type="text" name="casts" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">WBC</label><input type="text" name="wbc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">RBC</label><input type="text" name="rbc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Casts</label><input type="text" name="casts" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
-                        <div className="mb-2"><label className="text-xs font-bold text-gray-700">Lainnya (Urinalysis)</label><input type="text" name="ur_others" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                        <div className="mb-2"><label className="text-xs font-bold text-gray-700">Lainnya (Urinalysis)</label><input type="text" name="ur_others" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                        
+                        {/* KIMIA DARAH KHUSUS CHEVRON YANG SEBELUMNYA HILANG */}
+                        <h3 className="font-bold text-sm text-teal-900 mt-4 mb-3 border-b pb-1">Kimia Darah (mg% / mg/dl)</h3>
+                        <div className="grid grid-cols-2 gap-3 mb-2">
+                          <div><label className="text-xs font-bold text-gray-700">Blood Sugar (mg%)</label><input type="text" name="val_sugar" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Cholesterol (mg%)</label><input type="text" name="val_chol" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Triglyceride (mg%)</label><input type="text" name="val_trig" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">HDL (mg%)</label><input type="text" name="val_hdl" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">LDL (mg%)</label><input type="text" name="val_ldl" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Uric Acid (mg/dl)</label><input type="text" name="val_urig" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-3 mt-4 pt-2 border-t">
-                          <div><label className="text-xs font-bold text-gray-700">BUN</label><input type="text" name="val_bun" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">Creatinine</label><input type="text" name="val_creat" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">SGOT</label><input type="text" name="val_sgot" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                          <div><label className="text-xs font-bold text-gray-700">SGPT</label><input type="text" name="val_sgpt" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">BUN (mg/dl)</label><input type="text" name="val_bun" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">Creatinine (mg/dl)</label><input type="text" name="val_creat" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">SGOT (U/L)</label><input type="text" name="val_sgot" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                          <div><label className="text-xs font-bold text-gray-700">SGPT (U/L)</label><input type="text" name="val_sgpt" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                        </div>
+
+                        {/* STOOL CULTURE & DETAILS ABNORMAL FINDINGS */}
+                        <div className="mt-4 pt-2 border-t space-y-2">
+                           <div><label className="text-xs font-bold text-gray-700">Stool Culture (Only for Catering Group)</label><input type="text" name="only_cg" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                           <div><label className="text-xs font-bold text-gray-700">Details of Abnormal Findings</label><textarea name="detail_af" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold h-16 outline-none focus:ring-2 focus:ring-teal-500 bg-white"></textarea></div>
                         </div>
                       </div>
                       
                       <div className="bg-white p-4 border border-teal-300 rounded shadow-sm">
                         <h3 className="font-bold text-sm text-teal-900 mb-3 border-b pb-1">Keterangan Dokter / Summary</h3>
-                        <textarea name="summary" onChange={handleInputChange} placeholder="Summary..." className="border border-gray-400 p-2 rounded w-full text-sm h-16 outline-none focus:ring-2 focus:ring-teal-500 mb-2"></textarea>
-                        <textarea name="suggestion" onChange={handleInputChange} placeholder="Suggestion..." className="border border-gray-400 p-2 rounded w-full text-sm h-16 outline-none focus:ring-2 focus:ring-teal-500 mb-2"></textarea>
-                        <textarea name="comments" onChange={handleInputChange} placeholder="Comments untuk Fitness-for-Duty (Part I & II)..." className="border border-gray-400 p-2 rounded w-full text-sm h-16 outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+                        <textarea name="summary" onChange={handleInputChange} placeholder="Summary..." className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold h-20 outline-none focus:ring-2 focus:ring-teal-500 bg-white mb-2"></textarea>
+                        <textarea name="suggestion" onChange={handleInputChange} placeholder="Suggestion..." className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold h-20 outline-none focus:ring-2 focus:ring-teal-500 bg-white mb-2"></textarea>
+                        <textarea name="comments" onChange={handleInputChange} placeholder="Comments untuk Fitness-for-Duty (Part I & II)..." className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold h-20 outline-none focus:ring-2 focus:ring-teal-500 bg-white"></textarea>
                         <div className="grid grid-cols-2 gap-3 mt-2">
-                           <div><label className="text-xs font-bold text-gray-700">Nama Rumah Sakit</label><input type="text" name="hospital" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
-                           <div><label className="text-xs font-bold text-gray-700">Nama Dokter</label><input type="text" name="eps" onChange={handleInputChange} className="border p-2 rounded w-full text-sm outline-none focus:ring-2 focus:ring-teal-500" /></div>
+                           <div><label className="text-xs font-bold text-gray-700">Nama Rumah Sakit</label><input type="text" name="hospital" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
+                           <div><label className="text-xs font-bold text-gray-700">Nama Dokter</label><input type="text" name="eps" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-white" /></div>
                         </div>
                       </div>
                     </div>
@@ -597,22 +631,27 @@ export default function Home() {
                 
                 {/* Biometrik Dasar */}
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 p-5 border border-gray-300 rounded-lg bg-white shadow-sm">
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Tinggi (cm)</label><input type="number" name="height" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Berat (kg)</label><input type="number" name="weight" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Tinggi (cm)</label><input type="number" name="height" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Berat (kg)</label><input type="number" name="weight" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                   <div><label className="block text-sm font-bold mb-1 text-gray-900">BMI (Otomatis)</label><input type="text" value={formData.bmi} readOnly className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-bold bg-gray-200 cursor-not-allowed outline-none" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Tensi (120/80)</label><input type="text" name="bloodPressure" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nadi (Pulse)</label><input type="number" name="pulse" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Tensi (120/80)</label><input type="text" name="bloodPressure" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Nadi (Pulse)</label><input type="number" name="pulse" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                   
-                  {isChevron && <div><label className="block text-sm font-bold mb-1 text-teal-700">Resp. Rate (RR)</label><input type="number" name="respiratoryRate" onChange={handleInputChange} className="w-full border border-teal-400 p-2.5 rounded text-sm text-black font-semibold bg-teal-50 outline-none focus:ring-2 focus:ring-teal-500" /></div>}
+                  {isChevron && <div><label className="block text-sm font-bold mb-1 text-teal-700">Resp. Rate (RR)</label><input type="number" name="respiratoryRate" onChange={handleInputChange} className="w-full border border-teal-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-teal-500 bg-teal-50" /></div>}
                   
-                  <div><label className="block text-sm font-bold mb-1 text-gray-900">Lingkar Pinggang</label><input type="number" name="waist" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                  {/* Lingkar Pinggang Khusus Qatar */}
+                  {isQatar && (
+                    <div><label className="block text-sm font-bold mb-1 text-orange-700">Lingkar Pinggang</label><input type="number" name="waist" onChange={handleInputChange} className="w-full border border-orange-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-orange-500 bg-orange-50" /></div>
+                  )}
+
+                  {/* Golongan Darah Shared (Chevron & Qatar Membutuhkan Ini) */}
                   <div>
                     <label className="block text-sm font-bold mb-1 text-gray-900">Golongan Darah</label>
-                    <select name="bloodGroupType" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500"><option value="">-Pilih-</option><option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="O">O</option></select>
+                    <select name="bloodGroupType" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white"><option value="">-Pilih-</option><option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="O">O</option></select>
                   </div>
                   <div>
                     <label className="block text-sm font-bold mb-1 text-gray-900">Rhesus (Rh)</label>
-                    <select name="bloodGroupRh" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500"><option value="">-Pilih-</option><option value="+">Positif (+)</option><option value="-">Negatif (-)</option></select>
+                    <select name="bloodGroupRh" onChange={handleInputChange} className="w-full border border-gray-400 p-2.5 rounded text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white"><option value="">-Pilih-</option><option value="+">Positif (+)</option><option value="-">Negatif (-)</option></select>
                   </div>
                 </div>
 
@@ -622,37 +661,37 @@ export default function Home() {
                   <div className="bg-white p-4 border border-gray-300 rounded">
                     <h3 className="font-extrabold text-base mb-4 text-blue-900 border-b-2 border-blue-200 pb-1">Penglihatan Tanpa Kacamata (Uncorrected)</h3>
                     <div className="grid grid-cols-2 gap-4 mb-3">
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                     </div>
-                    <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                    <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                   </div>
                   
                   {/* Dengan Kacamata */}
                   <div className="bg-white p-4 border border-gray-300 rounded">
                     <h3 className="font-extrabold text-base mb-4 text-blue-900 border-b-2 border-blue-200 pb-1">Penglihatan Dengan Kacamata (Corrected)</h3>
                     <div className="grid grid-cols-2 gap-4 mb-3">
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-3">
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                     </div>
-                    <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500" /></div>
+                    <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500 bg-white" /></div>
                   </div>
 
-                  {/* Buta Warna */}
-                  <div className="md:col-span-2 bg-white p-4 border border-gray-300 rounded">
+                  {/* Buta Warna (Color Vision) */}
+                  <div className="md:col-span-2 bg-white p-4 border border-gray-300 rounded shadow-sm">
                       <label className="font-extrabold text-base block mb-3 text-blue-900 border-b-2 border-blue-200 pb-1">Tes Buta Warna (Color Vision):</label>
-                      <div className="flex flex-col md:flex-row gap-6 font-bold text-sm text-gray-900">
-                          <label className="cursor-pointer flex items-center gap-2"><input type="radio" name="color_vision" value="Normal" onChange={handleInputChange} className="w-5 h-5 accent-blue-600" /> Normal</label>
-                          <label className="cursor-pointer flex items-center gap-2"><input type="radio" name="color_vision" value="Partial" onChange={handleInputChange} className="w-5 h-5 accent-blue-600" /> Buta Warna Parsial</label>
-                          <label className="cursor-pointer flex items-center gap-2"><input type="radio" name="color_vision" value="Total" onChange={handleInputChange} className="w-5 h-5 accent-blue-600" /> Buta Warna Total</label>
+                      <div className="flex flex-col md:flex-row gap-6 font-bold text-sm text-gray-900 bg-blue-100 p-3 rounded-lg border border-blue-300">
+                          <label className="cursor-pointer flex items-center gap-2"><input type="radio" name="color_vision" value="Normal" onChange={handleInputChange} className="w-5 h-5 accent-blue-700" /> Normal</label>
+                          <label className="cursor-pointer flex items-center gap-2"><input type="radio" name="color_vision" value="Partial" onChange={handleInputChange} className="w-5 h-5 accent-blue-700" /> Buta Warna Parsial</label>
+                          <label className="cursor-pointer flex items-center gap-2"><input type="radio" name="color_vision" value="Total" onChange={handleInputChange} className="w-5 h-5 accent-blue-700" /> Buta Warna Total</label>
                       </div>
                   </div>
                 </div>

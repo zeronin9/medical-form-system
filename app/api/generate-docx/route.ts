@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const { formData, selectedFormat } = await request.json();
 
     const fileName = selectedFormat === 'chevron' 
-      ? 'Chevron Medical Form_updated_2.docx' 
+      ? 'Chevron Medical Form_updated.docx' 
       : 'QatarEnergy LNG Medical Department.docx'; // Menggunakan file asli
       
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
