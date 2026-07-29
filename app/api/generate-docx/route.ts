@@ -113,6 +113,7 @@ export async function POST(request: Request) {
       fear_y: check(formData.q_fear, 'Yes'), fear_n: check(formData.q_fear, 'No'),
       stress_y: check(formData.q_stress, 'Yes'), stress_n: check(formData.q_stress, 'No'),
       strfull_y: check(formData.q_stressful, 'Yes'), strfull_n: check(formData.q_stressful, 'No'),
+      score: formData.q_stress_score || "",
       qmfc_y: check(formData.q_omfc, 'Yes'), qmfc_n: check(formData.q_omfc, 'No'), omfc_ifyes: formData.q_omfc_text || "",
       alcohol: formData.q_alcohol === 'Yes' ? formData.q_alcohol_text || "" : "",
       smoker: formData.q_smoke === 'Yes' ? formData.q_smoke_freq || "" : "",

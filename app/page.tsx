@@ -65,7 +65,6 @@ export default function Home() {
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // State Input: Mencakup 100% field yang diperlukan oleh backend
   const [formData, setFormData] = useState<any>({
     firstName: '', familyName: '', dob: '', idPassport: '', nationality: '', gender: '', address: '', contactNumber: '',
     position: '', department: '', company: '', workLocation: '', date: new Date().toLocaleDateString('id-ID'),
@@ -73,7 +72,7 @@ export default function Home() {
     height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', bloodGroupType: '', bloodGroupRh: '',
     q_illness: '', q_medevac: '', q_medevac_text: '', q_meds: '', q_meds_text: '',
     q_smoke: '', q_smoke_text: '', q_smoke_freq: '', q_alcohol: '', q_alcohol_text: '',
-    q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', q_omfc_text: '',
+    q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_stress_score: '', q_omfc: '', q_omfc_text: '',
     nw_others: '', mh_others: '', fm_others: '',
     
     // Vision
@@ -86,7 +85,6 @@ export default function Home() {
   const isChevron = selectedFormats.includes('chevron');
   const showForm = isQatar || isChevron;
 
-  // Efek Samping: Hitung BMI otomatis
   useEffect(() => {
     if (formData.height && formData.weight) {
       const h = parseFloat(formData.height) / 100; 
@@ -372,12 +370,17 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <div className="flex flex-col md:flex-row md:items-center justify-between bg-white p-4 border border-gray-300 rounded shadow-sm text-sm text-gray-900 font-bold">
-                          <span className="mb-2 md:mb-0">9. Apakah hidup Anda penuh tekanan? (Skala 1-10)</span>
-                          <div className="flex gap-4">
-                            <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_stressful" value="Yes" onChange={handleInputChange} className="w-4 h-4 accent-orange-600" /> Ya</label>
-                            <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_stressful" value="No" onChange={handleInputChange} className="w-4 h-4 accent-orange-600" /> Tidak</label>
+                        <div className="flex flex-col bg-white p-4 border border-gray-300 rounded shadow-sm text-sm text-gray-900">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between font-bold">
+                            <span className="mb-2 md:mb-0">9. Apakah hidup Anda penuh tekanan? (Skala 1-10)</span>
+                            <div className="flex gap-4">
+                              <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_stressful" value="Yes" onChange={handleInputChange} className="w-4 h-4 accent-orange-600" /> Ya</label>
+                              <label className="cursor-pointer flex items-center gap-1"><input type="radio" name="q_stressful" value="No" onChange={handleInputChange} className="w-4 h-4 accent-orange-600" /> Tidak</label>
+                            </div>
                           </div>
+                          {formData.q_stressful === 'Yes' && (
+                            <input type="number" name="q_stress_score" min="1" max="10" placeholder="Masukkan Skor (1 - 10)..." onChange={handleInputChange} className="border border-gray-400 p-2.5 mt-3 rounded w-full outline-none focus:ring-2 focus:ring-orange-500 font-semibold" />
+                          )}
                         </div>
 
                         <div className="flex flex-col bg-white p-4 border border-gray-300 rounded shadow-sm text-sm text-gray-900">
@@ -394,7 +397,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* SECTION B: EXAMINING DOCTOR */}
+                  {/* SECTION B: EXAMINING DOCTOR (Diperbaiki Tata Letaknya) */}
                   <div className="p-6 border-2 border-red-400 rounded-xl bg-red-50 space-y-6 shadow-sm">
                     <h2 className="text-xl font-extrabold text-red-900 border-b-2 border-red-300 pb-2">BAGIAN B: Diisi Oleh Dokter Pemeriksa</h2>
                     
@@ -404,13 +407,15 @@ export default function Home() {
                         <h3 className="text-lg font-black text-gray-900 mb-4 bg-red-200 inline-block px-3 py-1 rounded">PEMERIKSAAN FISIK</h3>
                         <div className="space-y-3">
                           {physicalExams.map(p => (
-                            <div key={p.id} className="bg-white p-3 border border-red-300 rounded flex flex-col md:flex-row md:items-center justify-between shadow-sm">
-                              <span className="text-sm font-bold w-full md:w-5/12 mb-2 md:mb-0 text-gray-900">{p.label}</span>
-                              <div className="flex gap-4 w-full md:w-3/12 text-sm font-bold text-gray-900 mb-2 md:mb-0">
-                                <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={p.id} value="Normal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Normal</label>
-                                <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={p.id} value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Abn</label>
+                            <div key={p.id} className="bg-white p-3 border border-red-300 rounded flex flex-col gap-2 shadow-sm">
+                              <span className="text-sm font-bold text-gray-900">{p.label}</span>
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="flex gap-4 text-sm font-bold text-gray-900 shrink-0">
+                                  <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={p.id} value="Normal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Normal</label>
+                                  <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={p.id} value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Abnormal</label>
+                                </div>
+                                <input type="text" name={`${p.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2 w-full text-sm outline-none focus:ring-2 focus:ring-red-500 font-semibold" />
                               </div>
-                              <input type="text" name={`${p.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2 w-full md:w-4/12 text-sm outline-none focus:ring-2 focus:ring-red-500 font-semibold" />
                             </div>
                           ))}
                         </div>
@@ -421,13 +426,15 @@ export default function Home() {
                         <h3 className="text-lg font-black text-gray-900 mb-4 bg-red-200 inline-block px-3 py-1 rounded">HASIL LABORATORIUM</h3>
                         <div className="space-y-3">
                           {labReports.map(l => (
-                            <div key={l.id} className="bg-white p-3 border border-red-300 rounded flex flex-col md:flex-row md:items-center justify-between shadow-sm">
-                              <span className="text-sm font-bold w-full md:w-5/12 mb-2 md:mb-0 text-gray-900">{l.label}</span>
-                              <div className="flex gap-4 w-full md:w-3/12 text-sm font-bold text-gray-900 mb-2 md:mb-0">
-                                <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Normal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Normal</label>
-                                <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Abn</label>
+                            <div key={l.id} className="bg-white p-3 border border-red-300 rounded flex flex-col gap-2 shadow-sm">
+                              <span className="text-sm font-bold text-gray-900">{l.label}</span>
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="flex gap-4 text-sm font-bold text-gray-900 shrink-0">
+                                  <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Normal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Normal</label>
+                                  <label className="cursor-pointer flex items-center gap-1"><input type="radio" name={l.id} value="Abnormal" onChange={handleInputChange} className="w-4 h-4 accent-red-600" /> Abnormal</label>
+                                </div>
+                                <input type="text" name={`${l.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2 w-full text-sm outline-none focus:ring-2 focus:ring-red-500 font-semibold" />
                               </div>
-                              <input type="text" name={`${l.id}_r`} placeholder="Keterangan..." onChange={handleInputChange} className="border border-gray-400 rounded p-2 w-full md:w-4/12 text-sm outline-none focus:ring-2 focus:ring-red-500 font-semibold" />
                             </div>
                           ))}
                         </div>
@@ -472,28 +479,28 @@ export default function Home() {
                     <div className="bg-white p-4 border border-gray-300 rounded">
                       <h3 className="font-extrabold text-base mb-4 text-orange-900 border-b-2 border-orange-200 pb-1">Penglihatan Tanpa Kacamata (Uncorrected)</h3>
                       <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_unc" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_unc" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
                       </div>
                       <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_unc" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_unc" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
                       </div>
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_unc" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_unc" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
                     </div>
                     
                     {/* Dengan Kacamata */}
                     <div className="bg-white p-4 border border-gray-300 rounded">
                       <h3 className="font-extrabold text-base mb-4 text-orange-900 border-b-2 border-orange-200 pb-1">Penglihatan Dengan Kacamata (Corrected)</h3>
                       <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_cor" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_cor" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kanan / R)</label><input type="text" name="disr_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Jauh (Kiri / L)</label><input type="text" name="disl_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
                       </div>
                       <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_cor" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
-                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_cor" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kanan / R)</label><input type="text" name="nearr_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                        <div><label className="text-sm font-bold text-gray-900 block mb-1">Dekat (Kiri / L)</label><input type="text" name="nearl_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
                       </div>
-                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_cor" onChange={handleInputChange} className="border border-gray-400 p-2 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                      <div><label className="text-sm font-bold text-gray-900 block mb-1">Penglihatan Binokular</label><input type="text" name="bv_cor" onChange={handleInputChange} className="border border-gray-400 p-2.5 rounded w-full text-sm font-semibold outline-none focus:ring-2 focus:ring-orange-500" /></div>
                     </div>
 
                     {/* Buta Warna */}
