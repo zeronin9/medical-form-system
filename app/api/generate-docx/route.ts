@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
     const fileName = selectedFormat === 'chevron' 
       ? 'Chevron Medical Form_updated_2.docx' 
-      : 'QatarEnergy LNG Medical Department_3.docx';
+      : 'QatarEnergy LNG Medical Department.docx';
       
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
     const content = fs.readFileSync(templatePath, 'binary');
