@@ -8,47 +8,58 @@ export async function POST(request: Request) {
   try {
     const { formData, selectedFormat } = await request.json();
 
+    // Menentukan template DOCX berdasarkan pilihan frontend
     const fileName = selectedFormat === 'chevron' 
       ? 'Chevron Medical Form_updated_2.docx' 
-      : 'QatarEnergy LNG Medical Department.docx';
+      : 'QatarEnergy LNG Medical Department.docx'; // Menggunakan file update terbaru Anda
       
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);
 
-    // Pisahkan konfigurasinya dan tambahkan tipe ": any" agar TypeScript tidak protes
-    const docxOptions: any = {
+    // MENGATASI UNDEFINED: Memaksa TypeScript mengabaikan error tipe dengan @ts-ignore
+    // @ts-ignore
+    const doc = new Docxtemplater(zip, {
       paragraphLoop: true,
       linebreaks: true,
       delimiters: { start: '{{', end: '}}' },
       nullGetter: function() {
-        return ""; // Mengubah semua undefined/kosong menjadi string kosong ("")
+        return ""; // Mengubah semua nilai undefined/kosong menjadi string bersih
       }
-    };
+    });
 
-    const doc = new Docxtemplater(zip, docxOptions);
-
-    // Helper untuk Centang Kotak (Unicode)
+    // Helper Fungsi untuk Centang Kotak (Unicode)
     const check = (value: any, expected: string | boolean) => value === expected ? '☑' : '☐';
 
+    // PEMETAAN DATA (SINGLE SOURCE OF TRUTH UNTUK QATARENERGY DAN CHEVRON)
     doc.render({
       // ==========================================
       // SECTION A: IDENTITAS & PEKERJAAN
       // ==========================================
       first_name: formData.firstName || "",
       family_name: formData.familyName || "",
+      name: `${formData.firstName || ""} ${formData.familyName || ""}`.trim(), // Khusus Chevron
       ddmmyy: formData.dob || "",
       id_passport: formData.idPassport || "",
+      emp_id: formData.idPassport || "", // Khusus Chevron
+      personal_id: formData.idPassport || "", // Khusus Chevron
       nationality: formData.nationality || "",
       position: formData.position || "",
+      job_title: formData.position || "", // Khusus Chevron
       department: formData.department || "",
       company: formData.company || "",
+      employer: formData.company || "", // Khusus Chevron
       work_location: formData.workLocation || "",
+      location: formData.workLocation || "", // Khusus Chevron
       contact_number: formData.contactNumber || "",
       address: formData.address || "",
       date: formData.date || new Date().toLocaleDateString('id-ID'), // Tanggal hari ini
+      serv_date: formData.serviceDate || "", // Khusus Chevron
+      med_no: formData.medNo || "", // Khusus Chevron
+
       g_m: check(formData.gender, 'Male'),
       g_f: check(formData.gender, 'Female'),
+      gr: formData.gender || "", // Khusus Chevron
 
       // ==========================================
       // NATURE OF WORK (Multiple Checkbox)
@@ -64,7 +75,8 @@ export async function POST(request: Request) {
       l_r: check(formData.nw_radiation, true),
       sew_d: check(formData.nw_sewage, true),
       food_h: check(formData.nw_food, true),
-      othersy: formData.nw_others || "",
+      othersy: check(formData.nw_others !== "" && formData.nw_others !== undefined, true),
+      others_ifyes: formData.nw_others || "",
 
       // ==========================================
       // VACCINATION HISTORY (Yes / No / Not Sure)
@@ -89,7 +101,7 @@ export async function POST(request: Request) {
       r_a_p_y: check(formData.mh_abd_pain, 'Yes'), r_a_p_n: check(formData.mh_abd_pain, 'No'),
       s_dis_y: check(formData.mh_skin, 'Yes'), s_dis_n: check(formData.mh_skin, 'No'),
       m_skel_y: check(formData.mh_musculo, 'Yes'), m_skel_n: check(formData.mh_musculo, 'No'),
-      m_ill_y: check(formData.mh_mental, 'Yes'), m_ill_n: check(formData.mh_mental, 'No'), // Typo m_ill_ diperbaiki ke m_ill_n
+      m_ill_y: check(formData.mh_mental, 'Yes'), m_ill_n: check(formData.mh_mental, 'No'),
       cns_y: check(formData.mh_cns, 'Yes'), cns_n: check(formData.mh_cns, 'No'),
       h_dis_y: check(formData.mh_heart, 'Yes'), h_dis_n: check(formData.mh_heart, 'No'),
       mh_hbp_y: check(formData.mh_hbp, 'Yes'), mh_hbp_n: check(formData.mh_hbp, 'No'),
@@ -115,8 +127,8 @@ export async function POST(request: Request) {
       // ==========================================
       dia_y: check(formData.fm_diabetes, 'Yes'), dia_n: check(formData.fm_diabetes, 'No'),
       hyp_y: check(formData.fm_hypertension, 'Yes'), hyp_n: check(formData.fm_hypertension, 'No'),
-      fm_epil_y: check(formData.fm_epilepsy, 'Yes'), fm_epil_n: check(formData.fm_epilepsy, 'No'), // Menggunakan tag yg diperbaiki
-      fm_h_dis_y: check(formData.fm_heart, 'Yes'), fm_h_dis_n: check(formData.fm_heart, 'No'), // Menggunakan tag yg diperbaiki
+      fmepil_y: check(formData.fm_epilepsy, 'Yes'), fmepil_n: check(formData.fm_epilepsy, 'No'),
+      fm_h_dis_y: check(formData.fm_heart, 'Yes'), fm_h_dis_n: check(formData.fm_heart, 'No'),
       ast_y: check(formData.fm_asthma, 'Yes'), ast_n: check(formData.fm_asthma, 'No'),
       can_t_y: check(formData.fm_cancer, 'Yes'), can_t_n: check(formData.fm_cancer, 'No'),
       others_fm: formData.fm_others || "",
@@ -129,28 +141,35 @@ export async function POST(request: Request) {
       medev_why: formData.q_medevac_text || "",
       curren_y: check(formData.q_meds, 'Yes'), curren_n: check(formData.q_meds, 'No'),
       curren_ifyes: formData.q_meds_text || "",
-      q_smoke_y: check(formData.q_smoke, 'Yes'), q_smoke_n: check(formData.q_smoke, 'No'),
-      q_smoke_text: formData.q_smoke_text || "",
-      alc_y: check(formData.q_alcohol, 'Yes'), alc_n: check(formData.q_alcohol, 'No'),
+      
+      q_smoke_y: check(formData.q_smoke, 'Yes'), q_smoke_n: check(formData.q_smoke, 'No'), 
+      q_smoke_text: formData.q_smoke_text || "", hl_hf: formData.q_smoke_freq || "", 
+      
+      alc_y: check(formData.q_alcohol, 'Yes'), alc_n: check(formData.q_alcohol, 'No'), 
+      answer_ifyes: formData.q_alcohol_text || "",
+      
       fit_y: check(formData.q_fit, 'Yes'), fit_n: check(formData.q_fit, 'No'),
       fear_y: check(formData.q_fear, 'Yes'), fear_n: check(formData.q_fear, 'No'),
       stress_y: check(formData.q_stress, 'Yes'), stress_n: check(formData.q_stress, 'No'),
       strfull_y: check(formData.q_stressful, 'Yes'), strfull_n: check(formData.q_stressful, 'No'),
-      qmfc_y: check(formData.q_omfc, 'Yes'), qmfc_n: check(formData.q_omfc, 'No'),
+      qmfc_y: check(formData.q_omfc, 'Yes'), qmfc_n: check(formData.q_omfc, 'No'), 
       omfc_ifyes: formData.q_omfc_text || "",
+
+      // Tag Tambahan Khusus Chevron (Format Bebas)
+      alcohol: formData.q_alcohol === 'Yes' ? formData.q_alcohol_text || "" : "",
+      smoker: formData.q_smoke === 'Yes' ? formData.q_smoke_freq || "" : "",
 
       // ==========================================
       // SECTION C: BIOMETRICS
       // ==========================================
       h: formData.height || "", w: formData.weight || "", bmi: formData.bmi || "",
       weist: formData.waist || "", p: formData.pulse || "", b_p: formData.bloodPressure || "",
-      bg_type: formData.bloodGroupType || "", bg_rh: formData.bloodGroupRh || "",
-
-      // (Catatan: Section B (Doctor's Lab) sengaja tidak dipetakan di form Frontend karena 
-      // ini wilayah isi dokter, namun tag di Word akan aman/dikosongkan secara otomatis).
+      rr: formData.respiratoryRate || "", // Khusus Chevron
+      bg_type: formData.bloodGroupType || "", bg_rh: formData.bloodGroupRh || ""
     });
 
     const buf = doc.getZip().generate({ type: 'uint8array', compression: 'DEFLATE' });
+    
     return new NextResponse(buf as unknown as BodyInit, {
       status: 200,
       headers: {
@@ -159,7 +178,19 @@ export async function POST(request: Request) {
       },
     });
   } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan internal.' }, { status: 500 });
+    console.error('Error generating document:', error);
+    
+    // Penanganan error docxtemplater yang spesifik untuk mempermudah debugging jika ada tag yang salah
+    if (error.properties && error.properties.errors instanceof Array) {
+        const errorMessages = error.properties.errors
+            .map((e: any) => e.properties.explanation)
+            .join(", ");
+        return NextResponse.json({ error: `Format template salah: ${errorMessages}` }, { status: 500 });
+    }
+
+    return NextResponse.json(
+      { error: error.message || 'Terjadi kesalahan internal backend.' },
+      { status: 500 }
+    );
   }
 }
