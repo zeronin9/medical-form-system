@@ -16,11 +16,17 @@ export async function POST(request: Request) {
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);
 
-    const doc = new Docxtemplater(zip, {
+    // Pisahkan konfigurasinya dan tambahkan tipe ": any" agar TypeScript tidak protes
+    const docxOptions: any = {
       paragraphLoop: true,
       linebreaks: true,
-      delimiters: { start: '{{', end: '}}' }
-    });
+      delimiters: { start: '{{', end: '}}' },
+      nullGetter: function() {
+        return ""; // Mengubah semua undefined/kosong menjadi string kosong ("")
+      }
+    };
+
+    const doc = new Docxtemplater(zip, docxOptions);
 
     // Helper untuk Centang Kotak (Unicode)
     const check = (value: any, expected: string | boolean) => value === expected ? '☑' : '☐';

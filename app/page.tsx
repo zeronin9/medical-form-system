@@ -261,7 +261,7 @@ export default function Home() {
                         <span className="w-1/2">Do you smoke?</span>
                         <label><input type="radio" name="q_smoke" value="Yes" onChange={handleInputChange} /> Yes</label>
                         <label><input type="radio" name="q_smoke" value="No" onChange={handleInputChange} /> No</label>
-                        {formData.q_smoke === 'Yes' && <input type="text" name="q_smoke_text" placeholder="Type & Freq..." onChange={handleInputChange} className="border border-gray-400 p-1 rounded flex-1 font-normal" />}
+                        {formData.q_smoke === 'Yes' && <input type="text" name="q_smoke_text" placeholder="(Cigarettes, Cigars, Vape, Shisha, Pipe)" onChange={handleInputChange} className="border border-gray-400 p-1 rounded flex-1 font-normal" />}
                       </div>
                       <div className="flex items-center gap-4 bg-white p-2 border border-gray-300 rounded text-sm text-black font-bold">
                         <span className="w-1/2">Drink Alcohol/Drugs?</span>
