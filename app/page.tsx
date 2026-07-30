@@ -63,7 +63,7 @@ const labReports = [
 
 // === SHADCN DESIGN TOKENS (TAILWIND) ===
 const inputClass = "flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors";
-const labelClass = "text-sm font-medium leading-none text-slate-700 mb-2 block";
+const labelClass = "text-sm font-medium leading-none text-slate-700 mb-2 block flex items-center flex-wrap gap-1";
 const cardClass = "rounded-xl border border-slate-200 bg-white text-slate-950 shadow-sm overflow-hidden";
 const cardHeaderClass = "flex flex-col space-y-1.5 p-6 border-b border-slate-100 bg-slate-50/50";
 const cardTitleClass = "font-semibold leading-none tracking-tight text-lg text-slate-900";
@@ -77,47 +77,34 @@ const textareaClass = "flex min-h-[80px] w-full rounded-md border border-slate-2
 const btnPrimary = "inline-flex w-full items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-900 text-slate-50 hover:bg-slate-900/90 h-11 px-8 shadow-md mt-8";
 const btnDisabled = "inline-flex w-full items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 bg-slate-100 text-slate-400 h-11 px-8 border border-slate-200 mt-8";
 
+// === KOMPONEN LABEL BADGE ===
+const BadgeChevron = () => <span className="text-teal-600 font-normal text-xs bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100">(Chevron)</span>;
+const BadgeQatar = () => <span className="text-orange-600 font-normal text-xs bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100">(Qatar)</span>;
+const BadgeILO = () => <span className="text-blue-500 font-normal text-xs bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">(ILO)</span>;
+const BadgeMLC = () => <span className="text-purple-600 font-normal text-xs bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100">(MLC)</span>;
+
 export default function Home() {
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
   const [formData, setFormData] = useState<any>({
-    // Identitas
     firstName: '', familyName: '', dob: '', pob: '', idPassport: '', nationality: '', gender: '', address: '', contactNumber: '',
     position: '', department: '', company: '', workLocation: '', date: new Date().toLocaleDateString('id-ID'),
-    serviceDate: '', medNo: '', typeOfShip: '', tradeArea: '', ilo_position: '',
-    
-    // Biometrik
-    height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', bloodGroupType: '', bloodGroupRh: '',
-    
-    // Kuesioner
+    serviceDate: '', medNo: '', typeOfShip: '', tradeArea: '', ilo_position: '', seaman_book: '', height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', bloodGroupType: '', bloodGroupRh: '',
     q_illness: '', q_medevac: '', q_medevac_text: '', q_meds: '', q_meds_text: '', q_smoke: '', q_smoke_text: '', q_smoke_freq: '', q_alcohol: '', q_alcohol_text: '',
     q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_stress_score: '', q_omfc: '', q_omfc_text: '', nw_others: '', mh_others: '', fm_others: '',
-    
-    // Mata & Audiometri
-    disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '',
-    disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '',
-    l05: '', l1: '', l2: '', l3: '', l4: '', l6: '', l8: '', r05: '', r1: '', r2: '', r3: '', r4: '', r6: '', r8: '', oht_result: '',
-    
-    // Lab Tambahan & Khusus
-    smoker_y: '', smoker_d: '', smoker_q: '', smoker_s_y: '', ft_fvc: '', pre_fvc: '', ft_fev1: '', pre_fev1: '', ev1_vc: '',
-    rate: '', rhyt: '', axis: '', pr: '', qrs: '', twv: '', diag: '', lab_hb: '', lab_hct: '', rbc_m: '', lab_wbc: '', lab_platelet: '',
-    pmn: '', lymph: '', mono: '', eos: '', baso: '', band: '', albumin: '', ur_sugar: '', urin_b: '', wbc: '', rbc: '', casts: '', ur_others: '',
-    lab_sugar: '', val_sugar: '', lab_chol: '', val_chol: '', lab_trig: '', val_trig: '', only_cg: '', lab_hdl: '', val_hdl: '', lab_ldl: '', val_ldl: '', lab_bun: '', val_bun: '', lab_creat: '', val_creat: '',
-    lab_sgot: '', val_sgot: '', lab_sgpt: '', val_sgpt: '', lab_uric: '', val_urig: '', detail_af: '', date_xray: '', xray: '', des_abnor: '', 
-    
-    // Form Khusus ILO
-    lab_sr: '', hep_b_ab: '', hep_b_ag: '', stool_bact: '', stool_para: '', hiv_res: '', vac_status: '', vac_details: '',
+    disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '',
+    smoker_y: '', smoker_d: '', smoker_q: '', smoker_s_y: '', ft_fvc: '', pre_fvc: '', ft_fev1: '', pre_fev1: '', ev1_vc: '', l05: '', l1: '', l2: '', l3: '', l4: '', l6: '', l8: '', r05: '', r1: '', r2: '', r3: '', r4: '', r6: '', r8: '', oht_result: '', rate: '', rhyt: '', axis: '', pr: '', qrs: '', twv: '', diag: '', lab_hb: '', lab_hct: '', rbc_m: '', lab_wbc: '', lab_platelet: '', pmn: '', lymph: '', mono: '', eos: '', baso: '', band: '', albumin: '', ur_sugar: '', urin_b: '', wbc: '', rbc: '', casts: '', ur_others: '', lab_sugar: '', val_sugar: '', lab_chol: '', val_chol: '', lab_trig: '', val_trig: '', only_cg: '', lab_hdl: '', val_hdl: '', lab_ldl: '', val_ldl: '', lab_bun: '', val_bun: '', lab_creat: '', val_creat: '', lab_sgot: '', val_sgot: '', lab_sgpt: '', val_sgpt: '', lab_uric: '', val_urig: '', detail_af: '', date_xray: '', xray: '', des_abnor: '', 
+    lab_sr: '', hep_b_ab: '', hep_b_ag: '', stool_bact: '', stool_para: '', hiv_res: '', vdrl_res: '', vac_status: '', vac_details: '',
     fit_lookout: '', fit_deck: '', fit_engine: '', fit_catering: '', fit_other: '', restrictions: '', free_cond: '', rest_desc: '', action_taken: '', exp_date: '',
-    
-    // Kesimpulan
     summary: '', suggestion: '', eps: '', hospital: '', cert_auth: '', comments: ''
   });
 
   const isQatar = selectedFormats.includes('qatarenergy');
   const isChevron = selectedFormats.includes('chevron');
   const isIlo = selectedFormats.includes('ilo');
-  const showForm = isQatar || isChevron || isIlo;
+  const isMlc = selectedFormats.includes('mlc');
+  const showForm = isQatar || isChevron || isIlo || isMlc;
 
   useEffect(() => {
     if (formData.height && formData.weight) {
@@ -143,7 +130,7 @@ export default function Home() {
     setIsLoading(true);
     try {
       for (const format of selectedFormats) {
-        const apiRoute = format === 'chevron' ? '/api/chevron' : format === 'qatarenergy' ? '/api/qatar' : '/api/ilo';
+        const apiRoute = format === 'chevron' ? '/api/chevron' : format === 'qatarenergy' ? '/api/qatar' : format === 'mlc' ? '/api/mlc' : '/api/ilo';
         const response = await fetch(apiRoute, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -191,6 +178,10 @@ export default function Home() {
                   <input type="checkbox" value="ilo" onChange={handleCheckboxChange} className={`${checkboxClass} border-blue-400`} />
                   <span className="font-semibold text-sm text-blue-900">Format ILO (Pelaut)</span>
                 </label>
+                <label className="flex items-center space-x-3 border border-slate-200 rounded-lg p-4 cursor-pointer hover:bg-slate-50 transition-colors w-full sm:w-64 bg-purple-50/30 border-purple-200">
+                  <input type="checkbox" value="mlc" onChange={handleCheckboxChange} className={`${checkboxClass} border-purple-400`} />
+                  <span className="font-semibold text-sm text-purple-900">Format MLC</span>
+                </label>
               </div>
             </div>
           </div>
@@ -233,27 +224,31 @@ export default function Home() {
 
                     {isChevron && (
                       <>
-                        <div className="col-span-full border-t pt-4 mt-2"></div>
-                        <div><label className={labelClass}>Tanggal Mulai Kerja <span className="text-slate-400 font-normal">(Chevron)</span></label><input type="text" name="serviceDate" onChange={handleInputChange} className={inputClass} placeholder="DD/MM/YYYY" /></div>
-                        <div><label className={labelClass}>No. Rekam Medis <span className="text-slate-400 font-normal">(Chevron)</span></label><input type="text" name="medNo" onChange={handleInputChange} className={inputClass} /></div>
+                        <div className="col-span-full border-t pt-4 mt-2 border-slate-100"></div>
+                        <div><label className={labelClass}>Tanggal Mulai Kerja <BadgeChevron /></label><input type="text" name="serviceDate" onChange={handleInputChange} className={inputClass} placeholder="DD/MM/YYYY" /></div>
+                        <div><label className={labelClass}>No. Rekam Medis <BadgeChevron /></label><input type="text" name="medNo" onChange={handleInputChange} className={inputClass} /></div>
                       </>
                     )}
 
-                    {isQatar && (
+                    {(isQatar || isIlo || isMlc) && (
                       <>
-                        <div className={`col-span-full border-t pt-4 mt-2 ${!isChevron && 'hidden'}`}></div>
-                        <div><label className={labelClass}>Kewarganegaraan <span className="text-slate-400 font-normal">(Qatar)</span></label><input type="text" name="nationality" onChange={handleInputChange} className={inputClass} /></div>
-                        <div><label className={labelClass}>Departemen <span className="text-slate-400 font-normal">(Qatar)</span></label><input type="text" name="department" onChange={handleInputChange} className={inputClass} /></div>
+                        <div className="col-span-full border-t pt-4 mt-2 border-slate-100"></div>
+                        <div><label className={labelClass}>Kewarganegaraan {isQatar && <BadgeQatar />}{isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><input type="text" name="nationality" onChange={handleInputChange} className={inputClass} /></div>
                       </>
                     )}
+                    
+                    {(isQatar || isMlc) && (
+                        <div><label className={labelClass}>Departemen {isQatar && <BadgeQatar />}{isMlc && <BadgeMLC />}</label><input type="text" name="department" onChange={handleInputChange} className={inputClass} /></div>
+                    )}
 
-                    {isIlo && (
+                    {(isIlo || isMlc) && (
                       <>
-                        <div className={`col-span-full border-t pt-4 mt-2 border-blue-100`}></div>
-                        <div><label className={labelClass}>Tempat Lahir <span className="text-blue-500 font-normal">(ILO)</span></label><input type="text" name="pob" onChange={handleInputChange} className={`${inputClass} border-blue-200 focus-visible:ring-blue-500`} placeholder="Kota, Negara" /></div>
+                        <div className={`col-span-full border-t pt-4 mt-2 border-slate-100 ${(!isChevron && !isQatar && !isIlo && isMlc) ? 'hidden' : ''}`}></div>
+                        <div><label className={labelClass}>Tempat Lahir {isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><input type="text" name="pob" onChange={handleInputChange} className={inputClass} placeholder="Kota, Negara" /></div>
+                        <div><label className={labelClass}>Buku Pelaut (Seaman Book) {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="seaman_book" onChange={handleInputChange} className={inputClass} /></div>
                         <div>
-                            <label className={labelClass}>Posisi di Kapal <span className="text-blue-500 font-normal">(ILO)</span></label>
-                            <select name="ilo_position" onChange={handleInputChange} className={`${inputClass} border-blue-200 focus-visible:ring-blue-500`}>
+                            <label className={labelClass}>Posisi di Kapal {isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label>
+                            <select name="ilo_position" onChange={handleInputChange} className={inputClass}>
                                 <option value="">- Pilih Posisi -</option>
                                 <option value="Master">Master</option>
                                 <option value="Deck Officer">Deck Officer</option>
@@ -262,8 +257,8 @@ export default function Home() {
                                 <option value="Rating">Rating</option>
                             </select>
                         </div>
-                        <div><label className={labelClass}>Tipe Kapal <span className="text-blue-500 font-normal">(ILO)</span></label><input type="text" name="typeOfShip" onChange={handleInputChange} className={`${inputClass} border-blue-200 focus-visible:ring-blue-500`} placeholder="Kontainer, Tanker..." /></div>
-                        <div><label className={labelClass}>Area Pelayaran <span className="text-blue-500 font-normal">(ILO)</span></label><input type="text" name="tradeArea" onChange={handleInputChange} className={`${inputClass} border-blue-200 focus-visible:ring-blue-500`} placeholder="Pesisir (Coastal), Sedunia..." /></div>
+                        <div><label className={labelClass}>Tipe Kapal {isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><input type="text" name="typeOfShip" onChange={handleInputChange} className={inputClass} placeholder="Kontainer, Tanker..." /></div>
+                        <div><label className={labelClass}>Area Pelayaran {isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><input type="text" name="tradeArea" onChange={handleInputChange} className={inputClass} placeholder="Pesisir (Coastal), Sedunia..." /></div>
                       </>
                     )}
                   </div>
@@ -300,7 +295,7 @@ export default function Home() {
                   {/* Vaksinasi (QATAR ONLY) */}
                   {isQatar && (
                     <div className="space-y-4 pb-6">
-                      <label className={labelClass}>Riwayat Vaksinasi (Khusus QatarEnergy):</label>
+                      <label className={labelClass}>Riwayat Vaksinasi <BadgeQatar /></label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {vaccines.map(v => (
                           <div key={v.id} className="flex justify-between items-center rounded-lg border border-slate-200 p-4 shadow-sm bg-slate-50/30">
@@ -342,7 +337,7 @@ export default function Home() {
                   {/* Riwayat Keluarga (QATAR ONLY) */}
                   {isQatar && (
                     <div className="space-y-4 pb-6">
-                      <label className={labelClass}>Riwayat Penyakit Keluarga (Khusus QatarEnergy):</label>
+                      <label className={labelClass}>Riwayat Penyakit Keluarga <BadgeQatar /></label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {familyHistory.map(f => (
                           <div key={f.id} className="flex justify-between items-center rounded-lg border border-slate-200 p-4 shadow-sm bg-slate-50/30">
@@ -355,7 +350,7 @@ export default function Home() {
                         ))}
                       </div>
                       <div className="flex flex-col space-y-2 mt-4">
-                        <label className={labelClass}>Penyakit Keluarga Lainnya:</label>
+                        <label className={labelClass}>Penyakit Keluarga Lainnya <BadgeQatar />:</label>
                         <input type="text" name="fm_others" onChange={handleInputChange} className={inputClass} placeholder="Sebutkan..." />
                       </div>
                       <div className="border-t border-slate-100 mt-6"></div>
@@ -397,7 +392,7 @@ export default function Home() {
                             <label className={radioGroupClass}><input type="radio" name="q_smoke" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
                             {isChevron && (
                               <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700 sm:ml-4 sm:pl-4 sm:border-l border-slate-300">
-                                <input type="checkbox" name="smoker_q" onChange={(e) => setFormData({...formData, smoker_q: e.target.checked ? 'Yes' : 'No'})} className={checkboxClass} /> <span>Sudah Berhenti (Quit)</span>
+                                <input type="checkbox" name="smoker_q" onChange={(e) => setFormData({...formData, smoker_q: e.target.checked ? 'Yes' : 'No'})} className={checkboxClass} /> <span>Sudah Berhenti (Quit)</span> <BadgeChevron />
                               </label>
                             )}
                           </div>
@@ -405,15 +400,16 @@ export default function Home() {
                         
                         {formData.q_smoke === 'Yes' && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                            <input type="text" name="q_smoke_text" placeholder="Jenis (Rokok, Vape)..." onChange={handleInputChange} className={inputClass} />
-                            <input type="text" name="q_smoke_freq" placeholder="Frekuensi: btg/hari (Qatar)" onChange={handleInputChange} className={inputClass} />
-                            {isChevron && <input type="number" name="smoker_y" placeholder="Total tahun merokok? (Chevron)" onChange={handleInputChange} className={inputClass} />}
-                            {isChevron && <input type="number" name="smoker_d" placeholder="Jml batang/hari? (Chevron)" onChange={handleInputChange} className={inputClass} />}
+                            <div><label className={labelClass}>Jenis (Rokok, Vape) {isQatar && <BadgeQatar />}{isChevron && <BadgeChevron />}{isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><input type="text" name="q_smoke_text" onChange={handleInputChange} className={inputClass} /></div>
+                            {isQatar && <div><label className={labelClass}>Frekuensi: btg/hari <BadgeQatar /></label><input type="text" name="q_smoke_freq" onChange={handleInputChange} className={inputClass} /></div>}
+                            {isChevron && <div><label className={labelClass}>Total tahun merokok <BadgeChevron /></label><input type="number" name="smoker_y" onChange={handleInputChange} className={inputClass} /></div>}
+                            {isChevron && <div><label className={labelClass}>Jumlah batang/hari <BadgeChevron /></label><input type="number" name="smoker_d" onChange={handleInputChange} className={inputClass} /></div>}
                           </div>
                         )}
                         {formData.smoker_q === 'Yes' && isChevron && (
                           <div className="mt-4 sm:w-1/2">
-                            <input type="number" name="smoker_s_y" placeholder="Lama berhenti (tahun)?" onChange={handleInputChange} className={inputClass} />
+                            <label className={labelClass}>Lama berhenti (tahun) <BadgeChevron /></label>
+                            <input type="number" name="smoker_s_y" onChange={handleInputChange} className={inputClass} />
                           </div>
                         )}
                       </div>
@@ -429,13 +425,13 @@ export default function Home() {
                         {formData.q_alcohol === 'Yes' && <input type="text" name="q_alcohol_text" placeholder="Jenis, frekuensi, & volume per minggu..." onChange={handleInputChange} className={`${inputClass} mt-4`} />}
                       </div>
 
-                      {/* Khusus Qatar Only Questions */}
-                      {isQatar && (
+                      {/* Khusus Qatar & ILO/MLC Only Questions */}
+                      {(isQatar || isIlo || isMlc) && (
                         <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 space-y-4">
-                          <label className="text-sm font-bold text-slate-900 mb-1 block">Kuisioner Tambahan (Khusus QatarEnergy):</label>
+                          <label className="text-sm font-bold text-slate-900 mb-1 block">Kuisioner Tambahan Kepatuhan:</label>
                           
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <span className="text-sm font-medium text-slate-700">Punya riwayat Evakuasi Medis Darurat (MEDEVAC)?</span>
+                            <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Punya riwayat Evakuasi Medis / Dipulangkan karena sakit? {isQatar && <BadgeQatar />}{isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</span>
                             <div className="flex gap-4 shrink-0">
                               <label className={radioGroupClass}><input type="radio" name="q_medevac" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
                               <label className={radioGroupClass}><input type="radio" name="q_medevac" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
@@ -444,7 +440,7 @@ export default function Home() {
                           {formData.q_medevac === 'Yes' && <input type="text" name="q_medevac_text" placeholder="Jelaskan alasannya..." onChange={handleInputChange} className={inputClass} />}
 
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                            <span className="text-sm font-medium text-slate-700">Merasa bugar dan sehat saat ini?</span>
+                            <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Merasa bugar dan sehat saat ini? {isQatar && <BadgeQatar />}{isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</span>
                             <div className="flex gap-4 shrink-0">
                               <label className={radioGroupClass}><input type="radio" name="q_fit" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
                               <label className={radioGroupClass}><input type="radio" name="q_fit" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
@@ -452,40 +448,44 @@ export default function Home() {
                           </div>
 
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                            <span className="text-sm font-medium text-slate-700">Punya fobia? (Ketinggian, laut, terbang, dll)</span>
-                            <div className="flex gap-4 shrink-0">
-                              <label className={radioGroupClass}><input type="radio" name="q_fear" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
-                              <label className={radioGroupClass}><input type="radio" name="q_fear" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                            <span className="text-sm font-medium text-slate-700">Sedang mengalami stres yang tidak biasa / berat?</span>
-                            <div className="flex gap-4 shrink-0">
-                              <label className={radioGroupClass}><input type="radio" name="q_stress" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
-                              <label className={radioGroupClass}><input type="radio" name="q_stress" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                            <span className="text-sm font-medium text-slate-700">Apakah hidup Anda penuh tekanan? (Skala 1-10)</span>
-                            <div className="flex items-center gap-4 shrink-0">
-                              {formData.q_stressful === 'Yes' && (
-                                <input type="number" name="q_stress_score" min="1" max="10" placeholder="Skor" onChange={handleInputChange} className="flex h-8 w-20 rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-slate-950" />
-                              )}
-                              <label className={radioGroupClass}><input type="radio" name="q_stressful" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
-                              <label className={radioGroupClass}><input type="radio" name="q_stressful" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                            <span className="text-sm font-medium text-slate-700">Pernah ditolak Sertifikat Medis (OMFC) oleh QatarEnergy?</span>
+                            <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Pernah ditolak Sertifikat Medis (Unfit)? {isQatar && <BadgeQatar />}{isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</span>
                             <div className="flex gap-4 shrink-0">
                               <label className={radioGroupClass}><input type="radio" name="q_omfc" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
                               <label className={radioGroupClass}><input type="radio" name="q_omfc" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
                             </div>
                           </div>
                           {formData.q_omfc === 'Yes' && <input type="text" name="q_omfc_text" placeholder="Apa alasannya..." onChange={handleInputChange} className={inputClass} />}
+
+                          {isQatar && (
+                            <>
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-200 mt-2">
+                                <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Punya fobia? (Ketinggian, laut, terbang, dll) <BadgeQatar /></span>
+                                <div className="flex gap-4 shrink-0">
+                                  <label className={radioGroupClass}><input type="radio" name="q_fear" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
+                                  <label className={radioGroupClass}><input type="radio" name="q_fear" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                                <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Sedang mengalami stres yang tidak biasa / berat? <BadgeQatar /></span>
+                                <div className="flex gap-4 shrink-0">
+                                  <label className={radioGroupClass}><input type="radio" name="q_stress" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
+                                  <label className={radioGroupClass}><input type="radio" name="q_stress" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                                <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Apakah hidup Anda penuh tekanan? (Skala 1-10) <BadgeQatar /></span>
+                                <div className="flex items-center gap-4 shrink-0">
+                                  {formData.q_stressful === 'Yes' && (
+                                    <input type="number" name="q_stress_score" min="1" max="10" placeholder="Skor" onChange={handleInputChange} className="flex h-8 w-20 rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-slate-950" />
+                                  )}
+                                  <label className={radioGroupClass}><input type="radio" name="q_stressful" value="Yes" onChange={handleInputChange} className={radioClass} /><span>Ya</span></label>
+                                  <label className={radioGroupClass}><input type="radio" name="q_stressful" value="No" onChange={handleInputChange} className={radioClass} /><span>Tidak</span></label>
+                                </div>
+                              </div>
+                            </>
+                          )}
                         </div>
                       )}
                     </div>
@@ -521,8 +521,8 @@ export default function Home() {
               {isQatar && (
                 <div className={cardClass}>
                   <div className={cardHeaderClass}>
-                      <h3 className={cardTitleClass}>Status Laboratorium (Khusus QatarEnergy)</h3>
-                      <p className={cardDescClass}>Evaluasi status Normal/Abnormal khusus untuk lembar Qatar.</p>
+                      <h3 className={cardTitleClass}>Status Laboratorium <BadgeQatar /></h3>
+                      <p className={cardDescClass}>Evaluasi status Normal/Abnormal khusus untuk lembar QatarEnergy.</p>
                   </div>
                   <div className={cardContentClass}>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -547,7 +547,7 @@ export default function Home() {
               {isChevron && (
                 <div className={cardClass}>
                   <div className={cardHeaderClass}>
-                      <h3 className={cardTitleClass}>Detail Angka Laboratorium (Khusus Chevron)</h3>
+                      <h3 className={cardTitleClass}>Detail Angka Laboratorium <BadgeChevron /></h3>
                       <p className={cardDescClass}>Masukan hasil tes kuantitatif secara presisi untuk lembar rekam medis Chevron.</p>
                   </div>
                   <div className={cardContentClass}>
@@ -556,7 +556,7 @@ export default function Home() {
                       <div className="space-y-6">
                         {/* Spirometri */}
                         <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Spirometri (Fungsi Paru)</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">Spirometri (Fungsi Paru) <BadgeChevron /></h4>
                           <div className="grid grid-cols-2 gap-4 mb-3">
                             <div><label className={labelClass}>FVC</label><input type="text" name="ft_fvc" onChange={handleInputChange} className={inputClass} /></div>
                             <div><label className={labelClass}>% Predicted FVC</label><input type="text" name="pre_fvc" onChange={handleInputChange} className={inputClass} /></div>
@@ -570,7 +570,7 @@ export default function Home() {
 
                         {/* Audiometri */}
                         <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Audiometri (dB)</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">Audiometri (dB) <BadgeChevron /> {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</h4>
                           <label className="text-xs font-semibold text-slate-500 mb-2 block uppercase tracking-wider">Telinga Kiri (Left Ear)</label>
                           <div className="grid grid-cols-7 gap-2 mb-4">
                             {['0.5','1.0','2.0','3.0','4.0','6.0','8.0'].map((f, i) => (
@@ -588,7 +588,7 @@ export default function Home() {
 
                         {/* EKG */}
                         <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Elektrokardiogram / EKG (&gt;35 Tahun)</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">Elektrokardiogram / EKG (&gt;35 Tahun) <BadgeChevron /></h4>
                           <div className="grid grid-cols-3 gap-4 mb-3">
                             <div><label className={labelClass}>Rate</label><input type="text" name="rate" onChange={handleInputChange} className={inputClass} /></div>
                             <div><label className={labelClass}>Rhythm</label><input type="text" name="rhyt" onChange={handleInputChange} className={inputClass} /></div>
@@ -599,19 +599,19 @@ export default function Home() {
                             <div><label className={labelClass}>QRS</label><input type="text" name="qrs" onChange={handleInputChange} className={inputClass} /></div>
                             <div><label className={labelClass}>T wave</label><input type="text" name="twv" onChange={handleInputChange} className={inputClass} /></div>
                           </div>
-                          <div><label className={labelClass}>Diagnosis EKG</label><input type="text" name="diag" onChange={handleInputChange} className={inputClass} /></div>
+                          <div><label className={labelClass}>Diagnosis EKG {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="diag" onChange={handleInputChange} className={inputClass} /></div>
                         </div>
                         
                         {/* X-Ray */}
                         <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Rontgen Dada (Chest X-Ray)</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">Rontgen Dada (Chest X-Ray) <BadgeChevron /></h4>
                           <div className="flex gap-6 mb-4">
                              <label className={radioGroupClass}><input type="radio" name="xray" value="Normal" onChange={handleInputChange} className={radioClass} /> <span>Normal</span></label>
                              <label className={radioGroupClass}><input type="radio" name="xray" value="Abnormal" onChange={handleInputChange} className={radioClass} /> <span>Abnormal</span></label>
                           </div>
                           <div className="grid grid-cols-1 gap-4 mb-2">
-                            <div><label className={labelClass}>Tanggal Rontgen</label><input type="text" name="date_xray" onChange={handleInputChange} className={inputClass} placeholder="DD/MM/YYYY" /></div>
-                            <div><label className={labelClass}>Jelaskan Kelainan (Abnormalitas)</label><input type="text" name="des_abnor" onChange={handleInputChange} className={inputClass} /></div>
+                            <div><label className={labelClass}>Tanggal Rontgen {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="date_xray" onChange={handleInputChange} className={inputClass} placeholder="DD/MM/YYYY" /></div>
+                            <div><label className={labelClass}>Jelaskan Kelainan (Abnormalitas) {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="des_abnor" onChange={handleInputChange} className={inputClass} /></div>
                           </div>
                         </div>
                       </div>
@@ -620,9 +620,9 @@ export default function Home() {
                       <div className="space-y-6">
                         {/* Hematologi */}
                         <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Darah Lengkap (Hematologi)</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">Darah Lengkap (Hematologi) <BadgeChevron /></h4>
                           <div className="grid grid-cols-2 gap-4 mb-3">
-                            <div><label className={labelClass}>Hb</label><input type="text" name="lab_hb" onChange={handleInputChange} className={inputClass} /></div>
+                            <div><label className={labelClass}>Hb {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="lab_hb" onChange={handleInputChange} className={inputClass} /></div>
                             <div><label className={labelClass}>Hct</label><input type="text" name="lab_hct" onChange={handleInputChange} className={inputClass} /></div>
                           </div>
                           <div className="mb-3"><label className={labelClass}>Morfologi Sel Darah Merah (RBC Morphology)</label><input type="text" name="rbc_m" onChange={handleInputChange} className={inputClass} /></div>
@@ -644,10 +644,10 @@ export default function Home() {
 
                         {/* Urinalisis & Kimia Darah */}
                         <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Urinalisis & Kimia Darah</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">Urinalisis & Kimia Darah <BadgeChevron /></h4>
                           <div className="grid grid-cols-3 gap-4 mb-3">
-                            <div><label className={labelClass}>Albumin</label><input type="text" name="albumin" onChange={handleInputChange} className={inputClass} /></div>
-                            <div><label className={labelClass}>Gula (Urine)</label><input type="text" name="ur_sugar" onChange={handleInputChange} className={inputClass} /></div>
+                            <div><label className={labelClass}>Albumin {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="albumin" onChange={handleInputChange} className={inputClass} /></div>
+                            <div><label className={labelClass}>Gula (Urine) {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="ur_sugar" onChange={handleInputChange} className={inputClass} /></div>
                             <div><label className={labelClass}>Darah (Urine)</label><input type="text" name="urin_b" onChange={handleInputChange} className={inputClass} /></div>
                           </div>
                           <div className="grid grid-cols-3 gap-4 mb-3">
@@ -700,15 +700,15 @@ export default function Home() {
                     <div><label className={labelClass}>Tensi (120/80)</label><input type="text" name="bloodPressure" onChange={handleInputChange} className={inputClass} /></div>
                     <div><label className={labelClass}>Nadi (Pulse)</label><input type="number" name="pulse" onChange={handleInputChange} className={inputClass} /></div>
                     
-                    {isChevron && <div><label className="text-sm font-medium leading-none text-teal-700 mb-2 block">Laju Pernapasan</label><input type="number" name="respiratoryRate" onChange={handleInputChange} className={inputClass} /></div>}
-                    {isQatar && <div><label className="text-sm font-medium leading-none text-orange-700 mb-2 block">Lingkar Pinggang</label><input type="number" name="waist" onChange={handleInputChange} className={inputClass} /></div>}
+                    {isChevron && <div><label className={labelClass}>Laju Pernapasan <BadgeChevron /></label><input type="number" name="respiratoryRate" onChange={handleInputChange} className={inputClass} /></div>}
+                    {isQatar && <div><label className={labelClass}>Lingkar Pinggang <BadgeQatar /></label><input type="number" name="waist" onChange={handleInputChange} className={inputClass} /></div>}
 
                     <div>
-                      <label className={labelClass}>Gol. Darah</label>
+                      <label className={labelClass}>Gol. Darah {isChevron && <BadgeChevron />}{isQatar && <BadgeQatar />}</label>
                       <select name="bloodGroupType" onChange={handleInputChange} className={inputClass}><option value="">-Pilih-</option><option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="O">O</option></select>
                     </div>
                     <div>
-                      <label className={labelClass}>Rhesus (Rh)</label>
+                      <label className={labelClass}>Rhesus (Rh) {isChevron && <BadgeChevron />}{isQatar && <BadgeQatar />}</label>
                       <select name="bloodGroupRh" onChange={handleInputChange} className={inputClass}><option value="">-Pilih-</option><option value="+">Positif (+)</option><option value="-">Negatif (-)</option></select>
                     </div>
                   </div>
@@ -755,11 +755,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* CARD: KHUSUS PELAUT (ILO ONLY) */}
-              {isIlo && (
+              {/* CARD: KHUSUS PELAUT (ILO & MLC ONLY) */}
+              {(isIlo || isMlc) && (
                 <div className={`${cardClass} border-blue-200 animate-in fade-in slide-in-from-bottom-4`}>
                   <div className={`${cardHeaderClass} bg-blue-50/50 border-blue-100`}>
-                      <h3 className={cardTitleClass}>Sertifikasi Medis Pelaut (Khusus Format ILO)</h3>
+                      <h3 className={cardTitleClass}>Sertifikasi Medis Pelaut {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</h3>
                       <p className={cardDescClass}>Hasil uji laboratorium tambahan, status kelaikan layar, dan rincian pembatasan tugas dinas laut.</p>
                   </div>
                   <div className={cardContentClass}>
@@ -770,19 +770,19 @@ export default function Home() {
                           <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Tes Diagnostik Tambahan</h4>
                           
                           <div className="mb-4">
-                            <label className={labelClass}>Laju Endap Darah (SR) - mm/hr</label>
+                            <label className={labelClass}>Laju Endap Darah (SR) - mm/hr {isIlo && <BadgeILO />}</label>
                             <input type="text" name="lab_sr" onChange={handleInputChange} className={inputClass} />
                           </div>
                           
                           <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                              <label className={labelClass}>Hepatitis B (ab)</label>
+                              <label className={labelClass}>Hepatitis B (ab) {isIlo && <BadgeILO />}</label>
                               <select name="hep_b_ab" onChange={handleInputChange} className={inputClass}>
                                 <option value="">- Pilih -</option><option value="Positive">Positif (+ve)</option><option value="Negative">Negatif (-ve)</option>
                               </select>
                             </div>
                             <div>
-                              <label className={labelClass}>Hepatitis B (ag)</label>
+                              <label className={labelClass}>Hepatitis B (ag) {isIlo && <BadgeILO />}</label>
                               <select name="hep_b_ag" onChange={handleInputChange} className={inputClass}>
                                 <option value="">- Pilih -</option><option value="Positive">Positif (+ve)</option><option value="Negative">Negatif (-ve)</option>
                               </select>
@@ -791,24 +791,25 @@ export default function Home() {
 
                           <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                              <label className={labelClass}>Kultur Feses Bakteriologis</label>
+                              <label className={labelClass}>Kultur Feses Bakteriologis {isIlo && <BadgeILO />}</label>
                               <select name="stool_bact" onChange={handleInputChange} className={inputClass}>
                                 <option value="">- Pilih -</option><option value="Not Performed">Tidak Dilakukan</option><option value="Negative">Negatif</option><option value="Positive">Positif</option>
                               </select>
                             </div>
                             <div>
-                              <label className={labelClass}>Kultur Feses Parasitologis</label>
+                              <label className={labelClass}>Kultur Feses Parasitologis {isIlo && <BadgeILO />}</label>
                               <select name="stool_para" onChange={handleInputChange} className={inputClass}>
                                 <option value="">- Pilih -</option><option value="Not Performed">Tidak Dilakukan</option><option value="Negative">Negatif</option><option value="Positive">Positif</option>
                               </select>
                             </div>
                           </div>
 
-                          <div><label className={labelClass}>Hasil HIV (+ve / -ve)</label><input type="text" name="hiv_res" onChange={handleInputChange} className={inputClass} placeholder="Contoh: Negatif" /></div>
+                          <div><label className={labelClass}>Hasil HIV (+ve / -ve) {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label><input type="text" name="hiv_res" onChange={handleInputChange} className={inputClass} placeholder="Contoh: Negatif" /></div>
+                          <div><label className={labelClass}>Hasil VDRL (+ve / -ve) {isMlc && <BadgeMLC />}</label><input type="text" name="vdrl_res" onChange={handleInputChange} className={inputClass} placeholder="Contoh: Non-Reaktif" /></div>
                         </div>
 
                         <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Status Vaksinasi (Khusus ILO)</h4>
+                          <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-1">Status Vaksinasi {isIlo && <BadgeILO />}</h4>
                           <div className="flex gap-4 mb-3">
                             <label className={radioGroupClass}><input type="radio" name="vac_status" value="Satisfactory" onChange={handleInputChange} className={radioClass} /><span>Memuaskan (Satisfactory)</span></label>
                             <label className={radioGroupClass}><input type="radio" name="vac_status" value="Renewed" onChange={handleInputChange} className={radioClass} /><span>Perlu Diperbarui</span></label>
@@ -860,7 +861,7 @@ export default function Home() {
 
                           <div className="space-y-3">
                              <div><label className={labelClass}>Jelaskan pembatasan (jika ada)</label><input type="text" name="rest_desc" onChange={handleInputChange} className={inputClass} /></div>
-                             <div><label className={labelClass}>Tindakan medis yang diambil (jika ada)</label><input type="text" name="action_taken" onChange={handleInputChange} className={inputClass} /></div>
+                             <div><label className={labelClass}>Tindakan medis yang diambil {isIlo && <BadgeILO />}</label><input type="text" name="action_taken" onChange={handleInputChange} className={inputClass} /></div>
                              <div className="border-t border-blue-100 pt-3"><label className="text-sm font-bold text-blue-800 mb-2 block">Masa Berlaku Sertifikat (Expiry Date)</label><input type="text" name="exp_date" onChange={handleInputChange} className={`${inputClass} border-blue-300 focus-visible:ring-blue-500`} placeholder="DD/MM/YYYY" /></div>
                           </div>
                         </div>
@@ -874,15 +875,15 @@ export default function Home() {
               <div className="rounded-lg border border-slate-200 p-6 shadow-sm bg-slate-900 text-slate-50">
                 <h4 className="font-semibold text-lg text-slate-50 mb-4 pb-2 border-b border-slate-700">Kesimpulan Dokter & Administrasi Sertifikat</h4>
                 <div className="space-y-4">
-                    {/* Summary & Suggestion (muncul untuk Chevron, dll) */}
+                    {/* Summary & Suggestion */}
                     <div><label className="text-sm font-medium text-slate-300 mb-2 block">Kesimpulan Medis (Summary)</label><textarea name="summary" onChange={handleInputChange} className={`${textareaClass} bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500 focus-visible:ring-slate-400`}></textarea></div>
                     <div><label className="text-sm font-medium text-slate-300 mb-2 block">Saran Tindak Lanjut (Suggestion)</label><textarea name="suggestion" onChange={handleInputChange} className={`${textareaClass} bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500 focus-visible:ring-slate-400`}></textarea></div>
-                    <div><label className="text-sm font-medium text-slate-300 mb-2 block">Komentar Khusus (Catatan untuk Fitness-for-Duty)</label><textarea name="comments" onChange={handleInputChange} className={`${textareaClass} bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500 focus-visible:ring-slate-400`}></textarea></div>
+                    <div><label className="text-sm font-medium text-slate-300 mb-2 block flex flex-wrap items-center gap-1">Komentar Khusus (Catatan untuk Fitness-for-Duty) {isChevron && <BadgeChevron />}{isQatar && <BadgeQatar />}{isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><textarea name="comments" onChange={handleInputChange} className={`${textareaClass} bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500 focus-visible:ring-slate-400`}></textarea></div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-700">
                       <div><label className="text-sm font-medium text-slate-300 mb-2 block">Nama Klinik / Rumah Sakit</label><input type="text" name="hospital" onChange={handleInputChange} className={`${inputClass} bg-slate-800 border-slate-700 text-slate-100 focus-visible:ring-slate-400`} /></div>
                       <div><label className="text-sm font-medium text-slate-300 mb-2 block">Nama Dokter Pemeriksa</label><input type="text" name="eps" onChange={handleInputChange} className={`${inputClass} bg-slate-800 border-slate-700 text-slate-100 focus-visible:ring-slate-400`} /></div>
-                      <div><label className="text-sm font-medium text-slate-300 mb-2 block">Otoritas Penerbit Sertifikat <span className="font-normal text-slate-500">(Khusus ILO)</span></label><input type="text" name="cert_auth" onChange={handleInputChange} className={`${inputClass} bg-slate-800 border-slate-700 text-slate-100 focus-visible:ring-slate-400`} placeholder="Contoh: Kemenkes RI" /></div>
+                      {(isIlo || isMlc) && <div><label className="text-sm font-medium text-slate-300 mb-2 block flex items-center gap-1">Otoritas Penerbit {isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><input type="text" name="cert_auth" onChange={handleInputChange} className={`${inputClass} bg-slate-800 border-slate-700 text-slate-100 focus-visible:ring-slate-400`} placeholder="Contoh: Kemenkes RI" /></div>}
                     </div>
                 </div>
               </div>
