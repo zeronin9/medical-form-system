@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const { formData } = await request.json();
 
     // Pastikan nama file ini 100% sama dengan yang ada di folder public/templates Anda
-    const fileName = 'QatarEnergy LNG Medical Department.docx'; 
+    const fileName = '4. QatarEnergy LNG Medical Department.docx'; 
       
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
     const content = fs.readFileSync(templatePath, 'binary');
