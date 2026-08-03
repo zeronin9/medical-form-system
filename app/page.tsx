@@ -14,15 +14,15 @@ export default function Home() {
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // === MASTER STATE: 100% VARIABEL UTUH DENGAN TAMBAHAN QATAR & CHEVRON ===
+  // === MASTER STATE: 100% VARIABEL UTUH TERMASUK PEMISAHAN PENYAKIT ADNOC ===
   const [formData, setFormData] = useState<any>({
     // Identitas & Pekerjaan Dasar
     firstName: '', middleName: '', familyName: '', dob: '', pob: '', pob_city: '', pob_country: '', idPassport: '', nationality: '', gender: '', maritalStatus: '', address: '', contactNumber: '', email: '',
     position: '', department: '', company: '', workLocation: '', date: new Date().toLocaleDateString('id-ID'),
     serviceDate: '', medNo: '', typeOfShip: '', tradeArea: '', ilo_position: '', seaman_book: '', 
-    reason_exam: 'Pre-Employment', // Tujuan Pemeriksaan (ILO, MLC, ADNOC)
+    reason_exam: 'Pre-Employment', // Tujuan Pemeriksaan
 
-    // --- VARIABEL BARU UNTUK PREVIOUS EMPLOYMENT ADNOC ---
+    // --- VARIABEL PREVIOUS EMPLOYMENT ADNOC ---
     job1: '', comp1: '', from1: '', to1: '',
     job2: '', comp2: '', from2: '', to2: '',
     job3: '', comp3: '', from3: '', to3: '',
@@ -39,41 +39,44 @@ export default function Home() {
     disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '', color_test_type: 'Book', hear_r: '', hear_l: '',
     
     // Kuesioner Medis & Gaya Hidup Umum
-    q_illness: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes', // Tambahkan fm_tb, fm_allergy, fm_mental ke dalam state
-    fm_tb: '', fm_allergy: '', fm_mental: '',
-    
-    // --- VARIABEL KONDISI SPESIFIK (Mencegah Tumpang Tindih) ---
-    mh_angina: '', mh_cardiac_surgery: '', mh_kidney_stone: '', 
-    mh_anxiety: '', mh_sleep: '', mh_surgery: '', mh_fainting: '',
+    q_illness: '', q_hosp_wait: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes', 
+    fm_tb: '', fm_allergy: '', fm_mental: '', fm_heart: '', fm_asthma: '', fm_diabetes: '', fm_hypertension: '', fm_cancer: '',
+
+    // --- VARIABEL RIWAYAT PENYAKIT PRIBADI (SUDAH DIPISAH SESUAI BACKEND ADNOC) ---
+    mh_hbp: '', mh_angina: '', mh_heart: '', mh_cardiac_surgery: '', mh_asthma: '',
+    mh_bronchitis: '', mh_tb: '', mh_ulcer: '', mh_hep: '',
+    mh_piles: '', mh_hernia: '', mh_constipation: '', mh_diarrhea: '', mh_bowel: '',
+    mh_epilepsy: '', mh_stroke: '', mh_headache: '', mh_fainting: '',
+    mh_musculo: '', mh_rheumatism: '', mh_accident: '',
+    mh_eczema: '', mh_vitiligo: '', mh_skin: '',
+    mh_kidney: '', mh_kidney_stone: '', mh_anxiety: '', mh_sleep: '',
+    mh_eye: '', mh_eye2: '', mh_ear: '', mh_tinnitus: '', mh_ear2: '',
+    diab_ins: '', mh_diabetes: '', mh_thyroid: '', mh_blood: '', mh_drug: '',
+    mh_surgery: '',
     
     // Khusus Pelaut Wanita
-    f_lmp: '', f_preg_no: '', f_live_birth: '',
+    f_lmp: '', f_preg_no: '', f_live_birth: '', f_heavy: '', f_reg: '', f_pain: '', f_pill: '',
 
-    // --- VARIABEL BARU UNTUK TABEL KELUARGA ADNOC ---
+    // --- VARIABEL TABEL KELUARGA ADNOC ---
     fa_age: '', fa_state: '', mo_age: '', mo_state: '', sib_age: '', sib_state: '', spo_age: '', spo_state: '', chi_age: '', chi_state: '',
 
-    // --- VARIABEL BARU UNTUK QATAR & CHEVRON ---
-    // Detail Kuesioner (QatarEnergy)
+    // --- VARIABEL QATAR & CHEVRON ---
     q_stress_score: '', q_smoke_freq: '', q_smoke_text: '', q_alcohol_text: '', q_medevac_text: '', q_omfc_text: '', q_meds_text: '',
-    // Detail Merokok (Chevron)
     smoker_y: '', smoker_d: '', smoker_q: '', smoker_s_y: '', 
-    // Spirometri Tambahan (Chevron)
     ft_fvc: '', pre_fvc: '', ft_fev1: '', pre_fev1: '', ev1_vc: '', 
-    // Audiometri Lengkap
     l05: '', l1: '', l2: '', l3: '', l4: '', l6: '', l8: '', r05: '', r1: '', r2: '', r3: '', r4: '', r6: '', r8: '', oht_result: '', 
-    // EKG
     rate: '', rhyt: '', axis: '', pr: '', qrs: '', twv: '', diag: '', 
     
     // Darah Lengkap & Urin
     lab_hb: '', lab_hct: '', rbc_m: '', lab_wbc: '', lab_platelet: '', pmn: '', lymph: '', mono: '', eos: '', baso: '', band: '', albumin: '', ur_sugar: '', urin_b: '', wbc: '', rbc: '', casts: '', ur_others: '', 
     
-    // Kimia Darah & Hasil Laboratorium Terperinci
+    // Kimia Darah & Hasil Laboratorium
     lab_sugar: '', val_sugar: '', lab_chol: '', val_chol: '', lab_trig: '', val_trig: '', only_cg: '', lab_hdl: '', val_hdl: '', lab_ldl: '', val_ldl: '', lab_bun: '', val_bun: '', lab_creat: '', val_creat: '', lab_sgot: '', val_sgot: '', lab_sgpt: '', val_sgpt: '', lab_uric: '', val_urig: '', detail_af: '', 
     
-    // Rontgen & Serologi & Khusus Makanan
+    // Rontgen & Serologi
     date_xray: '', xray: '', des_abnor: '', lab_sr: '', hep_b_ab: '', hep_b_ag: '', hep_c: '', hep_a: '', stool_bact: '', stool_para: '', hiv_res: '', vdrl_res: '', vac_status: '', vac_details: '',
     
-    // Kesimpulan Kelaikan & Administrasi Sertifikat
+    // Kesimpulan Kelaikan
     fit_lookout: '', fit_deck: '', fit_engine: '', fit_catering: '', fit_other: '', restrictions: '', free_cond: '', rest_desc: '', action_taken: '', exp_date: '',
     summary: '', suggestion: '', eps: '', hospital: '', cert_auth: '', comments: '',
   });
@@ -111,14 +114,13 @@ export default function Home() {
     const combinedGivenName = [formData.firstName, formData.middleName].filter(Boolean).join(' ');
 
     // === LOGIKA PENGGABUNGAN TEMPAT LAHIR (POB) ===
-    // Menggabungkan Kota dan Negara menggunakan koma (Contoh: "Surabaya, Indonesia")
     const combinedPob = [formData.pob_city, formData.pob_country].filter(Boolean).join(', ');
 
     // Membuat salinan data khusus untuk dikirim ke API
     const payloadData = {
       ...formData,
-      firstName: combinedGivenName, // Timpa firstName agar menjadi Given Name (Depan + Tengah)
-      pob: combinedPob              // Timpa pob agar menjadi format satu baris
+      firstName: combinedGivenName, 
+      pob: combinedPob              
     };
     
     try {
@@ -129,7 +131,7 @@ export default function Home() {
         const response = await fetch(apiRoute, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ formData: payloadData }), // Gunakan payloadData yang baru
+          body: JSON.stringify({ formData: payloadData }),
         });
         
         if (!response.ok) throw new Error(`Gagal mencetak dokumen format: ${format.toUpperCase()}`);

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const { formData } = await request.json();
     
     // Pastikan nama file ini persis dengan template Word Marshall Anda
-    const fileName = '3. MARSHALL (1).docx'; 
+    const fileName = '3. MARSHALL.docx'; 
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);

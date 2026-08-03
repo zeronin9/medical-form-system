@@ -79,7 +79,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
         <div className="space-y-4">
           <label className={labelClass}>Riwayat Penyakit Diri Sendiri:</label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {medicalHistory.map(m => (
+            {medicalHistory.map((m: any) => (
               <div key={m.id} className="flex justify-between items-center rounded-lg border border-slate-200 p-3 shadow-sm hover:shadow-md transition-shadow">
                 <span className="text-sm font-medium text-slate-700">{m.label}</span>
                 <div className="flex gap-4">
@@ -101,7 +101,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
         <div className="space-y-4 pb-4">
           <label className={labelClass}>Riwayat Penyakit Keluarga <BadgeQatar /><BadgeADNOC/></label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {familyHistory.map(f => (
+            {familyHistory.map((f: any) => (
               <div key={f.id} className="flex justify-between items-center rounded-lg border border-slate-200 p-3 shadow-sm bg-slate-50/30">
                 <span className="text-sm font-medium text-slate-700">{f.label}</span>
                 <div className="flex gap-4">
@@ -195,9 +195,20 @@ export default function MedicalHistorySection({ formData, handleChange, selected
               </div>
             </div>
 
+            {/* DITAMBAHKAN: Pertanyaan menunggu RS (q_hosp_wait) untuk backend ADNOC */}
+            <div className="rounded-lg border border-slate-200 p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <span className="text-sm font-medium text-slate-700">2. Apakah saat ini Anda sedang menunggu perawatan Rumah Sakit? <BadgeADNOC/></span>
+                <div className="flex gap-4 shrink-0">
+                  <label className={radioGroupClass}><input type="radio" name="q_hosp_wait" value="Yes" checked={formData.q_hosp_wait === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
+                  <label className={radioGroupClass}><input type="radio" name="q_hosp_wait" value="No" checked={formData.q_hosp_wait === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
+                </div>
+              </div>
+            </div>
+
             <div className="rounded-lg border border-slate-200 p-4 transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-sm font-medium text-slate-700">2. Apakah saat ini sedang rutin mengonsumsi obat-obatan?</span>
+                <span className="text-sm font-medium text-slate-700">3. Apakah saat ini sedang rutin mengonsumsi obat-obatan?</span>
                 <div className="flex gap-4 shrink-0">
                   <label className={radioGroupClass}><input type="radio" name="q_meds" value="Yes" checked={formData.q_meds === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
                   <label className={radioGroupClass}><input type="radio" name="q_meds" value="No" checked={formData.q_meds === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
@@ -208,7 +219,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
 
             <div className="rounded-lg border border-slate-200 p-4 transition-all bg-slate-50/50">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-sm font-medium text-slate-900">3. Apakah Anda merokok?</span>
+                <span className="text-sm font-medium text-slate-900">4. Apakah Anda merokok?</span>
                 <div className="flex flex-wrap items-center gap-4 shrink-0">
                   <label className={radioGroupClass}><input type="radio" name="q_smoke" value="Yes" checked={formData.q_smoke === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
                   <label className={radioGroupClass}><input type="radio" name="q_smoke" value="No" checked={formData.q_smoke === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
@@ -236,7 +247,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
 
             <div className="rounded-lg border border-slate-200 p-4 transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-sm font-medium text-slate-700">4. Mengonsumsi alkohol atau narkoba (obat rekreasi)?</span>
+                <span className="text-sm font-medium text-slate-700">5. Mengonsumsi alkohol atau narkoba (obat rekreasi)?</span>
                 <div className="flex gap-4 shrink-0">
                   <label className={radioGroupClass}><input type="radio" name="q_alcohol" value="Yes" checked={formData.q_alcohol === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
                   <label className={radioGroupClass}><input type="radio" name="q_alcohol" value="No" checked={formData.q_alcohol === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
@@ -364,12 +375,43 @@ export default function MedicalHistorySection({ formData, handleChange, selected
               </div>
             )}
 
+            {/* DITAMBAHKAN: Pertanyaan spesifik wanita (heavy, regular, pain, pill) untuk backend ADNOC */}
             <div className="rounded-lg border border-slate-200 p-4 bg-pink-50/30 border-pink-200 mt-6">
-              <h4 className="font-semibold text-sm text-pink-900 mb-4 pb-2 border-b border-pink-100">Khusus Pelaut Wanita (Female)</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <h4 className="font-semibold text-sm text-pink-900 mb-4 pb-2 border-b border-pink-100">Khusus Pelaut Wanita (Female) <BadgeADNOC/></h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
                   <div><label className={labelClass}>Tanggal Haid Terakhir (LMP)</label><input type="date" name="f_lmp" value={formData.f_lmp || ''} onChange={handleChange} className={inputClass} /></div>
                   <div><label className={labelClass}>Jumlah Kehamilan</label><input type="number" name="f_preg_no" value={formData.f_preg_no || ''} onChange={handleChange} className={inputClass} /></div>
                   <div><label className={labelClass}>Jumlah Kelahiran Hidup</label><input type="number" name="f_live_birth" value={formData.f_live_birth || ''} onChange={handleChange} className={inputClass} /></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-pink-200">
+                <div className="flex justify-between items-center bg-white p-2 rounded border border-pink-100 shadow-sm">
+                  <span className="text-sm text-slate-700">Pendarahan Berat (Heavy Periods)?</span>
+                  <div className="flex gap-2">
+                    <label className={radioGroupClass}><input type="radio" name="f_heavy" value="Yes" checked={formData.f_heavy === 'Yes'} onChange={handleChange} className={radioClass} /><span className="text-xs">Ya</span></label>
+                    <label className={radioGroupClass}><input type="radio" name="f_heavy" value="No" checked={formData.f_heavy === 'No'} onChange={handleChange} className={radioClass} /><span className="text-xs">Tidak</span></label>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center bg-white p-2 rounded border border-pink-100 shadow-sm">
+                  <span className="text-sm text-slate-700">Haid Teratur (Regular)?</span>
+                  <div className="flex gap-2">
+                    <label className={radioGroupClass}><input type="radio" name="f_reg" value="Yes" checked={formData.f_reg === 'Yes'} onChange={handleChange} className={radioClass} /><span className="text-xs">Ya</span></label>
+                    <label className={radioGroupClass}><input type="radio" name="f_reg" value="No" checked={formData.f_reg === 'No'} onChange={handleChange} className={radioClass} /><span className="text-xs">Tidak</span></label>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center bg-white p-2 rounded border border-pink-100 shadow-sm">
+                  <span className="text-sm text-slate-700">Haid Nyeri (Painful)?</span>
+                  <div className="flex gap-2">
+                    <label className={radioGroupClass}><input type="radio" name="f_pain" value="Yes" checked={formData.f_pain === 'Yes'} onChange={handleChange} className={radioClass} /><span className="text-xs">Ya</span></label>
+                    <label className={radioGroupClass}><input type="radio" name="f_pain" value="No" checked={formData.f_pain === 'No'} onChange={handleChange} className={radioClass} /><span className="text-xs">Tidak</span></label>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center bg-white p-2 rounded border border-pink-100 shadow-sm">
+                  <span className="text-sm text-slate-700">Konsumsi Pil KB (Contraceptive Pill)?</span>
+                  <div className="flex gap-2">
+                    <label className={radioGroupClass}><input type="radio" name="f_pill" value="Yes" checked={formData.f_pill === 'Yes'} onChange={handleChange} className={radioClass} /><span className="text-xs">Ya</span></label>
+                    <label className={radioGroupClass}><input type="radio" name="f_pill" value="No" checked={formData.f_pill === 'No'} onChange={handleChange} className={radioClass} /><span className="text-xs">Tidak</span></label>
+                  </div>
+                </div>
               </div>
             </div>
 
