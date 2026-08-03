@@ -7,158 +7,224 @@ import path from 'path';
 export async function POST(request: Request) {
   try {
     const { formData } = await request.json();
-
-    // Pastikan nama file ini 100% sama dengan yang ada di folder public/templates Anda
+    
+    // Pastikan nama file ini persis dengan template Word QatarEnergy Anda
     const fileName = '4. QatarEnergy LNG Medical Department.docx'; 
-      
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);
 
-    // MENGATASI UNDEFINED: Memaksa TypeScript mengabaikan error tipe dengan @ts-ignore
     // @ts-ignore
     const doc = new Docxtemplater(zip, {
       paragraphLoop: true,
       linebreaks: true,
       delimiters: { start: '{{', end: '}}' },
-      nullGetter: function() {
-        return ""; // Mengubah semua undefined menjadi string kosong/bersih
-      }
+      nullGetter: function() { return ""; } // Mencegah muncul teks "undefined"
     });
 
-    const check = (value: any, expected: string | boolean) => value === expected ? '☑' : '☐';
+    // --- HELPER FUNCTIONS ---
+    const isY = (val: any) => (val === 'Yes' || val === true) ? '☑' : '☐';
+    const isN = (val: any) => (val === 'No' || val === false) ? '☑' : '☐';
+    const isNS = (val: any) => (val === 'Not Sure') ? '☑' : '☐';
+    
+    const isNorm = (val: any) => (val === 'Normal' || val === 'Good' || !val) ? '☑' : '☐';
+    const isAbn = (val: any) => val === 'Abnormal' ? '☑' : '☐';
+    const getRem = (status: string, rem: string) => status === 'Abnormal' ? (rem || 'Abnormal') : '';
 
+    // Helper Tabel Laboratorium Qatar (Otomatis deteksi Normal/Abnormal dari isian)
+    const isLabN = (val: any) => (val && val !== 'Abnormal' && val !== 'Positive' && val !== 'Reactive') ? '☑' : '☐';
+    const isLabA = (val: any) => (val === 'Abnormal' || val === 'Positive' || val === 'Reactive') ? '☑' : '☐';
+
+    // Format Tanggal Lahir (DD/MM/YY)
+    let dobFormatted = formData.dob || "";
+    if (formData.dob) {
+      const parts = formData.dob.split('-');
+      if (parts.length === 3) {
+        dobFormatted = `${parts[2]}/${parts[1]}/${parts[0].substring(2)}`;
+      }
+    }
+
+    const isFemale = formData.gender === 'Female';
+
+    // --- RENDER VARIABEL 100% MENGIKUTI TEMPLATE QATAR ENERGY ---
     doc.render({
       // ==========================================
-      // SECTION A: IDENTITAS & PEKERJAAN
+      // 1. IDENTITAS & SIFAT PEKERJAAN (NATURE OF WORK)
       // ==========================================
-      first_name: formData.firstName || "", family_name: formData.familyName || "",
-      ddmmyy: formData.dob || "", id_passport: formData.idPassport || "",
-      nationality: formData.nationality || "", position: formData.position || "",
-      department: formData.department || "", company: formData.company || "",
-      work_location: formData.workLocation || "", contact_number: formData.contactNumber || "",
-      address: formData.address || "", date: formData.date || new Date().toLocaleDateString('id-ID'),
-      g_m: check(formData.gender, 'Male'), g_f: check(formData.gender, 'Female'),
+      first_name: formData.firstName || "",
+      family_name: formData.familyName || "",
+      ddmmyy: dobFormatted,
+      id_passport: formData.idPassport || "",
+      nationality: formData.nationality || "",
+      g_m: formData.gender === 'Male' ? '☑' : '☐',
+      g_f: isFemale ? '☑' : '☐',
+      position: formData.position || formData.ilo_position || "",
+      work_location: formData.workLocation || "",
+      department: formData.department || "",
+      company: formData.company || "",
+      contact_number: formData.contactNumber || "",
+      address: formData.address || "",
 
-      // NATURE OF WORK
-      nw_confined: check(formData.nw_confined, true), nw_height: check(formData.nw_height, true),
-      o_h_e: check(formData.nw_heavy, true), dvg: check(formData.nw_diving, true),
-      s_r: check(formData.nw_swing, true), o_w: check(formData.nw_office, true),
-      hanging: check(formData.nw_hanging, true), emer_r: check(formData.nw_emergency, true),
-      l_r: check(formData.nw_radiation, true), sew_d: check(formData.nw_sewage, true),
-      food_h: check(formData.nw_food, true), othersy: check(formData.nw_others !== "" && formData.nw_others !== undefined, true),
-      others_ifyes: formData.nw_others || "", 
+      // Nature of Work
+      nw_confined: isY(formData.nw_confined),
+      dvg: isY(formData.nw_diving),
+      hanging: isY(formData.nw_hanging),
+      sew_d: isY(formData.nw_sewage),
+      nw_height: isY(formData.nw_height),
+      s_r: isY(formData.nw_swing),
+      emer_r: isY(formData.nw_emergency),
+      food_h: isY(formData.nw_food),
+      o_h_e: isY(formData.nw_heavy),
+      o_w: isY(formData.nw_office),
+      l_r: isY(formData.nw_radiation),
+      othersy: formData.nw_others ? '☑' : '☐',
+      others_ifyes: formData.nw_others || "",
 
-      // VACCINATION
-      v_hepa_y: check(formData.vac_hepa, 'Yes'), v_hepa_n: check(formData.vac_hepa, 'No'), v_hepa_s: check(formData.vac_hepa, 'Not Sure'),
-      v_hepb_y: check(formData.vac_hepb, 'Yes'), v_hepb_n: check(formData.vac_hepb, 'No'), v_hepb_s: check(formData.vac_hepb, 'Not Sure'),
-      c19_y: check(formData.vac_c19, 'Yes'), c19_n: check(formData.vac_c19, 'No'), c19_s: check(formData.vac_c19, 'Not Sure'),
-      tet_y: check(formData.vac_tet, 'Yes'), tet_n: check(formData.vac_tet, 'No'), tet_s: check(formData.vac_tet, 'Not Sure'),
-      mea_y: check(formData.vac_mea, 'Yes'), mea_n: check(formData.vac_mea, 'No'), mea_s: check(formData.vac_mea, 'Not Sure'),
-      chick_y: check(formData.vac_chick, 'Yes'), chick_n: check(formData.vac_chick, 'No'), chick_s: check(formData.vac_chick, 'Not Sure'),
-      typh_y: check(formData.vac_typh, 'Yes'), typh_n: check(formData.vac_typh, 'No'), typh_s: check(formData.vac_typh, 'Not Sure'),
+      // ==========================================
+      // 2. VACCINATION HISTORY
+      // ==========================================
+      v_hepa_y: isY(formData.vac_hepa), v_hepa_n: isN(formData.vac_hepa), v_hepa_s: isNS(formData.vac_hepa),
+      v_hepb_y: isY(formData.vac_hepb), v_hepb_n: isN(formData.vac_hepb), v_hepb_s: isNS(formData.vac_hepb),
+      c19_y: isY(formData.vac_c19), c19_n: isN(formData.vac_c19), c19_s: isNS(formData.vac_c19),
+      tet_y: isY(formData.vac_tet), tet_n: isN(formData.vac_tet), tet_s: isNS(formData.vac_tet),
+      mea_y: isY(formData.vac_mea), mea_n: isN(formData.vac_mea), mea_s: isNS(formData.vac_mea),
+      chick_y: isY(formData.vac_chick), chick_n: isN(formData.vac_chick), chick_s: isNS(formData.vac_chick),
+      typh_y: isY(formData.vac_typh), typh_n: isN(formData.vac_typh), typh_s: isNS(formData.vac_typh),
 
-      // MEDICAL HISTORY
-      mh_blood_y: check(formData.mh_blood, 'Yes'), mh_blood_n: check(formData.mh_blood, 'No'),
-      p_ulc_y: check(formData.mh_ulcer, 'Yes'), p_ulc_n: check(formData.mh_ulcer, 'No'),
-      epil_y: check(formData.mh_epilepsy, 'Yes'), epil_n: check(formData.mh_epilepsy, 'No'),
-      work_y: check(formData.mh_accident, 'Yes'), work_n: check(formData.mh_accident, 'No'),
-      ears_y: check(formData.mh_ear, 'Yes'), ears_n: check(formData.mh_ear, 'No'),
-      r_head_y: check(formData.mh_headache, 'Yes'), r_head_n: check(formData.mh_headache, 'No'),
-      r_a_p_y: check(formData.mh_abd_pain, 'Yes'), r_a_p_n: check(formData.mh_abd_pain, 'No'),
-      s_dis_y: check(formData.mh_skin, 'Yes'), s_dis_n: check(formData.mh_skin, 'No'),
-      m_skel_y: check(formData.mh_musculo, 'Yes'), m_skel_n: check(formData.mh_musculo, 'No'),
-      m_ill_y: check(formData.mh_mental, 'Yes'), m_ill_n: check(formData.mh_mental, 'No'),
-      cns_y: check(formData.mh_cns, 'Yes'), cns_n: check(formData.mh_cns, 'No'),
-      h_dis_y: check(formData.mh_heart, 'Yes'), h_dis_n: check(formData.mh_heart, 'No'),
-      mh_hbp_y: check(formData.mh_hbp, 'Yes'), mh_hbp_n: check(formData.mh_hbp, 'No'),
-      mh_dia_y: check(formData.mh_diabetes, 'Yes'), mh_dia_n: check(formData.mh_diabetes, 'No'),
-      k_b_t_y: check(formData.mh_kidney, 'Yes'), k_b_t_n: check(formData.mh_kidney, 'No'),
-      r_art_y: check(formData.mh_rheumatism, 'Yes'), r_art_n: check(formData.mh_rheumatism, 'No'),
-      f_lc_y: check(formData.mh_fainting, 'Yes'), f_lc_n: check(formData.mh_fainting, 'No'),
-      v_dis_y: check(formData.mh_vascular, 'Yes'), v_dis_n: check(formData.mh_vascular, 'No'),
-      eye_con_y: check(formData.mh_eye, 'Yes'), eye_con_n: check(formData.mh_eye, 'No'),
-      c_asma_y: check(formData.mh_asthma, 'Yes'), c_asma_n: check(formData.mh_asthma, 'No'),
-      std_y: check(formData.mh_std, 'Yes'), std_n: check(formData.mh_std, 'No'),
-      hep_y: check(formData.mh_hep, 'Yes'), hep_n: check(formData.mh_hep, 'No'),
-      m_sur_y: check(formData.mh_surgery, 'Yes'), m_sur_n: check(formData.mh_surgery, 'No'),
-      cancer_y: check(formData.mh_cancer, 'Yes'), cancer_n: check(formData.mh_cancer, 'No'),
-      drug_a_y: check(formData.mh_drug, 'Yes'), drug_a_n: check(formData.mh_drug, 'No'),
-      t_dis_y: check(formData.mh_thyroid, 'Yes'), t_dis_n: check(formData.mh_thyroid, 'No'),
-      c_preg_y: check(formData.mh_pregnancy, 'Yes'), c_preg_n: check(formData.mh_pregnancy, 'No'),
-      h_adm_y: check(formData.mh_hospital, 'Yes'), h_adm_n: check(formData.mh_hospital, 'No'),
+      // ==========================================
+      // 3. MEDICAL & FAMILY HISTORY
+      // ==========================================
+      mh_blood_y: isY(formData.mh_blood), mh_blood_n: isN(formData.mh_blood),
+      cns_y: isY(formData.mh_cns), cns_n: isN(formData.mh_cns),
+      c_asma_y: isY(formData.mh_asthma), c_asma_n: isN(formData.mh_asthma),
+      p_ulc_y: isY(formData.mh_ulcer), p_ulc_n: isN(formData.mh_ulcer),
+      h_dis_y: isY(formData.mh_heart), h_dis_n: isN(formData.mh_heart),
+      std_y: isY(formData.mh_std), std_n: isN(formData.mh_std),
+      epil_y: isY(formData.mh_epilepsy), epil_n: isN(formData.mh_epilepsy),
+      mh_hbp_y: isY(formData.mh_hbp), mh_hbp_n: isN(formData.mh_hbp),
+      hep_y: isY(formData.mh_hep), hep_n: isN(formData.mh_hep),
+      work_y: isY(formData.mh_accident), work_n: isN(formData.mh_accident),
+      mh_dia_y: isY(formData.mh_diabetes), mh_dia_n: isN(formData.mh_diabetes),
+      m_sur_y: isY(formData.mh_surgery), m_sur_n: isN(formData.mh_surgery),
+      ears_y: isY(formData.mh_ear), ears_n: isN(formData.mh_ear),
+      k_b_t_y: isY(formData.mh_kidney), k_b_t_n: isN(formData.mh_kidney),
+      cancer_y: isY(formData.mh_cancer), cancer_n: isN(formData.mh_cancer),
+      r_head_y: isY(formData.mh_headache), r_head_n: isN(formData.mh_headache),
+      r_art_y: isY(formData.mh_rheumatism), r_art_n: isN(formData.mh_rheumatism),
+      drug_a_y: isY(formData.mh_drug), drug_a_n: isN(formData.mh_drug),
+      r_a_p_y: isY(formData.mh_abd_pain), r_a_p_n: isN(formData.mh_abd_pain),
+      f_lc_y: isY(formData.mh_fainting), f_lc_n: isN(formData.mh_fainting),
+      t_dis_y: isY(formData.mh_thyroid), t_dis_n: isN(formData.mh_thyroid),
+      s_dis_y: isY(formData.mh_skin), s_dis_n: isN(formData.mh_skin),
+      v_dis_y: isY(formData.mh_vascular), v_dis_n: isN(formData.mh_vascular),
+      
+      c_preg_y: (isFemale && parseInt(formData.f_preg_no || '0') > 0) ? '☑' : '☐',
+      c_preg_n: (!isFemale || !formData.f_preg_no || formData.f_preg_no === '0') ? '☑' : '☐',
+      
+      m_skel_y: isY(formData.mh_musculo), m_skel_n: isN(formData.mh_musculo),
+      eye_con_y: isY(formData.mh_eye), eye_con_n: isN(formData.mh_eye),
+      h_adm_y: isY(formData.q_illness), h_adm_n: isN(formData.q_illness),
+      m_ill_y: isY(formData.mh_mental), m_ill_n: isN(formData.mh_mental),
       others_mh: formData.mh_others || "",
 
-      // FAMILY HISTORY
-      dia_y: check(formData.fm_diabetes, 'Yes'), dia_n: check(formData.fm_diabetes, 'No'),
-      hyp_y: check(formData.fm_hypertension, 'Yes'), hyp_n: check(formData.fm_hypertension, 'No'),
-      fmepil_y: check(formData.fm_epilepsy, 'Yes'), fmepil_n: check(formData.fm_epilepsy, 'No'),
-      fm_h_dis_y: check(formData.fm_heart, 'Yes'), fm_h_dis_n: check(formData.fm_heart, 'No'),
-      ast_y: check(formData.fm_asthma, 'Yes'), ast_n: check(formData.fm_asthma, 'No'),
-      can_t_y: check(formData.fm_cancer, 'Yes'), can_t_n: check(formData.fm_cancer, 'No'),
+      // Family History
+      dia_y: isY(formData.fm_diabetes), dia_n: isN(formData.fm_diabetes),
+      fm_h_dis_y: isY(formData.fm_heart), fm_h_dis_n: isN(formData.fm_heart),
+      hyp_y: isY(formData.fm_hypertension), hyp_n: isN(formData.fm_hypertension),
+      ast_y: isY(formData.fm_asthma), ast_n: isN(formData.fm_asthma),
+      fmepil_y: isY(formData.fm_epilepsy), fmepil_n: isN(formData.fm_epilepsy),
+      can_t_y: isY(formData.fm_cancer), can_t_n: isN(formData.fm_cancer),
       others_fm: formData.fm_others || "",
 
-      // GENERAL QUESTIONS
-      illness_y: check(formData.q_illness, 'Yes'), illness_n: check(formData.q_illness, 'No'),
-      medev_y: check(formData.q_medevac, 'Yes'), medev_n: check(formData.q_medevac, 'No'), medev_why: formData.q_medevac_text || "",
-      curren_y: check(formData.q_meds, 'Yes'), curren_n: check(formData.q_meds, 'No'), curren_ifyes: formData.q_meds_text || "",
-      q_smoke_y: check(formData.q_smoke, 'Yes'), q_smoke_n: check(formData.q_smoke, 'No'), 
-      q_smoke_text: formData.q_smoke_text || "", hl_hf: formData.q_smoke_freq || "", 
-      alc_y: check(formData.q_alcohol, 'Yes'), alc_n: check(formData.q_alcohol, 'No'), answer_ifyes: formData.q_alcohol_text || "",
-      fit_y: check(formData.q_fit, 'Yes'), fit_n: check(formData.q_fit, 'No'),
-      fear_y: check(formData.q_fear, 'Yes'), fear_n: check(formData.q_fear, 'No'),
-      stress_y: check(formData.q_stress, 'Yes'), stress_n: check(formData.q_stress, 'No'),
-      strfull_y: check(formData.q_stressful, 'Yes'), strfull_n: check(formData.q_stressful, 'No'),
-      score: formData.q_stress_score || "", 
-      qmfc_y: check(formData.q_omfc, 'Yes'), qmfc_n: check(formData.q_omfc, 'No'), omfc_ifyes: formData.q_omfc_text || "",
-
       // ==========================================
-      // SECTION B: DOCTOR'S PHYSICAL EXAM
+      // 4. GENERAL QUESTIONS
       // ==========================================
-      eyes_n: check(formData.eyes, 'Normal'), eyes_a: check(formData.eyes, 'Abnormal'), eyes_r: formData.eyes_r || "",
-      ent_n: check(formData.ent, 'Normal'), ent_a: check(formData.ent, 'Abnormal'), ent_r: formData.ent_r || "",
-      oral_c_n: check(formData.oral_c, 'Normal'), oral_c_a: check(formData.oral_c, 'Abnormal'), oral_c_r: formData.oral_c_r || "",
-      chest_n: check(formData.chest, 'Normal'), chest_a: check(formData.chest, 'Abnormal'), chest_r: formData.chest_r || "",
-      cardio_n: check(formData.cardio, 'Normal'), cardio_a: check(formData.cardio, 'Abnormal'), cardio_r: formData.cardio_r || "",
-      abdom_n: check(formData.abdom, 'Normal'), abdom_a: check(formData.abdom, 'Abnormal'), abdom_r: formData.abdom_r || "",
-      her_or_n: check(formData.her_or, 'Normal'), her_or_a: check(formData.her_or, 'Abnormal'), her_or_r: formData.her_or_r || "",
-      anus_r_n: check(formData.anus_r, 'Normal'), anus_r_a: check(formData.anus_r, 'Abnormal'), anus_r_r: formData.anus_r_r || "",
-      genito_n: check(formData.genito, 'Normal'), genito_a: check(formData.genito, 'Abnormal'), genito_r: formData.genito_r || "",
-      extrem_n: check(formData.extrem, 'Normal'), extrem_a: check(formData.extrem, 'Abnormal'), extrem_r: formData.extrem_r || "",
-      musculo_n: check(formData.musculo, 'Normal'), musculo_a: check(formData.musculo, 'Abnormal'), musculo_r: formData.musculo_r || "",
-      skin_n: check(formData.skin, 'Normal'), skin_a: check(formData.skin, 'Abnormal'), skin_r: formData.skin_r || "",
-      vas_s_n: check(formData.vas_s, 'Normal'), vas_s_a: check(formData.vas_s, 'Abnormal'), vas_s_r: formData.vas_s_r || "",
-      c_n_s_n: check(formData.c_n_s, 'Normal'), c_n_s_a: check(formData.c_n_s, 'Abnormal'), c_n_s_r: formData.c_n_s_r || "",
-
-      // ==========================================
-      // SECTION B: DOCTOR'S LAB REPORTS
-      // ==========================================
-      fbg_n: check(formData.fbg, 'Normal'), fbg_a: check(formData.fbg, 'Abnormal'), fbg_r: formData.fbg_r || "",
-      cbc_n: check(formData.cbc, 'Normal'), cbc_a: check(formData.cbc, 'Abnormal'), cbc_r: formData.cbc_r || "",
-      tcho_n: check(formData.tcho, 'Normal'), tcho_a: check(formData.tcho, 'Abnormal'), tcho_r: formData.tcho_r || "",
-      lft_n: check(formData.lft, 'Normal'), lft_a: check(formData.lft, 'Abnormal'), lft_r: formData.lft_r || "",
-      rft_n: check(formData.rft, 'Normal'), rft_a: check(formData.rft, 'Abnormal'), rft_r: formData.rft_r || "",
-      urin_n: check(formData.urin, 'Normal'), urin_a: check(formData.urin, 'Abnormal'), urin_r: formData.urin_r || "",
-      audi_n: check(formData.audi, 'Normal'), audi_a: check(formData.audi, 'Abnormal'), audi_r: formData.audi_r || "",
-      spir_n: check(formData.spir, 'Normal'), spir_a: check(formData.spir, 'Abnormal'), spir_r: formData.spir_r || "",
-      ecg_n: check(formData.ecg, 'Normal'), ecg_a: check(formData.ecg, 'Abnormal'), ecg_r: formData.ecg_r || "",
-      xrey_n: check(formData.xrey, 'Normal'), xrey_a: check(formData.xrey, 'Abnormal'), xrey_r: formData.xrey_r || "",
-      idt_n: check(formData.idt, 'Normal'), idt_a: check(formData.idt, 'Abnormal'), idt_r: formData.idt_r || "",
-      hha1_n: check(formData.hha1, 'Normal'), hha1_a: check(formData.hha1, 'Abnormal'), hha1_r: formData.hha1_r || "",
-      ffh_n: check(formData.ffh, 'Normal'), ffh_a: check(formData.ffh, 'Abnormal'), ffh_r: formData.ffh_r || "",
-
-      // ==========================================
-      // SECTION C: BIOMETRICS & VISION
-      // ==========================================
-      h: formData.height || "", w: formData.weight || "", bmi: formData.bmi || "",
-      weist: formData.waist || "", p: formData.pulse || "", b_p: formData.bloodPressure || "",
-      bg_type: formData.bloodGroupType || "", bg_rh: formData.bloodGroupRh || "",
+      illness_y: isY(formData.q_illness), illness_n: isN(formData.q_illness),
+      medev_why: formData.q_medevac_text || "",
+      medev_y: isY(formData.q_medevac), medev_n: isN(formData.q_medevac),
       
-      disr_unc: formData.disr_unc || "", disl_unc: formData.disl_unc || "",
-      nearr_unc: formData.nearr_unc || "", nearl_unc: formData.nearl_unc || "", bv_unc: formData.bv_unc || "",
-      disr_cor: formData.disr_cor || "", disl_cor: formData.disl_cor || "",
-      nearr_cor: formData.nearr_cor || "", nearl_cor: formData.nearl_cor || "", bv_cor: formData.bv_cor || "",
-      cv_nor: check(formData.color_vision, 'Normal'), cv_pcb: check(formData.color_vision, 'Partial'), cv_tcb: check(formData.color_vision, 'Total')
+      curren_ifyes: formData.q_meds_text || "",
+      curren_y: isY(formData.q_meds), curren_n: isN(formData.q_meds),
+      
+      q_smoke_text: formData.q_smoke === 'Yes' ? formData.q_smoke_text : "",
+      hl_hf: formData.q_smoke === 'Yes' ? formData.q_smoke_freq : "",
+      q_smoke_y: isY(formData.q_smoke), q_smoke_n: isN(formData.q_smoke),
+      
+      answer_ifyes: formData.q_alcohol_text || "",
+      alc_y: isY(formData.q_alcohol), alc_n: isN(formData.q_alcohol),
+      
+      fit_y: isY(formData.q_fit), fit_n: isN(formData.q_fit),
+      fear_y: isY(formData.q_fear), fear_n: isN(formData.q_fear),
+      stress_y: isY(formData.q_stress), stress_n: isN(formData.q_stress),
+      score: formData.q_stress_score || "",
+      strfull_y: isY(formData.q_stressful), strfull_n: isN(formData.q_stressful),
+      
+      omfc_ifyes: formData.q_omfc_text || "",
+      qmfc_y: isY(formData.q_omfc), qmfc_n: isN(formData.q_omfc),
+      
+      date: formData.date || "",
+
+      // ==========================================
+      // 5. PHYSICAL EXAMINATION (SECTION B)
+      // ==========================================
+      eyes_n: isNorm(formData.eyes), eyes_a: isAbn(formData.eyes), eyes_r: getRem(formData.eyes, formData.eyes_r),
+      ent_n: isNorm(formData.ent), ent_a: isAbn(formData.ent), ent_r: getRem(formData.ent, formData.ent_r),
+      oral_c_n: isNorm(formData.oral_c), oral_c_a: isAbn(formData.oral_c), oral_c_r: getRem(formData.oral_c, formData.oral_c_r),
+      chest_n: isNorm(formData.chest), chest_a: isAbn(formData.chest), chest_r: getRem(formData.chest, formData.chest_r),
+      cardio_n: isNorm(formData.cardio), cardio_a: isAbn(formData.cardio), cardio_r: getRem(formData.cardio, formData.cardio_r),
+      abdom_n: isNorm(formData.abdom), abdom_a: isAbn(formData.abdom), abdom_r: getRem(formData.abdom, formData.abdom_r),
+      her_or_n: isNorm(formData.her_or), her_or_a: isAbn(formData.her_or), her_or_r: getRem(formData.her_or, formData.her_or_r),
+      anus_r_n: isNorm(formData.anus_r), anus_r_a: isAbn(formData.anus_r), anus_r_r: getRem(formData.anus_r, formData.anus_r_r),
+      genito_n: isNorm(formData.genito), genito_a: isAbn(formData.genito), genito_r: getRem(formData.genito, formData.genito_r),
+      extrem_n: isNorm(formData.extrem), extrem_a: isAbn(formData.extrem), extrem_r: getRem(formData.extrem, formData.extrem_r),
+      musculo_n: isNorm(formData.musculo), musculo_a: isAbn(formData.musculo), musculo_r: getRem(formData.musculo, formData.musculo_r),
+      skin_n: isNorm(formData.skin), skin_a: isAbn(formData.skin), skin_r: getRem(formData.skin, formData.skin_r),
+      vas_s_n: isNorm(formData.vas_s), vas_s_a: isAbn(formData.vas_s), vas_s_r: getRem(formData.vas_s, formData.vas_s_r),
+      c_n_s_n: isNorm(formData.c_n_s), c_n_s_a: isAbn(formData.c_n_s), c_n_s_r: getRem(formData.c_n_s, formData.c_n_s_r),
+
+      // ==========================================
+      // 6. LABORATORY REPORTS (SECTION B)
+      // ==========================================
+      fbg_n: isLabN(formData.val_sugar), fbg_a: isLabA(formData.val_sugar), fbg_r: formData.val_sugar || "",
+      cbc_n: isLabN(formData.lab_hb), cbc_a: isLabA(formData.lab_hb), cbc_r: formData.lab_hb ? `Hb: ${formData.lab_hb}` : "",
+      tcho_n: isLabN(formData.val_chol), tcho_a: isLabA(formData.val_chol), tcho_r: formData.val_chol || "",
+      lft_n: isLabN(formData.val_sgot), lft_a: isLabA(formData.val_sgot), lft_r: formData.val_sgot ? `SGOT: ${formData.val_sgot}` : "",
+      rft_n: isLabN(formData.val_creat), rft_a: isLabA(formData.val_creat), rft_r: formData.val_creat || "",
+      urin_n: isLabN(formData.ur_sugar), urin_a: isLabA(formData.ur_sugar), urin_r: formData.ur_sugar ? `Sugar: ${formData.ur_sugar}` : "",
+      audi_n: isLabN(formData.oht_result), audi_a: isLabA(formData.oht_result), audi_r: formData.oht_result || "",
+      spir_n: isLabN(formData.ft_fvc), spir_a: isLabA(formData.ft_fvc), spir_r: formData.ft_fvc ? `FVC: ${formData.ft_fvc}` : "",
+      ecg_n: isLabN(formData.diag), ecg_a: isLabA(formData.diag), ecg_r: formData.diag || "",
+      
+      xrey_n: formData.xray === 'Normal' ? '☑' : '☐', xrey_a: formData.xray === 'Abnormal' ? '☑' : '☐', xrey_r: formData.des_abnor || "",
+      
+      idt_n: isLabN(formData.hiv_res), idt_a: isLabA(formData.hiv_res), idt_r: formData.hiv_res || "",
+      hha1_n: '☐', hha1_a: '☐', hha1_r: "",
+      ffh_n: isLabN(formData.stool_bact), ffh_a: isLabA(formData.stool_bact), ffh_r: formData.stool_bact || "",
+
+      // ==========================================
+      // 7. BIOMETRICS & VISION (SECTION C)
+      // ==========================================
+      h: formData.height || "",
+      w: formData.weight || "",
+      weist: formData.waist || "",
+      bmi: formData.bmi || "",
+      p: formData.pulse || "",
+      b_p: formData.bloodPressure || "",
+      
+      disr_unc: formData.disr_unc || "-", disl_unc: formData.disl_unc || "-",
+      nearr_unc: formData.nearr_unc || "-", nearl_unc: formData.nearl_unc || "-",
+      bv_unc: formData.bv_unc || "-",
+      
+      disr_cor: formData.disr_cor || "-", disl_cor: formData.disl_cor || "-",
+      nearr_cor: formData.nearr_cor || "-", nearl_cor: formData.nearl_cor || "-",
+      bv_cor: formData.bv_cor || "-",
+      
+      cv_nor: formData.color_vision === 'Normal' ? '☑' : '☐',
+      cv_pcb: formData.color_vision === 'Partial' ? '☑' : '☐',
+      cv_tcb: formData.color_vision === 'Total' ? '☑' : '☐',
+      
+      bg_type: formData.bloodGroupType || "",
+      bg_rh: formData.bloodGroupRh || "",
     });
 
     const buf = doc.getZip().generate({ type: 'uint8array', compression: 'DEFLATE' });
@@ -167,22 +233,11 @@ export async function POST(request: Request) {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'Content-Disposition': `attachment; filename="qatarenergy_terisi.docx"`,
+        'Content-Disposition': 'attachment; filename="QatarEnergy_Report.docx"',
       },
     });
   } catch (error: any) {
     console.error('Error generating document:', error);
-    
-    if (error.properties && error.properties.errors instanceof Array) {
-        const errorMessages = error.properties.errors
-            .map((e: any) => e.properties.explanation)
-            .join(", ");
-        return NextResponse.json({ error: `Format template salah: ${errorMessages}` }, { status: 500 });
-    }
-
-    return NextResponse.json(
-      { error: error.message || 'Terjadi kesalahan internal backend.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || 'Terjadi kesalahan internal backend.' }, { status: 500 });
   }
 }

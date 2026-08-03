@@ -8,9 +8,8 @@ export async function POST(request: Request) {
   try {
     const { formData } = await request.json();
     
-    // Pastikan nama file ini sama persis dengan template Word Marshall Anda
-    // Sesuaikan dengan nama file yang ada di dalam folder public/templates
-    const fileName = '3. MARSHALL.docx'; 
+    // Pastikan nama file ini persis dengan template Word Marshall Anda
+    const fileName = '3. MARSHALL (1).docx'; 
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);
@@ -23,68 +22,60 @@ export async function POST(request: Request) {
       nullGetter: function() { return ""; } // Mencegah munculnya teks "undefined" di Word
     });
 
-    // --- HELPER FUNCTIONS ---
-    // 1. Helper Checkbox Marshall (☑ / ☐)
-    const check = (val: any, expected: string | boolean) => val === expected ? '☑' : '☐';
-    const checkYes = (val: any) => (val === 'Yes' || val === true) ? '☑' : '☐';
-    const checkNo = (val: any) => (val === 'No' || val === false || val === undefined || val === '') ? '☑' : '☐'; 
-    
-    // 2. Helper Smart Grouping untuk Deskripsi Sistemik
-    const getDesc = (status: string, remark: string) => status === 'Normal' ? 'Normal' : (remark || status || "");
+    // --- HELPER FUNCTION UNTUK DESKRIPSI SISTEMIK ---
+    const getDesc = (status: string, remark: string) => status === 'Normal' ? 'Normal' : (remark || status || "Abnormal");
 
-    // --- PARSING TANGGAL LAHIR ---
+    // --- PARSING TANGGAL LAHIR (Bulan Teks, Hari, Tahun) ---
     const dobDate = formData.dob ? new Date(formData.dob) : null;
     const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
     const dobMonth = dobDate ? monthNames[dobDate.getMonth()] : "";
     const dobDay = dobDate ? dobDate.getDate().toString().padStart(2, '0') : "";
     const dobYear = dobDate ? dobDate.getFullYear().toString() : "";
 
-    // --- RENDER VARIABEL KE TEMPLATE ---
+    // --- RENDER VARIABEL KE TEMPLATE LENGKAP 100% ---
     doc.render({
       // 1. Identitas Dasar
       family_name: formData.familyName || "",
-      first_name: formData.firstName || "",
+      first_name: formData.firstName || "", // Telah digabungkan dari UI
       month_text: dobMonth,
       day: dobDay,
       year: dobYear,
-      pob_city: formData.pob_city || formData.placeOfBirth?.split(',')[0] || "",
+      pob_city: formData.pob_city || "",
       pob_country: formData.pob_country || formData.nationality || "",
-      g_m: check(formData.gender, 'Male'),
-      g_f: check(formData.gender, 'Female'),
+      g_m: formData.gender === 'Male' ? '☑' : '☐',
+      g_f: formData.gender === 'Female' ? '☑' : '☐',
       address: formData.address || "",
 
       // 2. Posisi Pekerjaan (EXAMINATION FOR DUTY AS)
-      pos_mas: check(formData.position, 'Master'),
-      pos_dec: check(formData.position, 'Deck Officer'),
-      pos_eng: check(formData.position, 'Engineering Officer'),
-      pos_rad: check(formData.position, 'Radio Officer'),
-      pos_rat: check(formData.position, 'Rating'),
-      pos_ccook: check(formData.position, 'Chief Cook'), 
-      pos_cook: check(formData.position, 'Cook'), 
+      pos_mas: formData.ilo_position === 'Master' ? '☑' : '☐',
+      pos_dec: formData.ilo_position === 'Deck Officer' ? '☑' : '☐',
+      pos_eng: formData.ilo_position === 'Engineering Officer' ? '☑' : '☐',
+      pos_rad: (formData.ilo_position === 'Radio Officer' || formData.ilo_position === 'Radio Operator') ? '☑' : '☐',
+      pos_rat: formData.ilo_position === 'Rating' ? '☑' : '☐',
+      pos_ccook: formData.ilo_position === 'Chief Cook' ? '☑' : '☐', 
+      pos_cook: formData.ilo_position === 'Cook' ? '☑' : '☐', 
 
       // 3. Tanda-Tanda Vital & Penampilan Fisik
       h: formData.height || "",
       w: formData.weight || "",
       bp: formData.bloodPressure || "",
       p: formData.pulse || "",
-      rr: formData.rr || "", // Respiration
-      gen_app: formData.gen_app || "Good", // Default 'Good' jika data kosong
+      rr: formData.rr || formData.respiratoryRate || "-", 
+      gen_app: formData.gen_app || "Good", 
 
       // 4. Penglihatan & Pendengaran
-      disr_unc: formData.disr_unc || "",
-      disl_unc: formData.disl_unc || "",
-      disr_cor: formData.disr_cor || "",
-      disl_cor: formData.disl_cor || "",
-      // Jika data hearing tidak spesifik per telinga, ambil dari status THT (ent)
-      hear_r: formData.hear_r || (formData.ent === 'Normal' ? 'Normal' : ''),
-      hear_l: formData.hear_l || (formData.ent === 'Normal' ? 'Normal' : ''),
+      disr_unc: formData.disr_unc || "-",
+      disl_unc: formData.disl_unc || "-",
+      disr_cor: formData.disr_cor || "-",
+      disl_cor: formData.disl_cor || "-",
+      hear_r: formData.hear_r || (formData.ent === 'Normal' ? 'Normal' : 'Abnormal'),
+      hear_l: formData.hear_l || (formData.ent === 'Normal' ? 'Normal' : 'Abnormal'),
 
-      // 5. Tes Warna & Kacamata
-      col_book: check(formData.color_test_type, 'Book') || '☑', // Default ke Book/Ishihara
-      col_lant: check(formData.color_test_type, 'Lantern'),
-      cv_y: check(formData.color_vision, 'Normal'),
-      cv_n: check(formData.color_vision, 'Total') || check(formData.color_vision, 'Partial') ? '☑' : '☐',
-      // Logika Kacamata: Jika vision corrected terisi, maka Yes.
+      // 5. Tes Warna & Kacamata 
+      col_book: formData.color_test_type === 'Book' ? '☑' : '☐', 
+      col_lant: formData.color_test_type === 'Lantern' ? '☑' : '☐',
+      cv_y: formData.color_vision === 'Normal' ? '☑' : '☐',
+      cv_n: (formData.color_vision === 'Partial' || formData.color_vision === 'Total') ? '☑' : '☐',
       glass_y: (formData.disr_cor || formData.disl_cor) ? '☑' : '☐',
       glass_n: !(formData.disr_cor || formData.disl_cor) ? '☑' : '☐',
 
@@ -92,42 +83,44 @@ export async function POST(request: Request) {
       head_neck: getDesc(formData.ent, formData.ent_r),
       heart_desc: getDesc(formData.cardio, formData.cardio_r),
       lungs_desc: getDesc(formData.chest, formData.chest_r),
-      speech_desc: getDesc(formData.ent, formData.ent_r),
+      speech_desc: "Yes", // Default Speech Unimpaired = Yes
       ext_up: getDesc(formData.extrem, formData.extrem_r),
       ext_low: getDesc(formData.extrem, formData.extrem_r),
 
-      // 7. Kuesioner Medis (Yes / No)
-      vac_y: checkYes(formData.vaccinated), // Pemetaan dari UI
-      vac_n: checkNo(formData.vaccinated),
-      suffer_y: checkYes(formData.q_illness),
-      suffer_n: checkNo(formData.q_illness),
-      meds_y: checkYes(formData.q_meds),
-      meds_n: checkNo(formData.q_meds),
+      // 7. Kuesioner Medis
+      vac_y: formData.vaccinated === 'Yes' ? '☑' : '☐', 
+      vac_n: formData.vaccinated === 'No' ? '☑' : '☐',
+      
+      // Mencegah kontradiksi: Jika bebas penyakit menular (Yes), maka menderita penyakit (No)
+      suffer_y: formData.free_cond === 'No' ? '☑' : '☐',
+      suffer_n: formData.free_cond === 'Yes' ? '☑' : '☐',
+      
+      meds_y: formData.q_meds === 'Yes' ? '☑' : '☐',
+      meds_n: formData.q_meds === 'No' ? '☑' : '☐',
 
       // 8. Bagian Tanda Tangan & Sertifikasi Dokter
       name: `${formData.firstName || ""} ${formData.familyName || ""}`.trim(),
       date: formData.date || new Date().toLocaleDateString('en-GB'),
-      exp_date: formData.exp_date || "", // Sesuai isian di form aplikasi
+      exp_date: formData.exp_date || "", 
       
-      com_y: check(formData.free_cond, 'Yes') || '☑', // Default ke Yes
-      com_n: check(formData.free_cond, 'No'),
+      com_y: formData.free_cond === 'Yes' ? '☑' : '☐',
+      com_n: formData.free_cond === 'No' ? '☑' : '☐',
       
-      fit_y: check(formData.fit_lookout, 'Fit') || check(formData.q_fit, 'Yes') ? '☑' : '☐',
-      fit_n: check(formData.fit_lookout, 'Unfit') || check(formData.q_fit, 'No') ? '☑' : '☐',
+      fit_y: formData.fit_lookout === 'Fit' ? '☑' : '☐',
+      fit_n: formData.fit_lookout === 'Unfit' ? '☑' : '☐',
       
-      rest_no: check(formData.restrictions, 'No') || '☑', // Default Without restrictions
-      rest_yes: check(formData.restrictions, 'Yes'),
-      rest_desc: formData.restrictions_desc || "",
+      rest_no: formData.restrictions === 'No' ? '☑' : '☐', 
+      rest_yes: formData.restrictions === 'Yes' ? '☑' : '☐',
+      rest_desc: formData.restrictions === 'Yes' ? (formData.rest_desc || "No Specific Restrictions") : "Tidak ada",
       
       eps: formData.eps || "",
       hospital: formData.hospital || "",
       cert_auth: formData.cert_auth || "Medical Council", 
     });
 
-    // Menghasilkan dokumen biner (ZIP format untuk DOCX)
+    // Menghasilkan dokumen biner
     const buf = doc.getZip().generate({ type: 'uint8array', compression: 'DEFLATE' });
     
-    // Mengembalikan dokumen sebagai attachment yang bisa di-download
     return new NextResponse(buf as unknown as BodyInit, {
       status: 200,
       headers: {
@@ -137,10 +130,6 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error('Error generating document:', error);
-    if (error.properties && error.properties.errors instanceof Array) {
-        const errorMessages = error.properties.errors.map((e: any) => e.properties.explanation).join(", ");
-        return NextResponse.json({ error: `Format template salah: ${errorMessages}` }, { status: 500 });
-    }
     return NextResponse.json({ error: error.message || 'Terjadi kesalahan internal backend.' }, { status: 500 });
   }
 }
