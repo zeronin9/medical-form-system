@@ -1,5 +1,5 @@
 import React from 'react';
-import { cardClass, cardHeaderClass, cardTitleClass, cardDescClass, cardContentClass, labelClass, inputClass, checkboxGroupClass, checkboxClass, radioGroupClass, radioClass, natureOfWork, vaccines, medicalHistory, familyHistory, BadgeQatar, BadgeADNOC, BadgeChevron, BadgeMarshall } from './FormConstants';
+import { cardClass, cardHeaderClass, cardTitleClass, cardDescClass, cardContentClass, labelClass, inputClass, checkboxGroupClass, checkboxClass, radioGroupClass, radioClass, natureOfWork, vaccines, medicalHistory, familyHistory, BadgeQatar, BadgeADNOC, BadgeChevron, BadgeMarshall, BadgeILO } from './FormConstants';
 
 export default function MedicalHistorySection({ formData, handleChange, selectedFormats }: any) {
   const isQatar = selectedFormats.includes('qatarenergy');
@@ -30,6 +30,48 @@ export default function MedicalHistorySection({ formData, handleChange, selected
               <input type="text" name="nw_others" value={formData.nw_others || ''} onChange={handleChange} className={inputClass} placeholder="Sebutkan paparan lainnya..." />
           </div>
         </div>
+
+        {/* Previous Exposure (Khusus ADNOC) */}
+        {isAdnoc && (
+          <div className="rounded-lg border border-teal-200 bg-teal-50/30 p-4 mt-6">
+            <h4 className="text-sm font-bold text-teal-900 mb-4">Paparan Sebelumnya (Previous Exposure) <BadgeADNOC /></h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { id: 'exp_noise', label: 'Bising (Noise)' },
+                { id: 'exp_heavy_metals', label: 'Logam Berat (Heavy Metals)' },
+                { id: 'exp_skin_infections', label: 'Infeksi Kulit (Skin Infections)' },
+                { id: 'exp_compensation', label: 'Kompensasi Kecelakaan Kerja (Accident compensation)' },
+                { id: 'exp_chemicals', label: 'Bahan Kimia (Chemicals)' },
+                { id: 'exp_radiation', label: 'Radiasi (Radiation)' },
+                { id: 'exp_dust', label: 'Debu (Dust)' }
+              ].map(m => (
+                <div key={m.id} className="flex justify-between items-center rounded bg-white border border-teal-100 p-2 shadow-sm">
+                  <span className="text-sm font-medium text-slate-700">{m.label}</span>
+                  <div className="flex gap-3">
+                    <label className={radioGroupClass}><input type="radio" name={m.id} value="Yes" checked={formData[m.id] === 'Yes'} onChange={handleChange} className={radioClass} /><span className="text-xs">Ya</span></label>
+                    <label className={radioGroupClass}><input type="radio" name={m.id} value="No" checked={formData[m.id] === 'No'} onChange={handleChange} className={radioClass} /><span className="text-xs">Tidak</span></label>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 p-3 bg-white rounded border border-teal-100">
+               <div className="flex items-center justify-between">
+                 <span className="text-sm font-medium text-slate-700">Terdaftar Cacat (Registered Disable)?</span>
+                 <div className="flex gap-3">
+                    <label className={radioGroupClass}><input type="radio" name="exp_disable" value="Yes" checked={formData.exp_disable === 'Yes'} onChange={handleChange} className={radioClass} /><span className="text-xs">Ya</span></label>
+                    <label className={radioGroupClass}><input type="radio" name="exp_disable" value="No" checked={formData.exp_disable === 'No'} onChange={handleChange} className={radioClass} /><span className="text-xs">Tidak</span></label>
+                 </div>
+               </div>
+               {formData.exp_disable === 'Yes' && (
+                 <div className="flex items-center gap-2">
+                   <label className="text-sm font-medium text-slate-700">No:</label>
+                   <input type="text" name="exp_disable_no" value={formData.exp_disable_no || ''} onChange={handleChange} className={inputClass} placeholder="Nomor Disabilitas..." />
+                 </div>
+               )}
+            </div>
+          </div>
+        )}
 
         <div className="border-t border-slate-100 my-6"></div>
 
@@ -73,9 +115,70 @@ export default function MedicalHistorySection({ formData, handleChange, selected
             <label className={labelClass}>Penyakit Keluarga Lainnya:</label>
             <input type="text" name="fm_others" value={formData.fm_others || ''} onChange={handleChange} className={inputClass} placeholder="Sebutkan..." />
           </div>
+
+          {/* TABEL DETAIL UMUR & KESEHATAN KELUARGA (KHUSUS ADNOC) */}
+          {isAdnoc && (
+            <div className="rounded-lg border border-blue-200 bg-blue-50/30 p-4 mt-6">
+              <h4 className="text-sm font-bold text-blue-900 mb-4">Detail Umur & Kesehatan Keluarga <BadgeADNOC /></h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-slate-600 bg-slate-100 uppercase">
+                    <tr>
+                      <th className="px-3 py-2 rounded-tl-lg">Anggota Keluarga</th>
+                      <th className="px-3 py-2">Umur (Age)</th>
+                      <th className="px-3 py-2 rounded-tr-lg">Status Kesehatan / Kematian</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { id: 'fa', label: 'Ayah (Father)' },
+                      { id: 'mo', label: 'Ibu (Mother)' },
+                      { id: 'sib', label: 'Saudara (Siblings)' },
+                      { id: 'spo', label: 'Suami/Istri (Spouse)' },
+                      { id: 'chi', label: 'Anak (Children)' }
+                    ].map((fam) => (
+                      <tr key={fam.id} className="border-b border-slate-200/60">
+                        <td className="px-3 py-2 font-medium text-slate-800">{fam.label}</td>
+                        <td className="px-3 py-2">
+                          <input type="text" name={`${fam.id}_age`} value={formData[`${fam.id}_age`] || ''} onChange={handleChange} className={inputClass} placeholder="Umur" />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input type="text" name={`${fam.id}_state`} value={formData[`${fam.id}_state`] || ''} onChange={handleChange} className={inputClass} placeholder="Sehat / Penyebab Meninggal..." />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
-        
+
         <div className="border-t border-slate-100 my-6"></div>
+
+        {/* Kondisi Spesifik (Mencegah Salah Kamar di ADNOC & ILO) */}
+        <div className="space-y-4">
+          <label className={labelClass}>Riwayat Kondisi Medis Spesifik <BadgeADNOC/><BadgeILO/></label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { id: 'mh_cardiac_surgery', label: 'Operasi / Bedah Jantung' },
+              { id: 'mh_surgery', label: 'Operasi Besar (Selain Jantung)' },
+              { id: 'mh_angina', label: 'Angina (Nyeri Dada)' },
+              { id: 'mh_kidney_stone', label: 'Batu Ginjal (Kidney Stones)' },
+              { id: 'mh_anxiety', label: 'Kecemasan / Depresi / Panik' },
+              { id: 'mh_sleep', label: 'Gangguan Tidur (Sleep Disturbance)' },
+              { id: 'mh_fainting', label: 'Pingsan / Hilang Kesadaran' }
+            ].map(m => (
+              <div key={m.id} className="flex justify-between items-center rounded-lg border border-orange-200 p-3 shadow-sm bg-orange-50/30">
+                <span className="text-sm font-medium text-slate-800">{m.label}</span>
+                <div className="flex gap-4">
+                  <label className={radioGroupClass}><input type="radio" name={m.id} value="Yes" checked={formData[m.id] === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
+                  <label className={radioGroupClass}><input type="radio" name={m.id} value="No" checked={formData[m.id] === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Pertanyaan Umum & Gaya Hidup */}
         <div className="space-y-4">

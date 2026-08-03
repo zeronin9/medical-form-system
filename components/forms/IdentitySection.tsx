@@ -85,6 +85,45 @@ export default function IdentitySection({ formData, handleChange, selectedFormat
               <div><label className={labelClass}>Area Pelayaran {isIlo && <BadgeILO />}{isMlc && <BadgeMLC />}</label><input type="text" name="tradeArea" value={formData.tradeArea} onChange={handleChange} className={inputClass} /></div>
             </>
           )}
+
+          {/* TABEL PREVIOUS EMPLOYMENT (KHUSUS ADNOC) */}
+          {isAdnoc && (
+            <div className="col-span-full mt-6 rounded-lg border border-slate-200 bg-slate-50/30 p-4">
+              <h4 className="text-sm font-bold text-slate-900 mb-4">Riwayat Pekerjaan Sebelumnya (Previous Employment) <BadgeADNOC /></h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-slate-600 bg-slate-200 uppercase">
+                    <tr>
+                      <th className="px-3 py-2 rounded-tl-lg w-10">No</th>
+                      <th className="px-3 py-2">Pekerjaan (Jobs)</th>
+                      <th className="px-3 py-2">Perusahaan (Company)</th>
+                      <th className="px-3 py-2 w-28">Dari (From)</th>
+                      <th className="px-3 py-2 w-28 rounded-tr-lg">Sampai (To)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[1, 2, 3, 4].map((num) => (
+                      <tr key={num} className="border-b border-slate-200/60">
+                        <td className="px-3 py-2 font-medium text-slate-800 text-center">{num}</td>
+                        <td className="px-3 py-2">
+                          <input type="text" name={`job${num}`} value={formData[`job${num}`] || ''} onChange={handleChange} className={inputClass} placeholder="Cth: Oiler" />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input type="text" name={`comp${num}`} value={formData[`comp${num}`] || ''} onChange={handleChange} className={inputClass} placeholder="Nama Perusahaan" />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input type="text" name={`from${num}`} value={formData[`from${num}`] || ''} onChange={handleChange} className={inputClass} placeholder="YYYY" />
+                        </td>
+                        <td className="px-3 py-2">
+                          <input type="text" name={`to${num}`} value={formData[`to${num}`] || ''} onChange={handleChange} className={inputClass} placeholder="YYYY" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

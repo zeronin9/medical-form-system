@@ -37,6 +37,9 @@ export const familyHistory = [
   { id: 'fm_diabetes', label: 'Diabetes' }, { id: 'fm_hypertension', label: 'Darah Tinggi' },
   { id: 'fm_epilepsy', label: 'Epilepsi / Kejang' }, { id: 'fm_heart', label: 'Penyakit Jantung' },
   { id: 'fm_asthma', label: 'Asma / Alergi' }, { id: 'fm_cancer', label: 'Kanker / Tumor' },
+  { id: 'fm_tb', label: 'Tuberculosis (TBC)' },
+  { id: 'fm_allergy', label: 'Alergi (Allergies)' },
+  { id: 'fm_mental', label: 'Gangguan Mental (Mental Disorder)' },
 ];
 
 export const physicalExams = [

@@ -21,6 +21,16 @@ export default function Home() {
     position: '', department: '', company: '', workLocation: '', date: new Date().toLocaleDateString('id-ID'),
     serviceDate: '', medNo: '', typeOfShip: '', tradeArea: '', ilo_position: '', seaman_book: '', 
     reason_exam: 'Pre-Employment', // Tujuan Pemeriksaan (ILO, MLC, ADNOC)
+
+    // --- VARIABEL BARU UNTUK PREVIOUS EMPLOYMENT ADNOC ---
+    job1: '', comp1: '', from1: '', to1: '',
+    job2: '', comp2: '', from2: '', to2: '',
+    job3: '', comp3: '', from3: '', to3: '',
+    job4: '', comp4: '', from4: '', to4: '',
+
+    // --- VARIABEL PREVIOUS EXPOSURE (KHUSUS ADNOC) ---
+    exp_noise: '', exp_heavy_metals: '', exp_skin_infections: '', exp_compensation: '', 
+    exp_chemicals: '', exp_radiation: '', exp_dust: '', exp_disable: '', exp_disable_no: '',
     
     // Biometrik & Tanda Vital
     height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', rr: '', temp: '', chest_exp: '', gen_app: 'Good', bloodGroupType: '', bloodGroupRh: '',
@@ -29,10 +39,18 @@ export default function Home() {
     disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '', color_test_type: 'Book', hear_r: '', hear_l: '',
     
     // Kuesioner Medis & Gaya Hidup Umum
-    q_illness: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes',
+    q_illness: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes', // Tambahkan fm_tb, fm_allergy, fm_mental ke dalam state
+    fm_tb: '', fm_allergy: '', fm_mental: '',
+    
+    // --- VARIABEL KONDISI SPESIFIK (Mencegah Tumpang Tindih) ---
+    mh_angina: '', mh_cardiac_surgery: '', mh_kidney_stone: '', 
+    mh_anxiety: '', mh_sleep: '', mh_surgery: '', mh_fainting: '',
     
     // Khusus Pelaut Wanita
     f_lmp: '', f_preg_no: '', f_live_birth: '',
+
+    // --- VARIABEL BARU UNTUK TABEL KELUARGA ADNOC ---
+    fa_age: '', fa_state: '', mo_age: '', mo_state: '', sib_age: '', sib_state: '', spo_age: '', spo_state: '', chi_age: '', chi_state: '',
 
     // --- VARIABEL BARU UNTUK QATAR & CHEVRON ---
     // Detail Kuesioner (QatarEnergy)

@@ -1,97 +1,101 @@
 import React from 'react';
-import { cardClass, cardHeaderClass, cardTitleClass, cardDescClass, cardContentClass, labelClass, inputClass, textareaClass, radioGroupClass, radioClass, BadgeILO, BadgeMLC, BadgeADNOC, BadgeMarshall } from './FormConstants';
+import { cardClass, cardHeaderClass, cardTitleClass, cardDescClass, cardContentClass, labelClass, inputClass, radioGroupClass, radioClass, textareaClass, BadgeADNOC, BadgeQatar, BadgeChevron, BadgeILO, BadgeMLC, BadgeMarshall } from './FormConstants';
 
 export default function ConclusionSection({ formData, handleChange }: any) {
   return (
     <div className={cardClass}>
       <div className={cardHeaderClass}>
-          <h3 className={cardTitleClass}>Kesimpulan Dokter & Administrasi Sertifikat</h3>
-          <p className={cardDescClass}>Status kelaikan akhir pelaut/pegawai yang akan dicetak di semua format.</p>
+          <h3 className={cardTitleClass}>Kesimpulan & Rekomendasi Medis</h3>
+          <p className={cardDescClass}>Deklarasi dokter dan status kelaikan kerja (Fitness for Duty) untuk sertifikat akhir.</p>
       </div>
       <div className={cardContentClass}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Kolom Kiri: Status Kelaikan */}
-          <div className="space-y-6">
-             <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Status Kelaikan Utama</h4>
-                <div className="space-y-4">
-                   <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-slate-700">Merasa sehat saat ini? (Fit)</span>
-                      <div className="flex gap-4">
-                        <label className={radioGroupClass}><input type="radio" name="q_fit" value="Yes" checked={formData.q_fit === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
-                        <label className={radioGroupClass}><input type="radio" name="q_fit" value="No" checked={formData.q_fit === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
-                      </div>
-                   </div>
-                   <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-slate-700">Bebas dari kondisi menular?</span>
-                      <div className="flex gap-4">
-                        <label className={radioGroupClass}><input type="radio" name="free_cond" value="Yes" checked={formData.free_cond === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
-                        <label className={radioGroupClass}><input type="radio" name="free_cond" value="No" checked={formData.free_cond === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
-                      </div>
-                   </div>
-                </div>
-             </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+          <div className="space-y-4">
+            <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">Status Kelaikan Kerja (Fit for Duty)</h4>
+            
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+              <label className="text-sm text-slate-700 font-medium col-span-2">Look-out Duty / General <BadgeADNOC/><BadgeQatar/></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_lookout" value="Fit" checked={formData.fit_lookout === 'Fit'} onChange={handleChange} className={radioClass} /><span>Fit (Laik)</span></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_lookout" value="Unfit" checked={formData.fit_lookout === 'Unfit'} onChange={handleChange} className={radioClass} /><span>Unfit (Tidak Laik)</span></label>
+            </div>
 
-             <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">Rincian Kelaikan Kerja <BadgeILO/><BadgeMLC/><BadgeADNOC/><BadgeMarshall/></h4>
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="col-span-2">
-                      <label className={labelClass}>Status Kelaikan Umum (ADNOC & Marshall)</label>
-                      <select name="fit_lookout" value={formData.fit_lookout} onChange={handleChange} className={`${inputClass} font-bold text-slate-900 bg-slate-50`}><option value="">- Pilih -</option><option value="Fit">Laik (Fit for duty)</option><option value="Unfit">Tidak Laik (Unfit)</option></select>
-                   </div>
-                   <div className="border-t border-slate-100 col-span-2 my-1"></div>
-                   <div>
-                      <label className={labelClass}>Dinas Dek (Deck)</label>
-                      <select name="fit_deck" value={formData.fit_deck} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="Fit">Laik (Fit)</option><option value="Unfit">Tidak Laik</option></select>
-                   </div>
-                   <div>
-                      <label className={labelClass}>Dinas Mesin (Engine)</label>
-                      <select name="fit_engine" value={formData.fit_engine} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="Fit">Laik (Fit)</option><option value="Unfit">Tidak Laik</option></select>
-                   </div>
-                   <div>
-                      <label className={labelClass}>Dinas Katering</label>
-                      <select name="fit_catering" value={formData.fit_catering} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="Fit">Laik (Fit)</option><option value="Unfit">Tidak Laik</option></select>
-                   </div>
-                </div>
-             </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+              <label className="text-sm text-slate-700 font-medium col-span-2">Deck Service <BadgeILO/><BadgeMLC/></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_deck" value="Fit" checked={formData.fit_deck === 'Fit'} onChange={handleChange} className={radioClass} /><span>Fit</span></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_deck" value="Unfit" checked={formData.fit_deck === 'Unfit'} onChange={handleChange} className={radioClass} /><span>Unfit</span></label>
+            </div>
 
-             <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-                <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Pembatasan Medis (Restrictions)</h4>
-                <div className="flex gap-4 mb-4">
-                   <label className={radioGroupClass}><input type="radio" name="restrictions" value="No" checked={formData.restrictions === 'No'} onChange={handleChange} className={radioClass} /><span>Tanpa Pembatasan</span></label>
-                   <label className={radioGroupClass}><input type="radio" name="restrictions" value="Yes" checked={formData.restrictions === 'Yes'} onChange={handleChange} className={radioClass} /><span>Dengan Pembatasan</span></label>
-                </div>
-                <div className="space-y-4">
-                   <div><label className={labelClass}>Detail Pembatasan</label><input type="text" name="rest_desc" value={formData.rest_desc} placeholder="Jelaskan pembatasan jika ada..." onChange={handleChange} className={inputClass} /></div>
-                   <div><label className={labelClass}>Tindakan Medis yang Diambil</label><input type="text" name="action_taken" value={formData.action_taken} placeholder="Tindakan/Resep..." onChange={handleChange} className={inputClass} /></div>
-                </div>
-             </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+              <label className="text-sm text-slate-700 font-medium col-span-2">Engine Service <BadgeILO/><BadgeMLC/></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_engine" value="Fit" checked={formData.fit_engine === 'Fit'} onChange={handleChange} className={radioClass} /><span>Fit</span></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_engine" value="Unfit" checked={formData.fit_engine === 'Unfit'} onChange={handleChange} className={radioClass} /><span>Unfit</span></label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+              <label className="text-sm text-slate-700 font-medium col-span-2">Catering Service <BadgeILO/><BadgeMLC/></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_catering" value="Fit" checked={formData.fit_catering === 'Fit'} onChange={handleChange} className={radioClass} /><span>Fit</span></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_catering" value="Unfit" checked={formData.fit_catering === 'Unfit'} onChange={handleChange} className={radioClass} /><span>Unfit</span></label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+              <label className="text-sm text-slate-700 font-medium col-span-2">Other Services <BadgeILO/><BadgeMLC/></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_other" value="Fit" checked={formData.fit_other === 'Fit'} onChange={handleChange} className={radioClass} /><span>Fit</span></label>
+              <label className={radioGroupClass}><input type="radio" name="fit_other" value="Unfit" checked={formData.fit_other === 'Unfit'} onChange={handleChange} className={radioClass} /><span>Unfit</span></label>
+            </div>
+
           </div>
 
-          {/* Kolom Kanan: Narasi Dokter & TTD */}
-          <div className="space-y-6">
-            <div className="rounded-lg border border-slate-200 p-5 shadow-sm hover:border-slate-300 transition-colors">
-              <h4 className="font-semibold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">Catatan Medis</h4>
-              <div className="space-y-4">
-                <div><label className={labelClass}>Kesimpulan Medis (Summary)</label><textarea name="summary" value={formData.summary} onChange={handleChange} className={textareaClass}></textarea></div>
-                <div><label className={labelClass}>Saran Tindak Lanjut (Suggestion)</label><textarea name="suggestion" value={formData.suggestion} onChange={handleChange} className={textareaClass}></textarea></div>
-                <div><label className={labelClass}>Komentar Khusus / Tindakan Tambahan</label><textarea name="comments" value={formData.comments} onChange={handleChange} className={textareaClass}></textarea></div>
+          <div className="space-y-4">
+            <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">Restriksi & Deklarasi Medis</h4>
+            
+            <div>
+              <label className={labelClass}>Apakah ada Restriksi/Batasan Medis?</label>
+              <div className="flex gap-4 mt-1">
+                <label className={radioGroupClass}><input type="radio" name="restrictions" value="Yes" checked={formData.restrictions === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya, Ada Batasan</span></label>
+                <label className={radioGroupClass}><input type="radio" name="restrictions" value="No" checked={formData.restrictions === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak Ada (Without Restrictions)</span></label>
+              </div>
+            </div>
+            
+            {formData.restrictions === 'Yes' && (
+              <div>
+                <label className={labelClass}>Deskripsi Restriksi <span className="text-[10px] text-slate-500 font-normal ml-1">(Batas angkat beban, dsb)</span></label>
+                <input type="text" name="rest_desc" value={formData.rest_desc || ''} onChange={handleChange} className={inputClass} placeholder="Jelaskan batasan medisnya..." />
+              </div>
+            )}
+
+            <div className="pt-2">
+              <label className={labelClass}>Bebas dari Kondisi Medis yang Membahayakan? <BadgeILO/><BadgeMLC/><BadgeMarshall/></label>
+              <div className="flex gap-4 mt-1">
+                <label className={radioGroupClass}><input type="radio" name="free_cond" value="Yes" checked={formData.free_cond === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya (Free from condition)</span></label>
+                <label className={radioGroupClass}><input type="radio" name="free_cond" value="No" checked={formData.free_cond === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak (Ada kondisi berbahaya)</span></label>
               </div>
             </div>
 
-            <div className="rounded-lg border border-blue-200 p-5 shadow-sm bg-blue-50/50">
-              <h4 className="font-semibold text-sm text-blue-900 mb-4 pb-2 border-b border-blue-200">Administrasi & Pengesahan</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div><label className={labelClass}>Tanggal Pemeriksaan</label><input type="date" name="date" value={formData.date} onChange={handleChange} className={inputClass} /></div>
-                <div><label className={`${labelClass} text-blue-700`}>Masa Berlaku (Expiry Date)</label><input type="date" name="exp_date" value={formData.exp_date} onChange={handleChange} className={`${inputClass} border-blue-300 focus-visible:ring-blue-500`} /></div>
-                <div><label className={labelClass}>Nama Dokter Pemeriksa</label><input type="text" name="eps" value={formData.eps} onChange={handleChange} className={inputClass} placeholder="Contoh: dr. Andi" /></div>
-                <div><label className={labelClass}>Nama Klinik / RS</label><input type="text" name="hospital" value={formData.hospital} onChange={handleChange} className={inputClass} placeholder="Nama Fasilitas" /></div>
-                <div className="sm:col-span-2"><label className={labelClass}>Otoritas Penerbit (Contoh: Kemenkes RI)</label><input type="text" name="cert_auth" value={formData.cert_auth} onChange={handleChange} className={inputClass} /></div>
-              </div>
+            <div className="pt-2">
+              <label className={labelClass}>Tindakan/Rujukan yang Diambil <BadgeILO/><BadgeMLC/></label>
+              <input type="text" name="action_taken" value={formData.action_taken || ''} onChange={handleChange} className={inputClass} placeholder="Contoh: Tidak ada / Rujuk ke Spesialis" />
             </div>
+
           </div>
         </div>
+
+        <div className="border-t border-slate-100 pt-6">
+          <h4 className="font-semibold text-slate-900 mb-4">Administrasi Dokter & Sertifikat</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div><label className={labelClass}>Tanggal Pemeriksaan</label><input type="date" name="date" value={formData.date || ''} onChange={handleChange} className={inputClass} /></div>
+            <div><label className={labelClass}>Tanggal Kedaluwarsa (Expiry)</label><input type="date" name="exp_date" value={formData.exp_date || ''} onChange={handleChange} className={inputClass} /></div>
+            <div><label className={labelClass}>Nama Dokter Pemeriksa</label><input type="text" name="eps" value={formData.eps || ''} onChange={handleChange} className={inputClass} /></div>
+            <div><label className={labelClass}>Nama Klinik / RS</label><input type="text" name="hospital" value={formData.hospital || ''} onChange={handleChange} className={inputClass} /></div>
+            <div className="md:col-span-2"><label className={labelClass}>Otoritas Penerbit (Certificating Authority) <BadgeILO/><BadgeMarshall/></label><input type="text" name="cert_auth" value={formData.cert_auth || ''} onChange={handleChange} className={inputClass} placeholder="Contoh: Ministry of Health / RS Pelabuhan" /></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div><label className={labelClass}>Komentar Dokter (Comments) <BadgeChevron/><BadgeMLC/><BadgeMarshall/></label><textarea name="comments" value={formData.comments || ''} onChange={handleChange} className={`${textareaClass} h-20`} placeholder="Komentar tambahan dokter..."></textarea></div>
+            <div><label className={labelClass}>Saran Khusus (Suggestion) <BadgeChevron/></label><textarea name="suggestion" value={formData.suggestion || ''} onChange={handleChange} className={`${textareaClass} h-20`} placeholder="Saran penanganan medis..."></textarea></div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
