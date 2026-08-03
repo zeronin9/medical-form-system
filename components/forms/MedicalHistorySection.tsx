@@ -27,7 +27,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
           </div>
           <div className="flex items-center gap-3 pt-2 w-full md:w-1/2">
               <span className="text-sm font-medium text-slate-700 whitespace-nowrap">Lainnya:</span>
-              <input type="text" name="nw_others" value={formData.nw_others} onChange={handleChange} className={inputClass} placeholder="Sebutkan paparan lainnya..." />
+              <input type="text" name="nw_others" value={formData.nw_others || ''} onChange={handleChange} className={inputClass} placeholder="Sebutkan paparan lainnya..." />
           </div>
         </div>
 
@@ -49,7 +49,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
           </div>
           <div className="flex flex-col space-y-2 mt-4">
               <label className={labelClass}>Penyakit Lainnya:</label>
-              <input type="text" name="mh_others" value={formData.mh_others} onChange={handleChange} className={inputClass} placeholder="Sebutkan jika ada riwayat penyakit lain..." />
+              <input type="text" name="mh_others" value={formData.mh_others || ''} onChange={handleChange} className={inputClass} placeholder="Sebutkan jika ada riwayat penyakit lain..." />
           </div>
         </div>
 
@@ -71,7 +71,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
           </div>
           <div className="flex flex-col space-y-2 mt-4">
             <label className={labelClass}>Penyakit Keluarga Lainnya:</label>
-            <input type="text" name="fm_others" value={formData.fm_others} onChange={handleChange} className={inputClass} placeholder="Sebutkan..." />
+            <input type="text" name="fm_others" value={formData.fm_others || ''} onChange={handleChange} className={inputClass} placeholder="Sebutkan..." />
           </div>
         </div>
         
@@ -100,7 +100,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                   <label className={radioGroupClass}><input type="radio" name="q_meds" value="No" checked={formData.q_meds === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
                 </div>
               </div>
-              {formData.q_meds === 'Yes' && <input type="text" name="q_meds_text" value={formData.q_meds_text} placeholder="Sebutkan nama obat, dosis, dan frekuensi..." onChange={handleChange} className={`${inputClass} mt-4`} />}
+              {formData.q_meds === 'Yes' && <input type="text" name="q_meds_text" value={formData.q_meds_text || ''} placeholder="Sebutkan nama obat, dosis, dan frekuensi..." onChange={handleChange} className={`${inputClass} mt-4`} />}
             </div>
 
             <div className="rounded-lg border border-slate-200 p-4 transition-all bg-slate-50/50">
@@ -117,16 +117,16 @@ export default function MedicalHistorySection({ formData, handleChange, selected
               
               {formData.q_smoke === 'Yes' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                  <div><label className={labelClass}>Jenis Rokok</label><input type="text" name="q_smoke_text" value={formData.q_smoke_text} onChange={handleChange} className={inputClass} /></div>
-                  <div><label className={labelClass}>Frekuensi: btg/hari <BadgeQatar /></label><input type="text" name="q_smoke_freq" value={formData.q_smoke_freq} onChange={handleChange} className={inputClass} /></div>
-                  <div><label className={labelClass}>Total tahun merokok <BadgeChevron /></label><input type="number" name="smoker_y" value={formData.smoker_y} onChange={handleChange} className={inputClass} /></div>
-                  <div><label className={labelClass}>Jumlah batang/hari <BadgeChevron /></label><input type="number" name="smoker_d" value={formData.smoker_d} onChange={handleChange} className={inputClass} /></div>
+                  <div><label className={labelClass}>Jenis Rokok</label><input type="text" name="q_smoke_text" value={formData.q_smoke_text || ''} onChange={handleChange} className={inputClass} /></div>
+                  <div><label className={labelClass}>Frekuensi: btg/hari <BadgeQatar /></label><input type="text" name="q_smoke_freq" value={formData.q_smoke_freq || ''} onChange={handleChange} className={inputClass} /></div>
+                  <div><label className={labelClass}>Total tahun merokok <BadgeChevron /></label><input type="number" name="smoker_y" value={formData.smoker_y || ''} onChange={handleChange} className={inputClass} /></div>
+                  <div><label className={labelClass}>Jumlah batang/hari <BadgeChevron /></label><input type="number" name="smoker_d" value={formData.smoker_d || ''} onChange={handleChange} className={inputClass} /></div>
                 </div>
               )}
               {formData.smoker_q === 'Yes' && (
                 <div className="mt-4 sm:w-1/2">
                   <label className={labelClass}>Lama berhenti (tahun) <BadgeChevron /></label>
-                  <input type="number" name="smoker_s_y" value={formData.smoker_s_y} onChange={handleChange} className={inputClass} />
+                  <input type="number" name="smoker_s_y" value={formData.smoker_s_y || ''} onChange={handleChange} className={inputClass} />
                 </div>
               )}
             </div>
@@ -139,7 +139,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                   <label className={radioGroupClass}><input type="radio" name="q_alcohol" value="No" checked={formData.q_alcohol === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
                 </div>
               </div>
-              {formData.q_alcohol === 'Yes' && <input type="text" name="q_alcohol_text" value={formData.q_alcohol_text} placeholder="Jenis, frekuensi, & volume per minggu..." onChange={handleChange} className={`${inputClass} mt-4`} />}
+              {formData.q_alcohol === 'Yes' && <input type="text" name="q_alcohol_text" value={formData.q_alcohol_text || ''} placeholder="Jenis, frekuensi, & volume per minggu..." onChange={handleChange} className={`${inputClass} mt-4`} />}
             </div>
 
             <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 space-y-4">
@@ -152,7 +152,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                   <label className={radioGroupClass}><input type="radio" name="q_medevac" value="No" checked={formData.q_medevac === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
                 </div>
               </div>
-              {formData.q_medevac === 'Yes' && <input type="text" name="q_medevac_text" value={formData.q_medevac_text} placeholder="Jelaskan alasannya..." onChange={handleChange} className={inputClass} />}
+              {formData.q_medevac === 'Yes' && <input type="text" name="q_medevac_text" value={formData.q_medevac_text || ''} placeholder="Jelaskan alasannya..." onChange={handleChange} className={inputClass} />}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
                 <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Pernah ditolak Sertifikat Medis (Unfit for Duty)?</span>
@@ -161,7 +161,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                   <label className={radioGroupClass}><input type="radio" name="q_omfc" value="No" checked={formData.q_omfc === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
                 </div>
               </div>
-              {formData.q_omfc === 'Yes' && <input type="text" name="q_omfc_text" value={formData.q_omfc_text} placeholder="Apa alasannya..." onChange={handleChange} className={inputClass} />}
+              {formData.q_omfc === 'Yes' && <input type="text" name="q_omfc_text" value={formData.q_omfc_text || ''} placeholder="Apa alasannya..." onChange={handleChange} className={inputClass} />}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-200 mt-2">
                 <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Punya fobia? (Ketinggian, laut, dll) <BadgeQatar /><BadgeADNOC/></span>
@@ -183,7 +183,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                 <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Apakah hidup Anda penuh tekanan? (Skala 1-10) <BadgeQatar /></span>
                 <div className="flex items-center gap-4 shrink-0">
                   {formData.q_stressful === 'Yes' && (
-                    <input type="number" name="q_stress_score" value={formData.q_stress_score} min="1" max="10" placeholder="Skor" onChange={handleChange} className="flex h-8 w-20 rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-slate-950" />
+                    <input type="number" name="q_stress_score" value={formData.q_stress_score || ''} min="1" max="10" placeholder="Skor" onChange={handleChange} className="flex h-8 w-20 rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus-visible:ring-2 focus-visible:ring-slate-950" />
                   )}
                   <label className={radioGroupClass}><input type="radio" name="q_stressful" value="Yes" checked={formData.q_stressful === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
                   <label className={radioGroupClass}><input type="radio" name="q_stressful" value="No" checked={formData.q_stressful === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
@@ -216,7 +216,6 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                           <input type="radio" name={v.id} value="No" checked={formData[v.id] === 'No'} onChange={handleChange} className={radioClass} />
                           <span className="text-xs">Tidak</span>
                         </label>
-                        {/* PENAMBAHAN OPSI NOT SURE DI SINI */}
                         <label className={radioGroupClass}>
                           <input type="radio" name={v.id} value="Not Sure" checked={formData[v.id] === 'Not Sure'} onChange={handleChange} className={radioClass} />
                           <span className="text-xs text-slate-500">Not Sure</span>
@@ -228,12 +227,46 @@ export default function MedicalHistorySection({ formData, handleChange, selected
               </div>
             )}
 
-            <div className="rounded-lg border border-slate-200 p-4 bg-pink-50/30 border-pink-200">
+            {/* === DETAIL GAYA HIDUP KHUSUS QATAR & CHEVRON === */}
+            {(isQatar || isChevron) && (
+              <div className="rounded-lg border border-indigo-200 bg-indigo-50/30 p-4 mt-6">
+                <h4 className="text-sm font-bold text-indigo-900 mb-4">Detail Tambahan (Khusus QatarEnergy & Chevron)</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
+                  {isQatar && (
+                    <>
+                      <div><label className={labelClass}>Skor Tingkat Stres (1-10) <BadgeQatar/></label><input type="number" min="1" max="10" name="q_stress_score" value={formData.q_stress_score || ''} onChange={handleChange} className={inputClass} placeholder="Contoh: 4" /></div>
+                      <div><label className={labelClass}>Detail Konsumsi Alkohol <BadgeQatar/><BadgeChevron/></label><input type="text" name="q_alcohol_text" value={formData.q_alcohol_text || ''} onChange={handleChange} className={inputClass} placeholder="Qatar: Jenis & Volume | Chevron: Jml Gelas/Minggu" /></div>
+                      <div><label className={labelClass}>Alasan MEDEVAC (Jika Pernah) <BadgeQatar/></label><input type="text" name="q_medevac_text" value={formData.q_medevac_text || ''} onChange={handleChange} className={inputClass} placeholder="Kosongkan jika tidak pernah" /></div>
+                      <div><label className={labelClass}>Alasan Penolakan OMFC (Jika Pernah) <BadgeQatar/></label><input type="text" name="q_omfc_text" value={formData.q_omfc_text || ''} onChange={handleChange} className={inputClass} placeholder="Kosongkan jika tidak pernah" /></div>
+                    </>
+                  )}
+
+                  {isChevron && (
+                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-3 rounded border border-slate-200">
+                      <div className="md:col-span-4"><label className="text-xs font-bold text-slate-700">Detail Merokok <BadgeChevron/></label></div>
+                      <div><label className={labelClass}>Lama Merokok (Tahun)</label><input type="text" name="smoker_y" value={formData.smoker_y || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 5" /></div>
+                      <div><label className={labelClass}>Batang per Hari</label><input type="text" name="smoker_d" value={formData.smoker_d || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 10" /></div>
+                      <div>
+                        <label className={labelClass}>Sudah Berhenti?</label>
+                        <select name="smoker_q" value={formData.smoker_q || ''} onChange={handleChange} className={inputClass}>
+                          <option value="">- Pilih -</option><option value="Yes">Ya (Quit)</option><option value="No">Masih Merokok</option>
+                        </select>
+                      </div>
+                      <div><label className={labelClass}>Berhenti Sejak (Tahun)</label><input type="text" name="smoker_s_y" value={formData.smoker_s_y || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 2" disabled={formData.smoker_q !== 'Yes'} /></div>
+                    </div>
+                  )}
+                  
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-lg border border-slate-200 p-4 bg-pink-50/30 border-pink-200 mt-6">
               <h4 className="font-semibold text-sm text-pink-900 mb-4 pb-2 border-b border-pink-100">Khusus Pelaut Wanita (Female)</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div><label className={labelClass}>Tanggal Haid Terakhir (LMP)</label><input type="date" name="f_lmp" value={formData.f_lmp} onChange={handleChange} className={inputClass} /></div>
-                  <div><label className={labelClass}>Jumlah Kehamilan</label><input type="number" name="f_preg_no" value={formData.f_preg_no} onChange={handleChange} className={inputClass} /></div>
-                  <div><label className={labelClass}>Jumlah Kelahiran Hidup</label><input type="number" name="f_live_birth" value={formData.f_live_birth} onChange={handleChange} className={inputClass} /></div>
+                  <div><label className={labelClass}>Tanggal Haid Terakhir (LMP)</label><input type="date" name="f_lmp" value={formData.f_lmp || ''} onChange={handleChange} className={inputClass} /></div>
+                  <div><label className={labelClass}>Jumlah Kehamilan</label><input type="number" name="f_preg_no" value={formData.f_preg_no || ''} onChange={handleChange} className={inputClass} /></div>
+                  <div><label className={labelClass}>Jumlah Kelahiran Hidup</label><input type="number" name="f_live_birth" value={formData.f_live_birth || ''} onChange={handleChange} className={inputClass} /></div>
               </div>
             </div>
 

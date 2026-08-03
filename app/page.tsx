@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-// Mengimpor semua komponen form yang sudah kita pisahkan
+// Mengimpor semua komponen form yang sudah dipisahkan
 import FormatSelector from '@/components/forms/FormatSelector';
 import IdentitySection from '@/components/forms/IdentitySection';
 import BiometricVisionSection from '@/components/forms/BiometricVisionSection';
@@ -14,34 +14,42 @@ export default function Home() {
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // === MASTER STATE: 100% VARIABEL UTUH (Tidak ada yang dihapus) ===
+  // === MASTER STATE: 100% VARIABEL UTUH DENGAN TAMBAHAN QATAR & CHEVRON ===
   const [formData, setFormData] = useState<any>({
-    // Identitas
+    // Identitas & Pekerjaan Dasar
     firstName: '', middleName: '', familyName: '', dob: '', pob: '', pob_city: '', pob_country: '', idPassport: '', nationality: '', gender: '', maritalStatus: '', address: '', contactNumber: '', email: '',
     position: '', department: '', company: '', workLocation: '', date: new Date().toLocaleDateString('id-ID'),
     serviceDate: '', medNo: '', typeOfShip: '', tradeArea: '', ilo_position: '', seaman_book: '', 
-    reason_exam: 'Pre-Employment',
+    reason_exam: 'Pre-Employment', // Tujuan Pemeriksaan (ILO, MLC, ADNOC)
     
     // Biometrik & Tanda Vital
     height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', rr: '', temp: '', chest_exp: '', gen_app: 'Good', bloodGroupType: '', bloodGroupRh: '',
     
-    // Kuesioner & Gaya Hidup
-    q_illness: '', q_medevac: '', q_medevac_text: '', q_meds: '', q_meds_text: '', q_smoke: '', q_smoke_text: '', q_smoke_freq: '', q_alcohol: '', q_alcohol_text: '',
-    q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_stress_score: '', q_omfc: '', q_omfc_text: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes',
-    
     // Penglihatan & Pendengaran
     disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '', color_test_type: 'Book', hear_r: '', hear_l: '',
     
-    // Riwayat Merokok (Chevron)
-    smoker_y: '', smoker_d: '', smoker_q: '', smoker_s_y: '', 
+    // Kuesioner Medis & Gaya Hidup Umum
+    q_illness: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes',
     
-    // Spirometri, Audiometri, EKG
-    ft_fvc: '', pre_fvc: '', ft_fev1: '', pre_fev1: '', ev1_vc: '', l05: '', l1: '', l2: '', l3: '', l4: '', l6: '', l8: '', r05: '', r1: '', r2: '', r3: '', r4: '', r6: '', r8: '', oht_result: '', rate: '', rhyt: '', axis: '', pr: '', qrs: '', twv: '', diag: '', 
+    // Khusus Pelaut Wanita
+    f_lmp: '', f_preg_no: '', f_live_birth: '',
+
+    // --- VARIABEL BARU UNTUK QATAR & CHEVRON ---
+    // Detail Kuesioner (QatarEnergy)
+    q_stress_score: '', q_smoke_freq: '', q_smoke_text: '', q_alcohol_text: '', q_medevac_text: '', q_omfc_text: '', q_meds_text: '',
+    // Detail Merokok (Chevron)
+    smoker_y: '', smoker_d: '', smoker_q: '', smoker_s_y: '', 
+    // Spirometri Tambahan (Chevron)
+    ft_fvc: '', pre_fvc: '', ft_fev1: '', pre_fev1: '', ev1_vc: '', 
+    // Audiometri Lengkap
+    l05: '', l1: '', l2: '', l3: '', l4: '', l6: '', l8: '', r05: '', r1: '', r2: '', r3: '', r4: '', r6: '', r8: '', oht_result: '', 
+    // EKG
+    rate: '', rhyt: '', axis: '', pr: '', qrs: '', twv: '', diag: '', 
     
     // Darah Lengkap & Urin
     lab_hb: '', lab_hct: '', rbc_m: '', lab_wbc: '', lab_platelet: '', pmn: '', lymph: '', mono: '', eos: '', baso: '', band: '', albumin: '', ur_sugar: '', urin_b: '', wbc: '', rbc: '', casts: '', ur_others: '', 
     
-    // Kimia Darah
+    // Kimia Darah & Hasil Laboratorium Terperinci
     lab_sugar: '', val_sugar: '', lab_chol: '', val_chol: '', lab_trig: '', val_trig: '', only_cg: '', lab_hdl: '', val_hdl: '', lab_ldl: '', val_ldl: '', lab_bun: '', val_bun: '', lab_creat: '', val_creat: '', lab_sgot: '', val_sgot: '', lab_sgpt: '', val_sgpt: '', lab_uric: '', val_urig: '', detail_af: '', 
     
     // Rontgen & Serologi & Khusus Makanan
@@ -50,9 +58,6 @@ export default function Home() {
     // Kesimpulan Kelaikan & Administrasi Sertifikat
     fit_lookout: '', fit_deck: '', fit_engine: '', fit_catering: '', fit_other: '', restrictions: '', free_cond: '', rest_desc: '', action_taken: '', exp_date: '',
     summary: '', suggestion: '', eps: '', hospital: '', cert_auth: '', comments: '',
-
-    // Khusus Pelaut Wanita
-    f_lmp: '', f_preg_no: '', f_live_birth: ''
   });
 
   const showForm = selectedFormats.length > 0;
