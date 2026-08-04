@@ -83,8 +83,36 @@ export default function MedicalHistorySection({ formData, handleChange, selected
               <div key={m.id} className="flex justify-between items-center rounded-lg border border-slate-200 p-3 shadow-sm hover:shadow-md transition-shadow">
                 <span className="text-sm font-medium text-slate-700">{m.label}</span>
                 <div className="flex gap-4">
-                  <label className={radioGroupClass}><input type="radio" name={m.id} value="Yes" checked={formData[m.id] === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
-                  <label className={radioGroupClass}><input type="radio" name={m.id} value="No" checked={formData[m.id] === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
+                  <label className={radioGroupClass}>
+                    <input 
+                      type="radio" 
+                      name={m.id} 
+                      value="Yes" 
+                      checked={formData[m.id] === 'Yes'} 
+                      onChange={handleChange} 
+                      className={radioClass} 
+                    />
+                    <span>Ya</span>
+                  </label>
+                  <label className={radioGroupClass}>
+                    <input 
+                      type="radio" 
+                      name={m.id} 
+                      value="No" 
+                      checked={formData[m.id] === 'No'} 
+                      onChange={(e) => {
+                        handleChange(e); // Simpan status "No" untuk penyakit
+                        
+                        // LOGIKA RESET: Kosongkan KEDUA variabel jika Diabetes = "No"
+                        if (m.id === 'mh_diabetes') {
+                          handleChange({ target: { name: 'diab_ins', value: '' } });
+                          handleChange({ target: { name: 'diab_non', value: '' } });
+                        }
+                      }} 
+                      className={radioClass} 
+                    />
+                    <span>Tidak</span>
+                  </label>
                 </div>
               </div>
             ))}
@@ -95,8 +123,34 @@ export default function MedicalHistorySection({ formData, handleChange, selected
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 mt-3 rounded-lg border border-blue-200 bg-blue-50/50">
               <span className="text-sm font-medium text-blue-900 flex items-center gap-1">Apakah Diabetes Anda bergantung pada Insulin? (Insulin dependent) <BadgeADNOC/></span>
               <div className="flex gap-4 shrink-0">
-                <label className={radioGroupClass}><input type="radio" name="diab_ins" value="Yes" checked={formData.diab_ins === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya (Insulin)</span></label>
-                <label className={radioGroupClass}><input type="radio" name="diab_ins" value="No" checked={formData.diab_ins === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak (Non-Insulin)</span></label>
+                <label className={radioGroupClass}>
+                  <input 
+                    type="radio" 
+                    name="diab_ins" 
+                    value="Yes" 
+                    checked={formData.diab_ins === 'Yes'} 
+                    onChange={(e) => {
+                      handleChange(e); // Set diab_ins menjadi "Yes"
+                      handleChange({ target: { name: 'diab_non', value: 'No' } }); // Paksa diab_non menjadi "No"
+                    }} 
+                    className={radioClass} 
+                  />
+                  <span>Ya (Insulin)</span>
+                </label>
+                <label className={radioGroupClass}>
+                  <input 
+                    type="radio" 
+                    name="diab_non" 
+                    value="Yes" 
+                    checked={formData.diab_non === 'Yes'} 
+                    onChange={(e) => {
+                      handleChange(e); // Set diab_non menjadi "Yes"
+                      handleChange({ target: { name: 'diab_ins', value: 'No' } }); // Paksa diab_ins menjadi "No"
+                    }} 
+                    className={radioClass} 
+                  />
+                  <span>Tidak (Non-Insulin)</span>
+                </label>
               </div>
             </div>
           )}
@@ -322,13 +376,7 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                   <label className={radioGroupClass}><input type="radio" name="vaccinated" value="Yes" checked={formData.vaccinated === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
                   <label className={radioGroupClass}><input type="radio" name="vaccinated" value="No" checked={formData.vaccinated === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
                 </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-200 mt-2">
-                <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Apakah sudah divaksin sesuai standar WHO? <BadgeMarshall /></span>
-                <div className="flex gap-4 shrink-0">
-                  <label className={radioGroupClass}><input type="radio" name="vaccinated" value="Yes" checked={formData.vaccinated === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
-                  <label className={radioGroupClass}><input type="radio" name="vaccinated" value="No" checked={formData.vaccinated === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
-                </div>
+                <div>
               </div>
 
               {/* === TAMBAHKAN KODE INI UNTUK INPUT ADNOC ILLNESS LAST EXAM === */}

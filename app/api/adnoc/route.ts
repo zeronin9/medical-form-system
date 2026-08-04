@@ -34,17 +34,14 @@ export async function POST(request: Request) {
     const bp_dia = bpParts[1] || "";
 
     // --- HELPER FUNCTIONS ---
-    // PERBAIKAN: Menghilangkan pengecekan !val agar tidak otomatis "No" saat variabel kosong
     const isY = (val: any) => (val === 'Yes' || val === true) ? '☑' : '☐';
     const isN = (val: any) => (val === 'No' || val === false) ? '☑' : '☐';
-    
-    // PERBAIKAN: Menghilangkan nilai default "Normal" jika Anda tidak menekan tombol apapun di UI
-    const getNorm = (status: string) => status ? status : '';
-    const getRem = (status: string, rem: string) => status === 'Abnormal' ? (rem || '') : '';
     const isFemale = formData.gender === 'Female';
 
+    // --- PENGECEKAN STATUS DIABETES ---
+    const isDiabetes = formData.mh_diabetes === 'Yes';
+
     // --- RENDER VARIABEL 100% MENGIKUTI TEMPLATE WORD ---
-    // PERBAIKAN: Semua string fallback seperti "-", "N/A", "Nil" diganti menjadi string kosong ""
     doc.render({
       // 1. IDENTITAS & PEKERJAAN
       first_name: realFirstName || "",
@@ -137,11 +134,14 @@ export async function POST(request: Request) {
       ph_tin_y: isY(formData.mh_tinnitus), ph_tin_n: isN(formData.mh_tinnitus),
       ph_ear2_y: isY(formData.mh_ear2), ph_ear2_n: isN(formData.mh_ear2),
       
-      diab_ins: isY(formData.diab_ins), 
-      ph_diab_y: isY(formData.mh_diabetes), ph_diab_n: isN(formData.mh_diabetes),
+      // === LOGIKA DIABETES INSULIN & NON-INSULIN ===
+      diab_ins: (isDiabetes && formData.diab_ins === 'Yes') ? '☑' : '☐',
+      diab_non: (isDiabetes && formData.diab_non === 'Yes') ? '☑' : '☐',
+      ph_diab_y: isY(formData.mh_diabetes), 
+      ph_diab_n: isN(formData.mh_diabetes),
+      
       ph_thyr_y: isY(formData.mh_thyroid), ph_thyr_n: isN(formData.mh_thyroid),
 
-      // PERBAIKAN: Memisahkan Kelainan Darah & Alergi
       ph_ane_y: isY(formData.mh_anemia), ph_ane_n: isN(formData.mh_anemia),
       ph_thal_y: isY(formData.mh_thal), ph_thal_n: isN(formData.mh_thal),
       ph_sick_y: isY(formData.mh_sickle), ph_sick_n: isN(formData.mh_sickle),
@@ -172,71 +172,68 @@ export async function POST(request: Request) {
 
       date: formData.date || "",
 
-      // 5. PEMERIKSAAN FISIK DOKTER (FORM B)
+      // 5. PEMERIKSAAN FISIK DOKTER (FORM B) - LOGIKA SMART UI TERBARU
       g_m: formData.gender === 'Male' ? '☑' : '☐',
       g_f: isFemale ? '☑' : '☐',
       illness_last: formData.illness_last || "", 
 
-      cv_pulse: getNorm(formData.cardio), cv_comm: getRem(formData.cardio, formData.cardio_r), 
-      cv_bp: getNorm(formData.cardio),
-      cv_apex: getNorm(formData.cardio),
-      cv_sounds: getNorm(formData.cardio),
-      cv_murmurs: getNorm(formData.cardio),
-      cv_varicose: getNorm(formData.vas_s),
+      cv_pulse: formData.cv_pulse || "", cv_comm: formData.cv_comm || "",
+      cv_bp: formData.cv_bp || "",
+      cv_apex: formData.cv_apex || "",
+      cv_sounds: formData.cv_sounds || "",
+      cv_murmurs: formData.cv_murmurs || "",
+      cv_varicose: formData.cv_varicose || "",
 
-      rs_nasal: getNorm(formData.ent), rs_comm: getRem(formData.chest, formData.chest_r),
-      rs_thyroid: getNorm(formData.ent),
-      rs_trachea: getNorm(formData.chest),
-      rs_chest: getNorm(formData.chest),
-      rs_perc: getNorm(formData.chest),
-      rs_air: getNorm(formData.chest),
-      rs_breath: getNorm(formData.chest),
-      rs_advent: getNorm(formData.chest),
+      rs_nasal: formData.rs_nasal || "", rs_comm: formData.rs_comm || "",
+      rs_thyroid: formData.rs_thyroid || "",
+      rs_trachea: formData.rs_trachea || "",
+      rs_chest: formData.rs_chest || "",
+      rs_perc: formData.rs_perc || "",
+      rs_air: formData.rs_air || "",
+      rs_breath: formData.rs_breath || "",
+      rs_advent: formData.rs_advent || "",
 
-      al_teeth: getNorm(formData.oral_c), al_comm: getRem(formData.abdom, formData.abdom_r),
-      al_tongue: getNorm(formData.oral_c),
-      al_abd: getNorm(formData.abdom),
-      al_liver: getNorm(formData.abdom),
-      al_spleen: getNorm(formData.abdom),
-      al_lymph: getNorm(formData.abdom),
-      al_hernia: getNorm(formData.her_or),
-      al_anus: getNorm(formData.anus_r),
+      al_teeth: formData.al_teeth || "", al_comm: formData.al_comm || "",
+      al_tongue: formData.al_tongue || "",
+      al_abd: formData.al_abd || "",
+      al_liver: formData.al_liver || "",
+      al_spleen: formData.al_spleen || "",
+      al_lymph: formData.al_lymph || "",
+      al_hernia: formData.al_hernia || "",
+      al_anus: formData.al_anus || "",
 
-      gu_kidney: getNorm(formData.genito), gu_comm: getRem(formData.genito, formData.genito_r),
-      gu_gen: getNorm(formData.genito),
+      gu_kidney: formData.gu_kidney || "", gu_comm: formData.gu_comm || "",
+      gu_gen: formData.gu_gen || "",
 
-      in_hair: getNorm(formData.skin), in_comm: getRem(formData.skin, formData.skin_r), 
-      in_skin: getNorm(formData.skin),
-      in_nails: getNorm(formData.skin),
+      in_hair: formData.in_hair || "", in_comm: formData.in_comm || "",
+      in_skin: formData.in_skin || "",
+      in_nails: formData.in_nails || "",
 
-      ms_hands: getNorm(formData.extrem), ms_comm: getRem(formData.extrem, formData.extrem_r), 
-      ms_limbs: getNorm(formData.extrem),
-      ms_back: getNorm(formData.musculo),
-      ms_joints: getNorm(formData.musculo),
-      ms_inj: getNorm(formData.musculo),
+      ms_hands: formData.ms_hands || "", ms_comm: formData.ms_comm || "",
+      ms_limbs: formData.ms_limbs || "",
+      ms_back: formData.ms_back || "",
+      ms_joints: formData.ms_joints || "",
+      ms_inj: formData.ms_inj || "",
 
-      ns_comm: getRem(formData.c_n_s, formData.c_n_s_r),
-      
-      // REFLEKS SARAF - MEMBACA C.N.S
-      r_bl_r: getNorm(formData.c_n_s), r_tl_r: getNorm(formData.c_n_s), r_sup_r: getNorm(formData.c_n_s), r_kn_r: getNorm(formData.c_n_s), r_an_r: getNorm(formData.c_n_s), r_pl_r: getNorm(formData.c_n_s),
-      r_bl_l: getNorm(formData.c_n_s), r_tl_l: getNorm(formData.c_n_s), r_sup_l: getNorm(formData.c_n_s), r_kn_l: getNorm(formData.c_n_s), r_an_l: getNorm(formData.c_n_s), r_pl_l: getNorm(formData.c_n_s),
-      
-      ns_power: getNorm(formData.c_n_s),
-      ns_tone: getNorm(formData.c_n_s),
-      ns_coord: getNorm(formData.c_n_s),
-      ns_sens: getNorm(formData.c_n_s),
-      ns_emot: getNorm(formData.mh_mental),
-      ns_intel: getNorm(formData.c_n_s),
+      ns_comm: formData.ns_comm || "",
+      r_bl_r: "", r_tl_r: "", r_sup_r: "", r_kn_r: "", r_an_r: "", r_pl_r: "",
+      r_bl_l: "", r_tl_l: "", r_sup_l: "", r_kn_l: "", r_an_l: "", r_pl_l: "",
+      ns_power: formData.ns_power || "",
+      ns_tone: formData.ns_tone || "",
+      ns_coord: formData.ns_coord || "",
+      ns_sens: formData.ns_sens || "",
+      ns_emot: formData.mh_mental || "", 
+      ns_intel: formData.ns_intel || "",
 
-      ea_meatus: getNorm(formData.ent), ea_comm: getRem(formData.ent, formData.ent_r), 
-      ea_drums: getNorm(formData.ent),
-      ea_wr_r: getNorm(formData.hear_r), ea_wr_l: getNorm(formData.hear_l),
-      ea_hr_r: getNorm(formData.hear_r), ea_hr_l: getNorm(formData.hear_l),
+      ea_meatus: formData.ea_meatus || "", ea_comm: formData.ea_comm || "",
+      ea_drums: formData.ea_drums || "",
+      ea_wr_r: formData.hear_r || "", ea_wr_l: formData.hear_l || "",
+      ea_hr_r: formData.hear_r || "", ea_hr_l: formData.hear_l || "",
 
-      ey_light: getNorm(formData.eyes), ey_comm: getRem(formData.eyes, formData.eyes_r), 
-      ey_accom: getNorm(formData.eyes),
-      ey_nyst: getNorm(formData.eyes),
-      ey_fundi: getNorm(formData.eyes),
+      ey_light: formData.ey_light || "", ey_comm: formData.ey_comm || "",
+      ey_accom: formData.ey_accom || "",
+      ey_nyst: formData.ey_nyst || "",
+      ey_fundi: formData.ey_fundi || "",
 
       // 6. VISUAL ACUITY & LABORATORIUM
       nearr_unc: formData.nearr_unc || "", nearl_unc: formData.nearl_unc || "",

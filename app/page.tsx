@@ -35,6 +35,20 @@ export default function Home() {
     // Biometrik & Tanda Vital
     height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', rr: '', temp: '', chest_exp: '', gen_app: 'Good', bloodGroupType: '', bloodGroupRh: '',
     
+    // --- VARIABEL RINCIAN PEMERIKSAAN FISIK (SMART UI ADNOC) ---
+    cv_pulse: '', cv_bp: '', cv_apex: '', cv_sounds: '', cv_murmurs: '', cv_varicose: '', cv_comm: '',
+    rs_nasal: '', rs_thyroid: '', rs_trachea: '', rs_chest: '', rs_perc: '', rs_air: '', rs_breath: '', rs_advent: '', rs_comm: '',
+    al_teeth: '', al_tongue: '', al_abd: '', al_liver: '', al_spleen: '', al_lymph: '', al_hernia: '', al_anus: '', al_comm: '',
+    gu_kidney: '', gu_gen: '', gu_comm: '',
+    in_hair: '', in_skin: '', in_nails: '', in_comm: '',
+    ms_hands: '', ms_limbs: '', ms_back: '', ms_joints: '', ms_inj: '', ms_comm: '',
+    ns_power: '', ns_tone: '', ns_coord: '', ns_sens: '', ns_intel: '', ns_comm: '',
+    ea_meatus: '', ea_drums: '', ea_comm: '',
+    ey_light: '', ey_accom: '', ey_nyst: '', ey_fundi: '', ey_comm: '',
+    
+    // (Opsional) Variabel pemeriksaan fisik lama tetap disisakan jika form lain masih bergantung pada ini
+    cardio: '', ent: '', chest: '', oral_c: '', abdom: '', her_or: '', anus_r: '', genito: '', skin: '', extrem: '', musculo: '', c_n_s: '', eyes: '',
+
     // Penglihatan & Pendengaran
     disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '', color_test_type: 'Book', hear_r: '', hear_l: '',
     
@@ -51,7 +65,7 @@ export default function Home() {
     mh_eczema: '', mh_vitiligo: '', mh_skin: '',
     mh_kidney: '', mh_kidney_stone: '', mh_anxiety: '', mh_sleep: '',
     mh_eye: '', mh_eye2: '', mh_ear: '', mh_tinnitus: '', mh_ear2: '',
-    diab_ins: '', mh_diabetes: '', mh_thyroid: '', mh_blood: '', mh_drug: '',
+    diab_ins: '', diab_non: '', mh_diabetes: '', mh_thyroid: '', mh_blood: '', mh_drug: '',
     mh_surgery: '',
     
     // --- VARIABEL TAMBAHAN BARU SESUAI UPDATE ADNOC ---
