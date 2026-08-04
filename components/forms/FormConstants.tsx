@@ -64,16 +64,6 @@ export const familyHistory = [
   { id: 'fm_mental', label: 'Gangguan Mental (Mental Disorder)' },
 ];
 
-export const physicalExams = [
-  { id: 'eyes', label: 'Mata' }, { id: 'ent', label: 'THT' },
-  { id: 'oral_c', label: 'Rongga Mulut' }, { id: 'chest', label: 'Dada / Paru' },
-  { id: 'cardio', label: 'Jantung & Vaskular' }, { id: 'abdom', label: 'Perut (Abdomen)' },
-  { id: 'her_or', label: 'Lubang Hernia' }, { id: 'anus_r', label: 'Anus dan Rektum' },
-  { id: 'genito', label: 'Saluran Kemih' }, { id: 'extrem', label: 'Anggota Gerak' },
-  { id: 'musculo', label: 'Otot dan Tulang' }, { id: 'skin', label: 'Kulit' },
-  { id: 'vas_s', label: 'Varises' }, { id: 'c_n_s', label: 'Sistem Saraf Pusat' }
-];
-
 // === CSS TOKENS ===
 export const inputClass = "flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950";
 export const labelClass = "text-sm font-medium leading-none text-slate-700 mb-2 block flex items-center flex-wrap gap-1";

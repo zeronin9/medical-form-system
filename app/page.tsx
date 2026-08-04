@@ -35,7 +35,7 @@ export default function Home() {
     // Biometrik & Tanda Vital
     height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', rr: '', temp: '', chest_exp: '', gen_app: 'Good', bloodGroupType: '', bloodGroupRh: '',
     
-    // --- VARIABEL RINCIAN PEMERIKSAAN FISIK (SMART UI ADNOC) ---
+    // --- VARIABEL RINCIAN PEMERIKSAAN FISIK (SMART UI) ---
     cv_pulse: '', cv_bp: '', cv_apex: '', cv_sounds: '', cv_murmurs: '', cv_varicose: '', cv_comm: '',
     rs_nasal: '', rs_thyroid: '', rs_trachea: '', rs_chest: '', rs_perc: '', rs_air: '', rs_breath: '', rs_advent: '', rs_comm: '',
     al_teeth: '', al_tongue: '', al_abd: '', al_liver: '', al_spleen: '', al_lymph: '', al_hernia: '', al_anus: '', al_comm: '',
@@ -45,9 +45,6 @@ export default function Home() {
     ns_power: '', ns_tone: '', ns_coord: '', ns_sens: '', ns_intel: '', ns_comm: '',
     ea_meatus: '', ea_drums: '', ea_comm: '',
     ey_light: '', ey_accom: '', ey_nyst: '', ey_fundi: '', ey_comm: '',
-    
-    // (Opsional) Variabel pemeriksaan fisik lama tetap disisakan jika form lain masih bergantung pada ini
-    cardio: '', ent: '', chest: '', oral_c: '', abdom: '', her_or: '', anus_r: '', genito: '', skin: '', extrem: '', musculo: '', c_n_s: '', eyes: '',
 
     // Penglihatan & Pendengaran
     disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '', color_test_type: 'Book', hear_r: '', hear_l: '',
@@ -56,7 +53,7 @@ export default function Home() {
     q_illness: '', q_hosp_wait: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes', 
     fm_tb: '', fm_allergy: '', fm_mental: '', fm_heart: '', fm_asthma: '', fm_diabetes: '', fm_hypertension: '', fm_cancer: '', illness_last: '', 
 
-    // --- VARIABEL RIWAYAT PENYAKIT PRIBADI (SUDAH DIPISAH SESUAI BACKEND ADNOC) ---
+    // --- VARIABEL RIWAYAT PENYAKIT PRIBADI ---
     mh_hbp: '', mh_angina: '', mh_heart: '', mh_cardiac_surgery: '', mh_asthma: '',
     mh_bronchitis: '', mh_tb: '', mh_ulcer: '', mh_hep: '',
     mh_piles: '', mh_hernia: '', mh_constipation: '', mh_diarrhea: '', mh_bowel: '',

@@ -27,9 +27,9 @@ export async function POST(request: Request) {
     const isN = (val: any) => (val === 'No' || val === false) ? '☑' : '☐';
     const isNS = (val: any) => (val === 'Not Sure') ? '☑' : '☐';
     
-    const isNorm = (val: any) => (val === 'Normal' || val === 'Good' || !val) ? '☑' : '☐';
-    const isAbn = (val: any) => val === 'Abnormal' ? '☑' : '☐';
-    const getRem = (status: string, rem: string) => status === 'Abnormal' ? (rem || 'Abnormal') : '';
+    // Checkbox Renderers untuk Roll-Up Logic
+    const isChecked = (cond: boolean) => cond ? '☑' : '☐';
+    const isUnchecked = (cond: boolean) => cond ? '☐' : '☑';
 
     // Helper Tabel Laboratorium Qatar (Otomatis deteksi Normal/Abnormal dari isian)
     const isLabN = (val: any) => (val && val !== 'Abnormal' && val !== 'Positive' && val !== 'Reactive') ? '☑' : '☐';
@@ -45,6 +45,25 @@ export async function POST(request: Request) {
     }
 
     const isFemale = formData.gender === 'Female';
+
+    // --- ROLL-UP LOGIC UNTUK PHYSICAL EXAM (SMART UI) ---
+    // Logika: Jika ada salah satu sub-organ yang "Abnormal", maka kategori Qatar menjadi "Abnormal"
+    const checkAbnormal = (fields: string[]) => fields.some(field => formData[field] === 'Abnormal');
+    
+    const eyeAbn = checkAbnormal(['ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi']);
+    const entAbn = checkAbnormal(['rs_nasal', 'rs_thyroid', 'rs_trachea', 'ea_meatus', 'ea_drums']);
+    const oralAbn = checkAbnormal(['al_teeth', 'al_tongue']);
+    const chestAbn = checkAbnormal(['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent']);
+    const cardioAbn = checkAbnormal(['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs']);
+    const abdAbn = checkAbnormal(['al_abd', 'al_liver', 'al_spleen', 'al_lymph']);
+    const hernAbn = checkAbnormal(['al_hernia']);
+    const anusAbn = checkAbnormal(['al_anus']);
+    const guAbn = checkAbnormal(['gu_kidney', 'gu_gen']);
+    const extAbn = checkAbnormal(['ms_hands', 'ms_limbs', 'ms_inj']);
+    const muscAbn = checkAbnormal(['ms_back', 'ms_joints']);
+    const skinAbn = checkAbnormal(['in_hair', 'in_skin', 'in_nails']);
+    const varAbn = checkAbnormal(['cv_varicose']);
+    const cnsAbn = checkAbnormal(['ns_power', 'ns_tone', 'ns_coord', 'ns_sens', 'ns_intel']);
 
     // --- RENDER VARIABEL 100% MENGIKUTI TEMPLATE QATAR ENERGY ---
     doc.render({
@@ -165,22 +184,22 @@ export async function POST(request: Request) {
       date: formData.date || "",
 
       // ==========================================
-      // 5. PHYSICAL EXAMINATION (SECTION B)
+      // 5. PHYSICAL EXAMINATION (SECTION B - MENGGUNAKAN ROLL UP LOGIC)
       // ==========================================
-      eyes_n: isNorm(formData.eyes), eyes_a: isAbn(formData.eyes), eyes_r: getRem(formData.eyes, formData.eyes_r),
-      ent_n: isNorm(formData.ent), ent_a: isAbn(formData.ent), ent_r: getRem(formData.ent, formData.ent_r),
-      oral_c_n: isNorm(formData.oral_c), oral_c_a: isAbn(formData.oral_c), oral_c_r: getRem(formData.oral_c, formData.oral_c_r),
-      chest_n: isNorm(formData.chest), chest_a: isAbn(formData.chest), chest_r: getRem(formData.chest, formData.chest_r),
-      cardio_n: isNorm(formData.cardio), cardio_a: isAbn(formData.cardio), cardio_r: getRem(formData.cardio, formData.cardio_r),
-      abdom_n: isNorm(formData.abdom), abdom_a: isAbn(formData.abdom), abdom_r: getRem(formData.abdom, formData.abdom_r),
-      her_or_n: isNorm(formData.her_or), her_or_a: isAbn(formData.her_or), her_or_r: getRem(formData.her_or, formData.her_or_r),
-      anus_r_n: isNorm(formData.anus_r), anus_r_a: isAbn(formData.anus_r), anus_r_r: getRem(formData.anus_r, formData.anus_r_r),
-      genito_n: isNorm(formData.genito), genito_a: isAbn(formData.genito), genito_r: getRem(formData.genito, formData.genito_r),
-      extrem_n: isNorm(formData.extrem), extrem_a: isAbn(formData.extrem), extrem_r: getRem(formData.extrem, formData.extrem_r),
-      musculo_n: isNorm(formData.musculo), musculo_a: isAbn(formData.musculo), musculo_r: getRem(formData.musculo, formData.musculo_r),
-      skin_n: isNorm(formData.skin), skin_a: isAbn(formData.skin), skin_r: getRem(formData.skin, formData.skin_r),
-      vas_s_n: isNorm(formData.vas_s), vas_s_a: isAbn(formData.vas_s), vas_s_r: getRem(formData.vas_s, formData.vas_s_r),
-      c_n_s_n: isNorm(formData.c_n_s), c_n_s_a: isAbn(formData.c_n_s), c_n_s_r: getRem(formData.c_n_s, formData.c_n_s_r),
+      eyes_n: isUnchecked(eyeAbn), eyes_a: isChecked(eyeAbn), eyes_r: formData.ey_comm || "",
+      ent_n: isUnchecked(entAbn), ent_a: isChecked(entAbn), ent_r: [formData.rs_comm, formData.ea_comm].filter(Boolean).join('. '),
+      oral_c_n: isUnchecked(oralAbn), oral_c_a: isChecked(oralAbn), oral_c_r: formData.al_comm || "",
+      chest_n: isUnchecked(chestAbn), chest_a: isChecked(chestAbn), chest_r: formData.rs_comm || "",
+      cardio_n: isUnchecked(cardioAbn), cardio_a: isChecked(cardioAbn), cardio_r: formData.cv_comm || "",
+      abdom_n: isUnchecked(abdAbn), abdom_a: isChecked(abdAbn), abdom_r: formData.al_comm || "",
+      her_or_n: isUnchecked(hernAbn), her_or_a: isChecked(hernAbn), her_or_r: formData.al_comm || "",
+      anus_r_n: isUnchecked(anusAbn), anus_r_a: isChecked(anusAbn), anus_r_r: formData.al_comm || "",
+      genito_n: isUnchecked(guAbn), genito_a: isChecked(guAbn), genito_r: formData.gu_comm || "",
+      extrem_n: isUnchecked(extAbn), extrem_a: isChecked(extAbn), extrem_r: formData.ms_comm || "",
+      musculo_n: isUnchecked(muscAbn), musculo_a: isChecked(muscAbn), musculo_r: formData.ms_comm || "",
+      skin_n: isUnchecked(skinAbn), skin_a: isChecked(skinAbn), skin_r: formData.in_comm || "",
+      vas_s_n: isUnchecked(varAbn), vas_s_a: isChecked(varAbn), vas_s_r: formData.cv_comm || "",
+      c_n_s_n: isUnchecked(cnsAbn), c_n_s_a: isChecked(cnsAbn), c_n_s_r: formData.ns_comm || "",
 
       // ==========================================
       // 6. LABORATORY REPORTS (SECTION B)

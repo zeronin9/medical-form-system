@@ -22,15 +22,27 @@ export async function POST(request: Request) {
       nullGetter: function() { return ""; } // Mencegah munculnya teks "undefined" di Word
     });
 
-    // --- HELPER FUNCTION UNTUK DESKRIPSI SISTEMIK ---
-    const getDesc = (status: string, remark: string) => status === 'Normal' ? 'Normal' : (remark || status || "Abnormal");
-
     // --- PARSING TANGGAL LAHIR (Bulan Teks, Hari, Tahun) ---
     const dobDate = formData.dob ? new Date(formData.dob) : null;
     const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
     const dobMonth = dobDate ? monthNames[dobDate.getMonth()] : "";
     const dobDay = dobDate ? dobDate.getDate().toString().padStart(2, '0') : "";
     const dobYear = dobDate ? dobDate.getFullYear().toString() : "";
+
+    // --- ROLL-UP LOGIC UNTUK DESKRIPSI SISTEMIK MARSHALL ---
+    // Marshall meminta deskripsi teks "Normal" atau keterangan abnormalitasnya.
+    const getSystemDesc = (fields: string[], remark: string) => {
+        const isAbnormal = fields.some(field => formData[field] === 'Abnormal');
+        return isAbnormal ? (remark || "Abnormal") : "Normal";
+    };
+
+    // Mapping berdasarkan organ spesifik Smart UI
+    const headNeckDesc = getSystemDesc(['rs_nasal', 'rs_thyroid', 'rs_trachea', 'ea_meatus', 'ea_drums', 'ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi', 'al_teeth', 'al_tongue'], 
+        [formData.rs_comm, formData.ea_comm, formData.ey_comm, formData.al_comm].filter(Boolean).join('. '));
+    
+    const heartDesc = getSystemDesc(['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs', 'cv_varicose'], formData.cv_comm);
+    const lungsDesc = getSystemDesc(['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent'], formData.rs_comm);
+    const extDesc = getSystemDesc(['ms_hands', 'ms_limbs', 'ms_joints'], formData.ms_comm);
 
     // --- RENDER VARIABEL KE TEMPLATE LENGKAP 100% ---
     doc.render({
@@ -61,15 +73,15 @@ export async function POST(request: Request) {
       bp: formData.bloodPressure || "",
       p: formData.pulse || "",
       rr: formData.rr || formData.respiratoryRate || "-", 
-      gen_app: formData.gen_app || "Good", 
+      gen_app: formData.gen_app === 'Abnormal' ? 'Abnormal' : "Good", 
 
       // 4. Penglihatan & Pendengaran
       disr_unc: formData.disr_unc || "-",
       disl_unc: formData.disl_unc || "-",
       disr_cor: formData.disr_cor || "-",
       disl_cor: formData.disl_cor || "-",
-      hear_r: formData.hear_r || (formData.ent === 'Normal' ? 'Normal' : 'Abnormal'),
-      hear_l: formData.hear_l || (formData.ent === 'Normal' ? 'Normal' : 'Abnormal'),
+      hear_r: formData.hear_r || (getSystemDesc(['ea_meatus', 'ea_drums'], '') === 'Normal' ? 'Normal' : 'Abnormal'),
+      hear_l: formData.hear_l || (getSystemDesc(['ea_meatus', 'ea_drums'], '') === 'Normal' ? 'Normal' : 'Abnormal'),
 
       // 5. Tes Warna & Kacamata 
       col_book: formData.color_test_type === 'Book' ? '☑' : '☐', 
@@ -79,13 +91,13 @@ export async function POST(request: Request) {
       glass_y: (formData.disr_cor || formData.disl_cor) ? '☑' : '☐',
       glass_n: !(formData.disr_cor || formData.disl_cor) ? '☑' : '☐',
 
-      // 6. Pemeriksaan Fisik Sistemik
-      head_neck: getDesc(formData.ent, formData.ent_r),
-      heart_desc: getDesc(formData.cardio, formData.cardio_r),
-      lungs_desc: getDesc(formData.chest, formData.chest_r),
+      // 6. Pemeriksaan Fisik Sistemik (MENGGUNAKAN SMART UI ROLL-UP)
+      head_neck: headNeckDesc,
+      heart_desc: heartDesc,
+      lungs_desc: lungsDesc,
       speech_desc: "Yes", // Default Speech Unimpaired = Yes
-      ext_up: getDesc(formData.extrem, formData.extrem_r),
-      ext_low: getDesc(formData.extrem, formData.extrem_r),
+      ext_up: extDesc,
+      ext_low: extDesc,
 
       // 7. Kuesioner Medis
       vac_y: formData.vaccinated === 'Yes' ? '☑' : '☐', 

@@ -22,11 +22,13 @@ export async function POST(request: Request) {
       nullGetter: function() { return ""; } // Mencegah teks "undefined"
     });
 
-    // --- HELPER FUNCTIONS PENCEGAH TABRAKAN CENTANG ---
+    // --- HELPER FUNCTIONS ---
     const isY = (val: any) => (val === 'Yes' || val === true) ? '☑' : '☐';
     const isN = (val: any) => (val === 'No' || val === false || !val) ? '☑' : '☐';
-    const isNorm = (val: any) => (val === 'Normal' || val === 'Good' || !val) ? '☑' : '☐';
-    const isAbn = (val: any) => val === 'Abnormal' ? '☑' : '☐';
+
+    // Checkbox Renderers untuk Roll-Up Logic
+    const isChecked = (cond: boolean) => cond ? '☑' : '☐';
+    const isUnchecked = (cond: boolean) => cond ? '☐' : '☑';
 
     // --- PEMISAH TANGGAL LAHIR (YYYY-MM-DD menjadi Year, Month, Day) ---
     const dobStr = formData.dob || ""; 
@@ -39,6 +41,36 @@ export async function POST(request: Request) {
 
     // Deteksi Gender
     const isFemale = formData.gender === 'Female';
+
+    // --- ROLL-UP LOGIC UNTUK PHYSICAL EXAM (SMART UI) ---
+    // Logika: Jika ada salah satu sub-organ yang "Abnormal", maka kategori MLC menjadi "Abnormal"
+    const checkAbnormal = (fields: string[]) => fields.some(field => formData[field] === 'Abnormal');
+    
+    const headAbn = checkAbnormal(['rs_nasal', 'al_teeth', 'al_tongue', 'ea_meatus', 'ea_drums', 'ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi']);
+    const entAbn = checkAbnormal(['rs_nasal', 'rs_thyroid', 'rs_trachea', 'ea_meatus', 'ea_drums']);
+    const oralAbn = checkAbnormal(['al_teeth', 'al_tongue']);
+    const earAbn = checkAbnormal(['ea_meatus', 'ea_drums']);
+    const eyeAbn = checkAbnormal(['ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi']);
+    const ophAbn = checkAbnormal(['ey_fundi']);
+    const pupilAbn = checkAbnormal(['ey_light', 'ey_accom']);
+    const eyemAbn = checkAbnormal(['ey_nyst']);
+    const lungAbn = checkAbnormal(['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent']);
+    const breastAbn = false; // Default normal karena tidak ada di Smart UI
+    const heartAbn = checkAbnormal(['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs']);
+    const varAbn = checkAbnormal(['cv_varicose']);
+    const vascAbn = checkAbnormal(['cv_varicose', 'cv_bp']);
+    const abdAbn = checkAbnormal(['al_abd', 'al_liver', 'al_spleen', 'al_lymph']);
+    const hernAbn = checkAbnormal(['al_hernia']);
+    const anusAbn = checkAbnormal(['al_anus']);
+    const guAbn = checkAbnormal(['gu_kidney', 'gu_gen']);
+    const extAbn = checkAbnormal(['ms_hands', 'ms_limbs', 'ms_inj']);
+    const spineAbn = checkAbnormal(['ms_back', 'ms_joints']);
+    const neuroAbn = checkAbnormal(['ns_power', 'ns_tone', 'ns_coord', 'ns_sens', 'ns_intel']);
+    const skinAbn = checkAbnormal(['in_hair', 'in_skin', 'in_nails']);
+
+    // Map kondisi mental & saraf pusat (cns) karena MLC menanyakannya
+    const hasMentalIssue = formData.mh_anxiety === 'Yes' || formData.q_stress === 'Yes';
+    const hasCnsIssue = formData.mh_stroke === 'Yes' || formData.mh_epilepsy === 'Yes';
 
     // --- RENDER VARIABEL KE TEMPLATE ---
     doc.render({
@@ -82,39 +114,39 @@ export async function POST(request: Request) {
       nearr_cor: formData.nearr_cor || "-", nearl_cor: formData.nearl_cor || "-", near_bv_cor: formData.near_bv_cor || "-",
 
       // Visual Fields & Color Vision
-      vf_r_n: isNorm(formData.eyes), vf_r_d: isAbn(formData.eyes),
-      vf_l_n: isNorm(formData.eyes), vf_l_d: isAbn(formData.eyes),
+      vf_r_n: isUnchecked(eyeAbn), vf_r_d: isChecked(eyeAbn),
+      vf_l_n: isUnchecked(eyeAbn), vf_l_d: isChecked(eyeAbn),
       cv_n: formData.color_vision === 'Normal' ? '☑' : '☐',
       cv_df: (formData.color_vision === 'Partial' || formData.color_vision === 'Total') ? '☑' : '☐',
 
       // Hearing
-      hr_r_n: isNorm(formData.hear_r), hr_r_s: isNorm(formData.hear_r), hr_r_o: isNorm(formData.ent),
-      hr_l_n: isNorm(formData.hear_l), hr_l_s: isNorm(formData.hear_l), hr_l_o: isNorm(formData.ent),
+      hr_r_n: formData.hear_r === 'Normal' ? '☑' : '☐', hr_r_s: formData.hear_r === 'Normal' ? '☑' : '☐', hr_r_o: isUnchecked(entAbn),
+      hr_l_n: formData.hear_l === 'Normal' ? '☑' : '☐', hr_l_s: formData.hear_l === 'Normal' ? '☑' : '☐', hr_l_o: isUnchecked(entAbn),
 
-      // Clinical Findings (Menggunakan Variabel Organ Spesifik)
-      head_n: isNorm(formData.ent), head_a: isAbn(formData.ent),
-      var_n: isNorm(formData.vas_s), var_a: isAbn(formData.vas_s),
-      ent_n: isNorm(formData.ent), ent_a: isAbn(formData.ent),
-      vasc_n: isNorm(formData.cardio), vasc_a: isAbn(formData.cardio),
-      oral_n: isNorm(formData.oral_c), oral_a: isAbn(formData.oral_c),
-      abd_n: isNorm(formData.abdom), abd_a: isAbn(formData.abdom),
-      ear_n: isNorm(formData.ent), ear_a: isAbn(formData.ent),
-      hern_n: isNorm(formData.her_or), hern_a: isAbn(formData.her_or),
-      eye_n: isNorm(formData.eyes), eye_a: isAbn(formData.eyes),
-      anus_n: isNorm(formData.anus_r), anus_a: isAbn(formData.anus_r),
-      oph_n: isNorm(formData.eyes), oph_a: isAbn(formData.eyes),
-      gu_n: isNorm(formData.genito), gu_a: isAbn(formData.genito),
-      pupil_n: isNorm(formData.eyes), pupil_a: isAbn(formData.eyes),
-      ext_n: isNorm(formData.extrem), ext_a: isAbn(formData.extrem),
-      eyem_n: isNorm(formData.eyes), eyem_a: isAbn(formData.eyes),
-      spine_n: isNorm(formData.musculo), spine_a: isAbn(formData.musculo),
-      lung_n: isNorm(formData.chest), lung_a: isAbn(formData.chest),
-      neuro_n: isNorm(formData.c_n_s), neuro_a: isAbn(formData.c_n_s),
-      breast_n: isNorm(formData.chest), breast_a: isAbn(formData.chest),
-      psych_n: formData.mh_mental === 'Yes' ? '☐' : '☑', psych_a: formData.mh_mental === 'Yes' ? '☑' : '☐',
-      heart_n: isNorm(formData.cardio), heart_a: isAbn(formData.cardio),
-      gen_n: isNorm(formData.gen_app), gen_a: isAbn(formData.gen_app),
-      skin_n: isNorm(formData.skin), skin_a: isAbn(formData.skin),
+      // Clinical Findings (Menggunakan Roll-Up Logic Smart UI)
+      head_n: isUnchecked(headAbn), head_a: isChecked(headAbn),
+      var_n: isUnchecked(varAbn), var_a: isChecked(varAbn),
+      ent_n: isUnchecked(entAbn), ent_a: isChecked(entAbn),
+      vasc_n: isUnchecked(vascAbn), vasc_a: isChecked(vascAbn),
+      oral_n: isUnchecked(oralAbn), oral_a: isChecked(oralAbn),
+      abd_n: isUnchecked(abdAbn), abd_a: isChecked(abdAbn),
+      ear_n: isUnchecked(earAbn), ear_a: isChecked(earAbn),
+      hern_n: isUnchecked(hernAbn), hern_a: isChecked(hernAbn),
+      eye_n: isUnchecked(eyeAbn), eye_a: isChecked(eyeAbn),
+      anus_n: isUnchecked(anusAbn), anus_a: isChecked(anusAbn),
+      oph_n: isUnchecked(ophAbn), oph_a: isChecked(ophAbn),
+      gu_n: isUnchecked(guAbn), gu_a: isChecked(guAbn),
+      pupil_n: isUnchecked(pupilAbn), pupil_a: isChecked(pupilAbn),
+      ext_n: isUnchecked(extAbn), ext_a: isChecked(extAbn),
+      eyem_n: isUnchecked(eyemAbn), eyem_a: isChecked(eyemAbn),
+      spine_n: isUnchecked(spineAbn), spine_a: isChecked(spineAbn),
+      lung_n: isUnchecked(lungAbn), lung_a: isChecked(lungAbn),
+      neuro_n: isUnchecked(neuroAbn), neuro_a: isChecked(neuroAbn),
+      breast_n: isUnchecked(breastAbn), breast_a: isChecked(breastAbn),
+      psych_n: isUnchecked(hasMentalIssue), psych_a: isChecked(hasMentalIssue),
+      heart_n: isUnchecked(heartAbn), heart_a: isChecked(heartAbn),
+      gen_n: isUnchecked(formData.gen_app === 'Abnormal'), gen_a: isChecked(formData.gen_app === 'Abnormal'),
+      skin_n: isUnchecked(skinAbn), skin_a: isChecked(skinAbn),
 
       // Lab Results
       xray_res: formData.des_abnor || formData.xray || "NORMAL",
@@ -154,7 +186,7 @@ export async function POST(request: Request) {
       q2_y: isY(formData.mh_hbp), q2_n: isN(formData.mh_hbp),
       q3_y: isY(formData.mh_heart), q3_n: isN(formData.mh_heart),
       q4_y: isY(formData.mh_surgery), q4_n: isN(formData.mh_surgery),
-      q5_y: isY(formData.vas_s === 'Abnormal' ? 'Yes' : 'No'), q5_n: isY(formData.vas_s !== 'Abnormal' ? 'Yes' : 'No'),
+      q5_y: isY(formData.cv_varicose === 'Abnormal' ? 'Yes' : 'No'), q5_n: isY(formData.cv_varicose !== 'Abnormal' ? 'Yes' : 'No'),
       q6_y: isY(formData.mh_asthma), q6_n: isN(formData.mh_asthma),
       q7_y: isY(formData.mh_blood), q7_n: isN(formData.mh_blood),
       q8_y: isY(formData.mh_diabetes), q8_n: isN(formData.mh_diabetes),
@@ -164,8 +196,8 @@ export async function POST(request: Request) {
       q12_y: isY(formData.mh_skin), q12_n: isN(formData.mh_skin),
       q13_y: isY(formData.mh_skin), q13_n: isN(formData.mh_skin),
       q14_y: isY(formData.mh_hep), q14_n: isN(formData.mh_hep),
-      q15_y: isY(formData.her_or === 'Abnormal' ? 'Yes' : 'No'), q15_n: isY(formData.her_or !== 'Abnormal' ? 'Yes' : 'No'),
-      q16_y: isY(formData.genito === 'Abnormal' ? 'Yes' : 'No'), q16_n: isY(formData.genito !== 'Abnormal' ? 'Yes' : 'No'),
+      q15_y: isY(formData.al_hernia === 'Abnormal' ? 'Yes' : 'No'), q15_n: isY(formData.al_hernia !== 'Abnormal' ? 'Yes' : 'No'),
+      q16_y: isY(formData.gu_gen === 'Abnormal' ? 'Yes' : 'No'), q16_n: isY(formData.gu_gen !== 'Abnormal' ? 'Yes' : 'No'),
       
       q17_y: (isFemale && parseInt(formData.f_preg_no || '0') > 0) ? '☑' : '☐', 
       q17_n: (!isFemale || !formData.f_preg_no || formData.f_preg_no === '0') ? '☑' : '☐', 
@@ -176,16 +208,16 @@ export async function POST(request: Request) {
       q21_y: isY(formData.mh_epilepsy), q21_n: isN(formData.mh_epilepsy),
       q22_y: isY(formData.mh_fainting), q22_n: isN(formData.mh_fainting),
       q23_y: isY(formData.mh_fainting), q23_n: isN(formData.mh_fainting),
-      q24_y: isY(formData.mh_mental), q24_n: isN(formData.mh_mental),
-      q25_y: isY(formData.mh_mental), q25_n: isN(formData.mh_mental),
-      q26_y: isY(formData.mh_mental), q26_n: isN(formData.mh_mental),
-      q27_y: isY(formData.mh_cns), q27_n: isN(formData.mh_cns),
-      q28_y: isY(formData.mh_cns), q28_n: isN(formData.mh_cns),
+      q24_y: isY(hasMentalIssue ? 'Yes' : 'No'), q24_n: isN(hasMentalIssue ? 'Yes' : 'No'),
+      q25_y: isY(hasMentalIssue ? 'Yes' : 'No'), q25_n: isN(hasMentalIssue ? 'Yes' : 'No'),
+      q26_y: isY(hasMentalIssue ? 'Yes' : 'No'), q26_n: isN(hasMentalIssue ? 'Yes' : 'No'),
+      q27_y: isY(hasCnsIssue ? 'Yes' : 'No'), q27_n: isN(hasCnsIssue ? 'Yes' : 'No'),
+      q28_y: isY(hasCnsIssue ? 'Yes' : 'No'), q28_n: isN(hasCnsIssue ? 'Yes' : 'No'),
       q29_y: isY(formData.mh_headache), q29_n: isN(formData.mh_headache),
       q30_y: isY(formData.mh_ear), q30_n: isN(formData.mh_ear),
       q31_y: isY(formData.mh_musculo), q31_n: isN(formData.mh_musculo),
       q32_y: isY(formData.mh_rheumatism), q32_n: isN(formData.mh_rheumatism),
-      q33_y: isY(formData.extrem === 'Abnormal' ? 'Yes' : 'No'), q33_n: isY(formData.extrem !== 'Abnormal' ? 'Yes' : 'No'),
+      q33_y: isY(formData.ms_limbs === 'Abnormal' ? 'Yes' : 'No'), q33_n: isY(formData.ms_limbs !== 'Abnormal' ? 'Yes' : 'No'),
       q34_y: isY(formData.mh_accident), q34_n: isN(formData.mh_accident),
       
       q35_y: isY(formData.q_medevac), q35_n: isN(formData.q_medevac),
