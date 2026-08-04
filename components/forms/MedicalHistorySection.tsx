@@ -89,6 +89,18 @@ export default function MedicalHistorySection({ formData, handleChange, selected
               </div>
             ))}
           </div>
+          
+          {/* === SUB-PERTANYAAN DIABETES (KHUSUS ADNOC) === */}
+          {formData.mh_diabetes === 'Yes' && isAdnoc && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 mt-3 rounded-lg border border-blue-200 bg-blue-50/50">
+              <span className="text-sm font-medium text-blue-900 flex items-center gap-1">Apakah Diabetes Anda bergantung pada Insulin? (Insulin dependent) <BadgeADNOC/></span>
+              <div className="flex gap-4 shrink-0">
+                <label className={radioGroupClass}><input type="radio" name="diab_ins" value="Yes" checked={formData.diab_ins === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya (Insulin)</span></label>
+                <label className={radioGroupClass}><input type="radio" name="diab_ins" value="No" checked={formData.diab_ins === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak (Non-Insulin)</span></label>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col space-y-2 mt-4">
               <label className={labelClass}>Penyakit Lainnya:</label>
               <input type="text" name="mh_others" value={formData.mh_others || ''} onChange={handleChange} className={inputClass} placeholder="Sebutkan jika ada riwayat penyakit lain..." />
@@ -310,6 +322,22 @@ export default function MedicalHistorySection({ formData, handleChange, selected
                   <label className={radioGroupClass}><input type="radio" name="vaccinated" value="Yes" checked={formData.vaccinated === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
                   <label className={radioGroupClass}><input type="radio" name="vaccinated" value="No" checked={formData.vaccinated === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
                 </div>
+                
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-200 mt-2">
+                <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Apakah sudah divaksin sesuai standar WHO? <BadgeMarshall /></span>
+                <div className="flex gap-4 shrink-0">
+                  <label className={radioGroupClass}><input type="radio" name="vaccinated" value="Yes" checked={formData.vaccinated === 'Yes'} onChange={handleChange} className={radioClass} /><span>Ya</span></label>
+                  <label className={radioGroupClass}><input type="radio" name="vaccinated" value="No" checked={formData.vaccinated === 'No'} onChange={handleChange} className={radioClass} /><span>Tidak</span></label>
+                </div>
+              </div>
+
+              {/* === TAMBAHKAN KODE INI UNTUK INPUT ADNOC ILLNESS LAST EXAM === */}
+              {isAdnoc && (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-200 mt-4">
+                  <span className="text-sm font-medium text-slate-700 flex items-center flex-wrap gap-1">Penyakit sejak pemeriksaan terakhir (Illnesses since last exam) <BadgeADNOC /></span>
+                  <input type="text" name="illness_last" value={formData.illness_last || ''} onChange={handleChange} className={`${inputClass} sm:w-1/2`} placeholder="Kosongkan jika tidak ada" />
+                </div>
+              )}
               </div>
             </div>
 

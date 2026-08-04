@@ -40,7 +40,7 @@ export default function Home() {
     
     // Kuesioner Medis & Gaya Hidup Umum
     q_illness: '', q_hosp_wait: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes', 
-    fm_tb: '', fm_allergy: '', fm_mental: '', fm_heart: '', fm_asthma: '', fm_diabetes: '', fm_hypertension: '', fm_cancer: '',
+    fm_tb: '', fm_allergy: '', fm_mental: '', fm_heart: '', fm_asthma: '', fm_diabetes: '', fm_hypertension: '', fm_cancer: '', illness_last: '', 
 
     // --- VARIABEL RIWAYAT PENYAKIT PRIBADI (SUDAH DIPISAH SESUAI BACKEND ADNOC) ---
     mh_hbp: '', mh_angina: '', mh_heart: '', mh_cardiac_surgery: '', mh_asthma: '',
