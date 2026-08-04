@@ -54,6 +54,9 @@ export default function Home() {
     diab_ins: '', mh_diabetes: '', mh_thyroid: '', mh_blood: '', mh_drug: '',
     mh_surgery: '',
     
+    // --- VARIABEL TAMBAHAN BARU SESUAI UPDATE ADNOC ---
+    mh_anemia: '', mh_thal: '', mh_sickle: '', mh_allergy_med: '',
+    
     // Khusus Pelaut Wanita
     f_lmp: '', f_preg_no: '', f_live_birth: '', f_heavy: '', f_reg: '', f_pain: '', f_pill: '',
 

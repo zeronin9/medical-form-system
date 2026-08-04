@@ -30,32 +30,36 @@ export async function POST(request: Request) {
 
     // --- PEMISAH TEKANAN DARAH (120/80 menjadi Sys: 120, Dia: 80) ---
     const bpParts = (formData.bloodPressure || "").split("/");
-    const bp_sys = bpParts[0] || "-";
-    const bp_dia = bpParts[1] || "-";
+    const bp_sys = bpParts[0] || "";
+    const bp_dia = bpParts[1] || "";
 
     // --- HELPER FUNCTIONS ---
+    // PERBAIKAN: Menghilangkan pengecekan !val agar tidak otomatis "No" saat variabel kosong
     const isY = (val: any) => (val === 'Yes' || val === true) ? '☑' : '☐';
-    const isN = (val: any) => (val === 'No' || val === false || !val) ? '☑' : '☐';
-    const getNorm = (status: string) => status === 'Abnormal' ? 'Abnormal' : 'Normal';
-    const getRem = (status: string, rem: string) => status === 'Abnormal' ? (rem || 'Abnormal') : '';
+    const isN = (val: any) => (val === 'No' || val === false) ? '☑' : '☐';
+    
+    // PERBAIKAN: Menghilangkan nilai default "Normal" jika Anda tidak menekan tombol apapun di UI
+    const getNorm = (status: string) => status ? status : '';
+    const getRem = (status: string, rem: string) => status === 'Abnormal' ? (rem || '') : '';
     const isFemale = formData.gender === 'Female';
 
     // --- RENDER VARIABEL 100% MENGIKUTI TEMPLATE WORD ---
+    // PERBAIKAN: Semua string fallback seperti "-", "N/A", "Nil" diganti menjadi string kosong ""
     doc.render({
       // 1. IDENTITAS & PEKERJAAN
-      first_name: realFirstName || "-",
+      first_name: realFirstName || "",
       middle_name: middle,
-      family_name: formData.familyName || "-",
-      dob: formData.dob || "-",
-      gender: formData.gender || "-",
-      nationality: formData.nationality || "-",
-      company: formData.company || "-",
-      position: formData.position || formData.ilo_position || "-",
-      marital_status: formData.maritalStatus || "-",
-      address: formData.address || "-",
-      contact_number: formData.contactNumber || "-",
-      email: formData.email || "-",
-      reason_exam: formData.reason_exam || "Pre-Employment",
+      family_name: formData.familyName || "",
+      dob: formData.dob || "",
+      gender: formData.gender || "",
+      nationality: formData.nationality || "",
+      company: formData.company || "",
+      position: formData.position || formData.ilo_position || "",
+      marital_status: formData.maritalStatus || "",
+      address: formData.address || "",
+      contact_number: formData.contactNumber || "",
+      email: formData.email || "",
+      reason_exam: formData.reason_exam || "",
 
       // Previous Employment
       job1: formData.job1 || "", comp1: formData.comp1 || "", from1: formData.from1 || "", to1: formData.to1 || "",
@@ -93,7 +97,7 @@ export async function POST(request: Request) {
       chi_age: formData.chi_age || "", chi_state: formData.chi_state || "",
       sib_age: formData.sib_age || "", sib_state: formData.sib_state || "",
 
-      // 3. RIWAYAT MEDIS PRIBADI (PERSONAL HISTORY) - SUDAH DIPERBAIKI MAPPING-NYA
+      // 3. RIWAYAT MEDIS PRIBADI (PERSONAL HISTORY)
       ph_hbp_y: isY(formData.mh_hbp), ph_hbp_n: isN(formData.mh_hbp),
       ph_ang_y: isY(formData.mh_angina), ph_ang_n: isN(formData.mh_angina),
       ph_hrt_y: isY(formData.mh_heart), ph_hrt_n: isN(formData.mh_heart),
@@ -136,23 +140,25 @@ export async function POST(request: Request) {
       diab_ins: isY(formData.diab_ins), 
       ph_diab_y: isY(formData.mh_diabetes), ph_diab_n: isN(formData.mh_diabetes),
       ph_thyr_y: isY(formData.mh_thyroid), ph_thyr_n: isN(formData.mh_thyroid),
-      ph_ane_y: isY(formData.mh_blood), ph_ane_n: isN(formData.mh_blood),
-      ph_thal_y: isY(formData.mh_blood), ph_thal_n: isN(formData.mh_blood),
-      ph_sick_y: isY(formData.mh_blood), ph_sick_n: isN(formData.mh_blood),
-      ph_alrg_y: isY(formData.mh_skin), ph_alrg_n: isN(formData.mh_skin), // alergi kulit
+
+      // PERBAIKAN: Memisahkan Kelainan Darah & Alergi
+      ph_ane_y: isY(formData.mh_anemia), ph_ane_n: isN(formData.mh_anemia),
+      ph_thal_y: isY(formData.mh_thal), ph_thal_n: isN(formData.mh_thal),
+      ph_sick_y: isY(formData.mh_sickle), ph_sick_n: isN(formData.mh_sickle),
+      ph_alrg_y: isY(formData.mh_allergy_med), ph_alrg_n: isN(formData.mh_allergy_med),
 
       // BAGIAN BAWAH PERSONAL HISTORY
       ph_meds_y: isY(formData.q_meds), ph_meds_n: isN(formData.q_meds),
       ph_hosp1_y: isY(formData.q_illness), ph_hosp1_n: isN(formData.q_illness),
       ph_hosp2_y: isY(formData.q_hosp_wait), ph_hosp2_n: isN(formData.q_hosp_wait),
-      ph_oth_y: formData.mh_others ? '☑' : '☐', ph_oth_n: formData.mh_others ? '☐' : '☑',
+      ph_oth_y: formData.mh_others ? '☑' : '☐', ph_oth_n: '☐', 
       ph_smoke_y: isY(formData.q_smoke), ph_smoke_n: isN(formData.q_smoke),
       ph_alc_y: isY(formData.q_alcohol), ph_alc_n: isN(formData.q_alcohol),
       ph_drug_y: isY(formData.mh_drug), ph_drug_n: isN(formData.mh_drug),
       ph_skin_y: isY(formData.mh_skin), ph_skin_n: isN(formData.mh_skin),
 
       // 4. KHUSUS WANITA (FEMALES)
-      f_lmp: isFemale ? (formData.f_lmp || 'N/A') : 'N/A',
+      f_lmp: isFemale ? (formData.f_lmp || '') : '',
       f_heavy_y: isFemale ? isY(formData.f_heavy) : '☐', 
       f_heavy_n: isFemale ? isN(formData.f_heavy) : '☐',
       f_reg_y: isFemale ? isY(formData.f_reg) : '☐', 
@@ -161,15 +167,15 @@ export async function POST(request: Request) {
       f_pain_n: isFemale ? isN(formData.f_pain) : '☐',
       f_pill_y: isFemale ? isY(formData.f_pill) : '☐', 
       f_pill_n: isFemale ? isN(formData.f_pill) : '☐',
-      f_preg_no: isFemale ? (formData.f_preg_no || 'N/A') : 'N/A',
-      f_live_birth: isFemale ? (formData.f_live_birth || 'N/A') : 'N/A',
+      f_preg_no: isFemale ? (formData.f_preg_no || '') : '',
+      f_live_birth: isFemale ? (formData.f_live_birth || '') : '',
 
-      date: formData.date || new Date().toLocaleDateString('en-GB'),
+      date: formData.date || "",
 
       // 5. PEMERIKSAAN FISIK DOKTER (FORM B)
       g_m: formData.gender === 'Male' ? '☑' : '☐',
       g_f: isFemale ? '☑' : '☐',
-      illness_last: formData.illness_last || "Nil", 
+      illness_last: formData.illness_last || "", 
 
       cv_pulse: getNorm(formData.cardio), cv_comm: getRem(formData.cardio, formData.cardio_r), 
       cv_bp: getNorm(formData.cardio),
@@ -178,7 +184,7 @@ export async function POST(request: Request) {
       cv_murmurs: getNorm(formData.cardio),
       cv_varicose: getNorm(formData.vas_s),
 
-      rs_nasal: getNorm(formData.ent), rs_comm: getRem(formData.chest, formData.chest_r), // Perbaikan chest
+      rs_nasal: getNorm(formData.ent), rs_comm: getRem(formData.chest, formData.chest_r),
       rs_thyroid: getNorm(formData.ent),
       rs_trachea: getNorm(formData.chest),
       rs_chest: getNorm(formData.chest),
@@ -187,7 +193,7 @@ export async function POST(request: Request) {
       rs_breath: getNorm(formData.chest),
       rs_advent: getNorm(formData.chest),
 
-      al_teeth: getNorm(formData.oral_c), al_comm: getRem(formData.abdom, formData.abdom_r), // Perbaikan abdom
+      al_teeth: getNorm(formData.oral_c), al_comm: getRem(formData.abdom, formData.abdom_r),
       al_tongue: getNorm(formData.oral_c),
       al_abd: getNorm(formData.abdom),
       al_liver: getNorm(formData.abdom),
@@ -233,28 +239,28 @@ export async function POST(request: Request) {
       ey_fundi: getNorm(formData.eyes),
 
       // 6. VISUAL ACUITY & LABORATORIUM
-      nearr_unc: formData.nearr_unc || "-", nearl_unc: formData.nearl_unc || "-",
-      disr_unc: formData.disr_unc || "-", disl_unc: formData.disl_unc || "-",
-      nearr_cor: formData.nearr_cor || "-", nearl_cor: formData.nearl_cor || "-",
-      disr_cor: formData.disr_cor || "-", disl_cor: formData.disl_cor || "-",
+      nearr_unc: formData.nearr_unc || "", nearl_unc: formData.nearl_unc || "",
+      disr_unc: formData.disr_unc || "", disl_unc: formData.disl_unc || "",
+      nearr_cor: formData.nearr_cor || "", nearl_cor: formData.nearl_cor || "",
+      disr_cor: formData.disr_cor || "", disl_cor: formData.disl_cor || "",
       
       cv_n: formData.color_vision === 'Normal' ? '☑' : '☐',
       cv_df: (formData.color_vision === 'Partial' || formData.color_vision === 'Total') ? '☑' : '☐',
 
       // FORMAT TAMBAHAN UNTUK TINGGI, BERAT, DENYUT NADI
-      height: formData.height ? `${formData.height} cm` : "-", 
-      weight: formData.weight ? `${formData.weight} kg` : "-", 
-      bmi: formData.bmi || "-",
-      pulse: formData.pulse ? `${formData.pulse} bpm` : "-", 
+      height: formData.height ? `${formData.height} cm` : "", 
+      weight: formData.weight ? `${formData.weight} kg` : "", 
+      bmi: formData.bmi || "",
+      pulse: formData.pulse ? `${formData.pulse} bpm` : "", 
       bp_sys: bp_sys, bp_dia: bp_dia,
       
-      chest_exp: formData.chest_exp || "-", ft_fvc: formData.ft_fvc || "-", ft_fev1: formData.ft_fev1 || "-",
-      xray_res: formData.xray || "-", oht_result: formData.oht_result || "-", diag: formData.diag || "-",
+      chest_exp: formData.chest_exp || "", ft_fvc: formData.ft_fvc || "", ft_fev1: formData.ft_fev1 || "",
+      xray_res: formData.xray || "", oht_result: formData.oht_result || "", diag: formData.diag || "",
       bg_rh: `${formData.bloodGroupType || ""}${formData.bloodGroupRh || ""}`,
-      lab_hb: formData.lab_hb || "-",
-      ur_sugar: formData.ur_sugar || "-", albumin: formData.albumin || "-",
-      hep_b: formData.hep_b_ag === 'Positive' ? 'Positive' : (formData.hep_b_ag === 'Negative' ? 'Negative' : '-'),
-      hep_c: formData.hep_c || "-", hep_a: formData.hep_a || "-",
+      lab_hb: formData.lab_hb || "",
+      ur_sugar: formData.ur_sugar || "", albumin: formData.albumin || "",
+      hep_b: formData.hep_b_ag === 'Positive' ? 'Positive' : (formData.hep_b_ag === 'Negative' ? 'Negative' : ''),
+      hep_c: formData.hep_c || "", hep_a: formData.hep_a || "",
 
       // 7. REKOMENDASI DOKTER (FITNESS)
       fit_job: formData.fit_lookout === 'Fit' ? '☑' : '☐',
