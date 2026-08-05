@@ -6,11 +6,18 @@ import path from 'path';
 
 export async function POST(request: Request) {
   try {
-    const { formData } = await request.json();
-    
-    // Sesuaikan nama file dengan yang ada di folder public/templates Anda
-    const fileName = '5. Chevron Medical Form.docx'; 
+    const { formData = {} } = await request.json();
+
+    const fileName = '5. Chevron Medical Form.docx';
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
+
+    if (!fs.existsSync(templatePath)) {
+      return NextResponse.json(
+        { error: `Template tidak ditemukan: ${fileName}` },
+        { status: 404 }
+      );
+    }
+
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);
 
@@ -19,47 +26,95 @@ export async function POST(request: Request) {
       paragraphLoop: true,
       linebreaks: true,
       delimiters: { start: '{{', end: '}}' },
-      nullGetter: function() { return ""; } // Mencegah muncul teks "undefined"
+      nullGetter: () => '',
     });
 
-    // --- HELPER FUNCTIONS (3-STATE LOGIC) ---
-    // PENTING: Ganti charChecked dan charUnchecked di bawah ini sesuai karakter 
-    // kotak/centang yang Anda gunakan di dalam template Word Docxtemplater.
-    const charChecked = '☑';   // Karakter jika dicentang
-    const charUnchecked = '☐'; // Karakter jika dibiarkan kosong/tidak dicentang
+    const charChecked = '☑';
+    const charUnchecked = '☐';
 
-    const isY = (val: any) => (val === 'Yes' || val === true) ? charChecked : charUnchecked;
-    const isN = (val: any) => (val === 'No' || val === false) ? charChecked : charUnchecked;
-
-    // Helper Kuesioner (Medical History) - Mengembalikan 'Yes', 'No', atau null jika kosong
-    const evaluateQ = (fields: string[], conditionFn: (val: any) => boolean = (val) => val === 'Yes') => {
-        // Jika SEMUA field pembentuk kosong, kembalikan null (Tidak ada yang dicentang)
-        if (fields.every(f => formData[f] === undefined || formData[f] === '')) return null;
-        // Jika ADA minimal satu field yang memenuhi kondisi, kembalikan 'Yes'
-        if (fields.some(f => conditionFn(formData[f]))) return 'Yes';
-        // Jika sudah diisi tapi tidak ada yang memenuhi kondisi, kembalikan 'No'
-        return 'No';
+    const val = (...keys: string[]) => {
+      for (const key of keys) {
+        const v = formData[key];
+        if (v !== undefined && v !== null) return v;
+      }
+      return '';
     };
 
-    const cq = (val: string | null) => ({
-        y: val === 'Yes' ? charChecked : charUnchecked,
-        n: val === 'No' ? charChecked : charUnchecked
+    const str = (...keys: string[]) => {
+      const v = val(...keys);
+      return v === undefined || v === null ? '' : String(v).trim();
+    };
+
+    const isFilled = (v: any) => v !== undefined && v !== null && String(v).trim() !== '';
+
+    const isY = (v: any) =>
+      String(v).trim() === 'Yes' || v === true ? charChecked : charUnchecked;
+
+    const isN = (v: any) =>
+      String(v).trim() === 'No' || v === false ? charChecked : charUnchecked;
+
+    const formatDateDDMMYYYY = (dateStr: string) => {
+      if (!dateStr || !dateStr.includes('-')) return dateStr || '';
+      const [yyyy, mm, dd] = dateStr.split('-');
+      if (!yyyy || !mm || !dd) return dateStr || '';
+      return `${dd}/${mm}/${yyyy}`;
+    };
+
+    const formatDateDDMMYY = (dateStr: string) => {
+      if (!dateStr || !dateStr.includes('-')) return dateStr || '';
+      const [yyyy, mm, dd] = dateStr.split('-');
+      if (!yyyy || !mm || !dd) return dateStr || '';
+      return `${dd}/${mm}/${yyyy.slice(-2)}`;
+    };
+
+    const joinRemarks = (...items: any[]) =>
+      items
+        .map((x) => String(x || '').trim())
+        .filter(Boolean)
+        .join('. ');
+
+    const evaluateQ = (
+      fields: string[],
+      conditionFn: (val: any) => boolean = (val) => val === 'Yes'
+    ) => {
+      if (fields.length === 0) return null;
+      if (fields.every((f) => !isFilled(formData[f]))) return null;
+      if (fields.some((f) => conditionFn(formData[f]))) return 'Yes';
+      return 'No';
+    };
+
+    const cq = (v: string | null) => ({
+      y: v === 'Yes' ? charChecked : charUnchecked,
+      n: v === 'No' ? charChecked : charUnchecked,
     });
 
-    // Helper Pemeriksaan Fisik (Physical Exam) - Mengembalikan 'Abnormal', 'Normal', atau null jika kosong
     const getExamCategoryStatus = (fields: string[]) => {
-        if (fields.every(f => formData[f] === undefined || formData[f] === '')) return null; // Kosong 100%
-        if (fields.some(field => formData[field] === 'Abnormal')) return 'Abnormal';
-        if (fields.some(field => formData[field] === 'Normal')) return 'Normal';
-        return null;
+      if (fields.every((f) => !isFilled(formData[f]))) return null;
+      if (fields.some((f) => String(formData[f]).trim() === 'Abnormal')) return 'Abnormal';
+      if (fields.some((f) => String(formData[f]).trim() === 'Normal')) return 'Normal';
+      return null;
     };
 
     const checkEx = (status: string | null) => ({
-        n: status === 'Normal' ? charChecked : charUnchecked,
-        a: status === 'Abnormal' ? charChecked : charUnchecked
+      n: status === 'Normal' ? charChecked : charUnchecked,
+      a: status === 'Abnormal' ? charChecked : charUnchecked,
     });
 
-    // --- 1. ROLL-UP LOGIC UNTUK PHYSICAL EXAM (MENGGUNAKAN 3-STATE) ---
+    const dobRaw = str('dob');
+    const dobShort = formatDateDDMMYY(dobRaw);
+    const dobLong = formatDateDDMMYYYY(dobRaw);
+    const serviceDate = formatDateDDMMYYYY(str('serviceDate'));
+    const examDate = formatDateDDMMYYYY(str('date'));
+    const xrayDate = formatDateDDMMYYYY(str('date_xray'));
+
+    const fullName = [
+      str('firstName'),
+      str('middleName'),
+      str('familyName'),
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     const eyes_status = getExamCategoryStatus(['ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi']);
     const ears_status = getExamCategoryStatus(['ea_meatus', 'ea_drums']);
     const nose_status = getExamCategoryStatus(['rs_nasal']);
@@ -77,40 +132,39 @@ export async function POST(request: Request) {
     const muscul_status = getExamCategoryStatus(['ms_hands', 'ms_limbs', 'ms_back', 'ms_joints', 'ms_inj']);
     const reflex_status = getExamCategoryStatus(['ns_power', 'ns_tone', 'ns_coord', 'ns_sens', 'ns_intel']);
 
-    // --- 2. ROLL-UP LOGIC UNTUK 44 KUESIONER CHEVRON (MENGGUNAKAN 3-STATE) ---
     const q1 = evaluateQ(['mh_fainting', 'mh_epilepsy']);
     const q2 = evaluateQ(['mh_headache']);
     const q3 = evaluateQ(['mh_anxiety', 'fm_mental']);
-    const q4 = evaluateQ(['mh_allergy_med', 'rs_nasal'], (val) => val === 'Yes' || val === 'Abnormal');
-    const q5 = evaluateQ(['al_tongue'], (val) => val === 'Abnormal');
+    const q4 = evaluateQ(['mh_allergy_med', 'rs_nasal'], (v) => v === 'Yes' || v === 'Abnormal');
+    const q5 = evaluateQ(['al_tongue'], (v) => v === 'Abnormal');
     const q6 = evaluateQ(['mh_ear', 'mh_ear2', 'mh_tinnitus']);
-    const q7 = evaluateQ(['mh_thyroid', 'rs_thyroid'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q7 = evaluateQ(['mh_thyroid', 'rs_thyroid'], (v) => v === 'Yes' || v === 'Abnormal');
     const q8 = evaluateQ(['mh_hbp']);
     const q9 = evaluateQ(['mh_heart', 'mh_angina']);
     const q10 = evaluateQ(['mh_asthma', 'mh_bronchitis']);
     const q11 = evaluateQ(['mh_tb']);
     const q12 = evaluateQ(['mh_ulcer']);
-    const q13 = evaluateQ(['mh_hep', 'al_liver'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q13 = evaluateQ(['mh_hep', 'al_liver'], (v) => v === 'Yes' || v === 'Abnormal');
     const q14 = evaluateQ(['mh_diarrhea', 'mh_bowel']);
     const q15 = evaluateQ(['mh_piles']);
     const q16 = evaluateQ(['mh_kidney', 'mh_kidney_stone']);
-    const q17 = evaluateQ(['ur_sugar', 'albumin', 'urin_b'], (val) => val === 'Positive');
-    const q18 = evaluateQ(['vdrl_res', 'hiv_res'], (val) => val === 'Reactive');
+    const q17 = evaluateQ(['ur_sugar', 'albumin', 'urin_b'], (v) => v === 'Positive');
+    const q18 = evaluateQ(['vdrl_res', 'hiv_res'], (v) => v === 'Reactive' || v === 'Positive');
     const q19 = evaluateQ(['mh_diabetes']);
-    const q20 = evaluateQ([], () => false); // Change in weight (Otomatis Kosong jika tidak ada input UI)
-    const q21 = evaluateQ(['mh_rheumatism', 'cv_varicose'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q20 = null;
+    const q21 = evaluateQ(['mh_rheumatism', 'cv_varicose'], (v) => v === 'Yes' || v === 'Abnormal');
     const q22 = evaluateQ(['mh_accident']);
-    const q23 = evaluateQ(['mh_musculo', 'ms_back'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q23 = evaluateQ(['mh_musculo', 'ms_back'], (v) => v === 'Yes' || v === 'Abnormal');
     const q24 = evaluateQ(['mh_skin', 'mh_eczema']);
     const q25 = evaluateQ(['fm_cancer']);
-    const q26 = evaluateQ(['xray'], (val) => !!val);
-    const q27 = evaluateQ(['nearr_cor', 'disr_cor'], (val) => !!val);
+    const q26 = evaluateQ(['date_xray', 'des_abnor'], (v) => isFilled(v));
+    const q27 = evaluateQ(['nearr_cor', 'nearl_cor', 'disr_cor', 'disl_cor'], (v) => isFilled(v));
     const q28 = evaluateQ(['mh_eye', 'mh_eye2']);
     const q29 = evaluateQ(['q_illness', 'mh_surgery']);
-    const q30 = evaluateQ(['q_meds', 'q_illness']);
+    const q30 = evaluateQ(['q_illness'], (v) => v === 'Yes');
     const q31 = evaluateQ(['q_meds']);
     const q32 = evaluateQ(['mh_allergy_med']);
-    const q33 = evaluateQ(['mh_others'], (val) => !!val);
+    const q33 = evaluateQ(['mh_others'], (v) => isFilled(v));
     const q34 = evaluateQ(['exp_compensation']);
     const q35 = evaluateQ(['exp_disable']);
     const q36 = evaluateQ(['q_illness']);
@@ -121,39 +175,56 @@ export async function POST(request: Request) {
     const q41 = evaluateQ(['exp_dust']);
     const q42 = evaluateQ(['exp_chemicals']);
     const q43 = evaluateQ(['exp_skin_infections']);
-    const q44 = evaluateQ(['f_preg_no'], (val) => !!val && parseInt(val) > 0);
+    const q44 = evaluateQ(['f_preg_no'], (v) => isFilled(v) && parseInt(String(v), 10) > 0);
+
+    const smokingQuit = str('smoker_q');
+    const smokingQuitYes = smokingQuit === 'Yes' || smokingQuit === 'true' || smokingQuit === 'True';
+
+    const detailAbnormalFindings = joinRemarks(
+      str('cv_comm'),
+      str('rs_comm'),
+      str('al_comm'),
+      str('gu_comm'),
+      str('in_comm'),
+      str('ms_comm'),
+      str('ns_comm'),
+      str('ea_comm'),
+      str('ey_comm'),
+      str('des_abnor'),
+      str('detail_af')
+    );
 
     doc.render({
-      // SECTION I: IDENTITAS PRIBADI
-      name: `${formData.firstName || ''} ${formData.middleName || ''} ${formData.familyName || ''}`.trim(),
-      employer: formData.company || "",
-      address: formData.address || "",
-      id_passport: formData.idPassport || "",
-      ddmmyy: formData.dob || "",
-      gr: formData.gender || "",
-      med_no: formData.medNo || "",
-      position: formData.position || "",
-      work_location: formData.workLocation || "",
-      
-      // TABEL HEALTH EXAMINATION SUMMARY (KOP ATAS)
-      emp_id: formData.idPassport || "", 
-      ddmmyyyy: formData.dob || "",
-      service_date: formData.serviceDate || "",
-      job_title: formData.position || "",
-      location: formData.workLocation || "",
-      company: formData.company || "",
-      personal_id: formData.idPassport || "",
-      
-      // GAYA HIDUP (ROKOK & ALKOHOL)
-      alcohol_w: formData.q_alcohol_text || (formData.q_alcohol === 'Yes' ? 'Yes' : '0'),
-      n_smoker: isN(formData.q_smoke),
-      smoker: isY(formData.q_smoke),
-      smoker_y: formData.smoker_y || "",
-      smoker_d: formData.smoker_d || "",
-      smoker_q: isY(formData.smoker_q),
-      smoker_q_y: formData.smoker_s_y || "",
+      // SECTION I
+      name: fullName,
+      employer: str('company'),
+      address: str('address'),
+      id_passport: str('idPassport', 'id_passport'),
+      ddmmyy: dobShort,
+      gr: str('gender'),
+      med_no: str('medNo', 'med_no'),
+      position: str('position', 'ilo_position'),
+      work_location: str('workLocation', 'work_location'),
 
-      // SECTION II: MAPPING KUESIONER
+      // HEALTH EXAMINATION SUMMARY HEADER
+      emp_id: str('idPassport', 'id_passport'),
+      ddmmyyyy: dobLong,
+      service_date: serviceDate,
+      job_title: str('position', 'ilo_position'),
+      location: str('workLocation', 'work_location'),
+      company: str('company'),
+      personal_id: str('idPassport', 'id_passport'),
+
+      // Lifestyle
+      alcohol_w: str('q_alcohol_text') || (str('q_alcohol') === 'Yes' ? 'Yes' : '0'),
+      n_smoker: isN(val('q_smoke')),
+      smoker: isY(val('q_smoke')),
+      smoker_y: str('smoker_y'),
+      smoker_d: str('smoker_d'),
+      smoker_q: smokingQuitYes ? charChecked : charUnchecked,
+      smoker_q_y: str('smoker_q_y', 'smoker_s_y'),
+
+      // Questionnaire
       c_q1_y: cq(q1).y, c_q1_n: cq(q1).n,
       c_q2_y: cq(q2).y, c_q2_n: cq(q2).n,
       c_q3_y: cq(q3).y, c_q3_n: cq(q3).n,
@@ -174,8 +245,8 @@ export async function POST(request: Request) {
       c_q18_y: cq(q18).y, c_q18_n: cq(q18).n,
       c_q19_y: cq(q19).y, c_q19_n: cq(q19).n,
       c_q20_y: cq(q20).y, c_q20_n: cq(q20).n,
-      c_q21_y: cq(q21).y, c_q21_n: cq(q21).n, 
-      c_q22_y: cq(q22).y, c_q22_n: cq(q22).n, 
+      c_q21_y: cq(q21).y, c_q21_n: cq(q21).n,
+      c_q22_y: cq(q22).y, c_q22_n: cq(q22).n,
       c_q23_y: cq(q23).y, c_q23_n: cq(q23).n,
       c_q24_y: cq(q24).y, c_q24_n: cq(q24).n,
       c_q25_y: cq(q25).y, c_q25_n: cq(q25).n,
@@ -199,126 +270,140 @@ export async function POST(request: Request) {
       c_q43_y: cq(q43).y, c_q43_n: cq(q43).n,
       c_q44_y: cq(q44).y, c_q44_n: cq(q44).n,
 
-      // BIOMETRIK FISIK (TEKANAN DARAH & TINGGI)
-      p: formData.pulse || "",
-      b_p: formData.bloodPressure || "",
-      rr: formData.respiratoryRate || formData.rr || "",
-      w: formData.weight || "",
-      h: formData.height || "",
-      bmi: formData.bmi || "",
+      // Biometrics
+      p: str('pulse'),
+      b_p: str('bloodPressure', 'blood_pressure'),
+      rr: str('respiratoryRate', 'rr'),
+      w: str('weight'),
+      h: str('height'),
+      bmi: str('bmi'),
 
-      // 1. VISION TEST
-      date_vt: formData.date || "",
-      va_rt: formData.disr_unc || formData.disr_cor || "",
-      va_lt: formData.disl_unc || formData.disl_cor || "",
-      va_be: formData.bv_unc || formData.bv_cor || "",
-      color_blindness: formData.color_vision || "",
-      
-      // MAPPING KE TABEL PHYSICAL EXAM CHEVRON (MENGGUNAKAN 3-STATE)
+      // Vision
+      date_vt: examDate,
+      va_rt: str('disr_unc') || str('disr_cor'),
+      va_lt: str('disl_unc') || str('disl_cor'),
+      va_be: str('bv_unc') || str('bv_cor'),
+      color_blindness: str('color_vision'),
+
+      // Physical exam
       eyes_a: checkEx(eyes_status).a, eyes_n: checkEx(eyes_status).n,
       ears_a: checkEx(ears_status).a, ears_n: checkEx(ears_status).n,
       nose_a: checkEx(nose_status).a, nose_n: checkEx(nose_status).n,
       throat_a: checkEx(throat_status).a, throat_n: checkEx(throat_status).n,
       den_c_a: checkEx(dental_status).a, den_c_n: checkEx(dental_status).n,
       n_t_a: checkEx(neck_status).a, n_t_n: checkEx(neck_status).n,
-      breast_a: charUnchecked, breast_n: charUnchecked, // Default kosong, tidak ada di Smart UI
+      breast_a: charUnchecked, breast_n: charUnchecked,
       lung_a: checkEx(lung_status).a, lung_n: checkEx(lung_status).n,
       heart_a: checkEx(heart_status).a, heart_n: checkEx(heart_status).n,
       abdomen_a: checkEx(abdomen_status).a, abdomen_n: checkEx(abdomen_status).n,
       hernia_a: checkEx(hernia_status).a, hernia_n: checkEx(hernia_status).n,
       genit_a: checkEx(genitalia_status).a, genit_n: checkEx(genitalia_status).n,
       rectal_a: checkEx(rectal_status).a, rectal_n: checkEx(rectal_status).n,
-      pelvic_e_a: charUnchecked, pelvic_e_n: charUnchecked, // Default kosong
+      pelvic_e_a: charUnchecked, pelvic_e_n: charUnchecked,
       lymph_a: checkEx(lymph_status).a, lymph_n: checkEx(lymph_status).n,
       skin_a: checkEx(skin_status).a, skin_n: checkEx(skin_status).n,
       muscul_a: checkEx(muscul_status).a, muscul_n: checkEx(muscul_status).n,
       reflex_a: checkEx(reflex_status).a, reflex_n: checkEx(reflex_status).n,
 
-      // 2. PULMONARY FUNCTION TEST (PFT)
-      ft_fvc: formData.ft_fvc || "",
-      pre_fvc: formData.pre_fvc || "",
-      ft_fev1: formData.ft_fev1 || "",
-      pre_fev1: formData.pre_fev1 || "",
-      ev1_vc: formData.ev1_vc || "",
-      result: formData.result || "",
+      // PFT
+      ft_fvc: str('ft_fvc'),
+      pre_fvc: str('pre_fvc'),
+      ft_fev1: str('ft_fev1'),
+      pre_fev1: str('pre_fev1'),
+      ev1_vc: str('ev1_vc'),
+      result: str('result'),
 
-      // 3. AUDIOMETRIC TEST (TELINGA)
-      l05: formData.l05 || "", l1: formData.l1 || "", l2: formData.l2 || "", l3: formData.l3 || "", l4: formData.l4 || "", l6: formData.l6 || "", l8: formData.l8 || "",
-      r05: formData.r05 || "", r1: formData.r1 || "", r2: formData.r2 || "", r3: formData.r3 || "", r4: formData.r4 || "", r6: formData.r6 || "", r8: formData.r8 || "",
-      oth_result: formData.oht_result || "",
+      // Audiometry
+      l05: str('l05'), l1: str('l1'), l2: str('l2'), l3: str('l3'), l4: str('l4'), l6: str('l6'), l8: str('l8'),
+      r05: str('r05'), r1: str('r1'), r2: str('r2'), r3: str('r3'), r4: str('r4'), r6: str('r6'), r8: str('r8'),
+      oth_result: str('oht_result'),
 
-      // 4. EKG / ECG
-      rate: formData.rate || "",
-      rhyt: formData.rhyt || "",
-      axis: formData.axis || "",
-      pr: formData.pr || "",
-      qrs: formData.qrs || "",
-      twv: formData.twv || "",
-      diag: formData.diag || "",
+      // ECG
+      rate: str('rate'),
+      rhyt: str('rhyt'),
+      axis: str('axis'),
+      pr: str('pr'),
+      qrs: str('qrs'),
+      twv: str('twv'),
+      diag: str('diag'),
 
-      // 5. DARAH (BLOOD)
-      blood_g: formData.bloodGroupType || "",
-      lab_rh: formData.bloodGroupRh || "",
-      lab_hb: formData.lab_hb || "",
-      lab_hct: formData.lab_hct || "",
-      rbc_m: formData.rbc_m || "",
-      lab_wbc: formData.lab_wbc || "",
+      // Blood
+      blood_g: str('bloodGroupType', 'bg_type'),
+      lab_rh: str('bloodGroupRh', 'bg_rh'),
+      lab_hb: str('lab_hb'),
+      lab_hct: str('lab_hct'),
+      rbc_m: str('rbc_m'),
+      lab_wbc: str('lab_wbc'),
 
-      // 6. URINE (KENCING)
-      pmn: formData.pmn || "",
-      lymph: formData.lymph || "",
-      mono: formData.mono || "",
-      eos: formData.eos || "",
-      baso: formData.baso || "",
-      band: formData.band || "",
-      albumin: formData.albumin || "",
-      ur_sugar: formData.ur_sugar || "",
-      urin_b: formData.urin_b || "",
-      lab_platelet: formData.lab_platelet || "",
-      wbc: formData.wbc || "",
-      rbc: formData.rbc || "",
-      casts: formData.casts || "",
-      ur_others: formData.ur_others || "",
+      // Urine
+      pmn: str('pmn'),
+      lymph: str('lymph'),
+      mono: str('mono'),
+      eos: str('eos'),
+      baso: str('baso'),
+      band: str('band'),
+      albumin: str('albumin'),
+      ur_sugar: str('ur_sugar'),
+      urin_b: str('urin_b'),
+      lab_platelet: str('lab_platelet'),
+      wbc: str('wbc'),
+      rbc: str('rbc'),
+      casts: str('casts'),
+      ur_others: str('ur_others'),
 
-      // 7. CHEMICAL BLOOD & STOOL
-      lab_sugar: formData.lab_sugar || "", val_sugar: formData.val_sugar || "",
-      lab_chol: formData.lab_chol || "", val_chol: formData.val_chol || "",
-      lab_trig: formData.lab_trig || "", val_trig: formData.val_trig || "",
-      lab_hdl: formData.lab_hdl || "", val_hdl: formData.val_hdl || "",
-      lab_ldl: formData.lab_ldl || "", val_ldl: formData.val_ldl || "",
-      lab_bun: formData.lab_bun || "", val_bun: formData.val_bun || "",
-      lab_creat: formData.lab_creat || "", val_creat: formData.val_creat || "",
-      lab_sgot: formData.lab_sgot || "", val_sgot: formData.val_sgot || "",
-      lab_sgpt: formData.lab_sgpt || "", val_sgpt: formData.val_sgpt || "",
-      lab_uric: formData.lab_uric || "", val_urig: formData.val_urig || "",
-      only_cg: formData.stool_bact || formData.stool_para || "",
+      // Chemical blood & stool
+      lab_sugar: str('lab_sugar'),
+      val_sugar: str('val_sugar'),
+      lab_chol: str('lab_chol'),
+      val_chol: str('val_chol'),
+      lab_trig: str('lab_trig'),
+      val_trig: str('val_trig'),
+      lab_hdl: str('lab_hdl'),
+      val_hdl: str('val_hdl'),
+      lab_ldl: str('lab_ldl'),
+      val_ldl: str('val_ldl'),
+      lab_bun: str('lab_bun'),
+      val_bun: str('val_bun'),
+      lab_creat: str('lab_creat'),
+      val_creat: str('val_creat'),
+      lab_sgot: str('lab_sgot'),
+      val_sgot: str('val_sgot'),
+      lab_sgpt: str('lab_sgpt'),
+      val_sgpt: str('val_sgpt'),
+      lab_uric: str('lab_uric'),
+      val_urig: str('val_urig'),
+      only_cg: str('only_cg') || [str('stool_bact'), str('stool_para')].filter(Boolean).join(' / '),
 
-      // 8. RONGTEN (X-RAY) & KESIMPULAN (CONCLUSION)
-      date_xray: formData.date_xray || formData.date || "",
-      des_abnor: formData.des_abnor || formData.xray || "",
-      
-      // Menggabungkan komentar pemeriksaan fisik yang abnormal ke dalam kolom detail
-      detail_af: [formData.cv_comm, formData.rs_comm, formData.al_comm, formData.gu_comm, formData.in_comm, formData.ms_comm, formData.ns_comm, formData.ea_comm, formData.ey_comm].filter(Boolean).join('. '),
-      
-      summary: formData.summary || "",
-      suggestion: formData.suggestion || "",
-      eps: formData.eps || "",
-      hospital: formData.hospital || "",
-      date: formData.date || "",
-      comments: formData.comments || formData.restrictions || "",
+      // X-ray & conclusion
+      date_xray: xrayDate || examDate,
+      des_abnor: str('des_abnor') || str('xray'),
+      detail_af: detailAbnormalFindings,
+      summary: str('summary'),
+      suggestion: str('suggestion'),
+      eps: str('eps'),
+      hospital: str('hospital'),
+      date: examDate,
+      comments: str('comments') || str('restrictions') || str('rest_desc'),
     });
 
-    const buf = doc.getZip().generate({ type: 'uint8array', compression: 'DEFLATE' });
-    
+    const buf = doc.getZip().generate({
+      type: 'uint8array',
+      compression: 'DEFLATE',
+    });
+
     return new NextResponse(buf as unknown as BodyInit, {
       status: 200,
       headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': 'attachment; filename="Chevron_Report.docx"',
       },
     });
   } catch (error: any) {
     console.error('Error generating document:', error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan internal backend.' }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || 'Terjadi kesalahan internal backend.' },
+      { status: 500 }
+    );
   }
 }

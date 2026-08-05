@@ -6,11 +6,18 @@ import path from 'path';
 
 export async function POST(request: Request) {
   try {
-    const { formData } = await request.json();
-    
-    // Pastikan nama file ini persis dengan template Word Marshall Anda
-    const fileName = '3. MARSHALL.docx'; 
+    const { formData = {} } = await request.json();
+
+    const fileName = '3. MARSHALL.docx';
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
+
+    if (!fs.existsSync(templatePath)) {
+      return NextResponse.json(
+        { error: `Template tidak ditemukan: ${fileName}` },
+        { status: 404 }
+      );
+    }
+
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);
 
@@ -19,129 +26,212 @@ export async function POST(request: Request) {
       paragraphLoop: true,
       linebreaks: true,
       delimiters: { start: '{{', end: '}}' },
-      nullGetter: function() { return ""; } // Mencegah munculnya teks "undefined" di Word
+      nullGetter: () => '',
     });
 
-    // --- PARSING TANGGAL LAHIR (Bulan Teks, Hari, Tahun) ---
-    const dobDate = formData.dob ? new Date(formData.dob) : null;
-    const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-    const dobMonth = dobDate ? monthNames[dobDate.getMonth()] : "";
-    const dobDay = dobDate ? dobDate.getDate().toString().padStart(2, '0') : "";
-    const dobYear = dobDate ? dobDate.getFullYear().toString() : "";
-
-    // --- ROLL-UP LOGIC UNTUK DESKRIPSI SISTEMIK MARSHALL ---
-    // Marshall meminta deskripsi teks "Normal" atau keterangan abnormalitasnya.
-    const getSystemDesc = (fields: string[], remark: string) => {
-        const isAbnormal = fields.some(field => formData[field] === 'Abnormal');
-        return isAbnormal ? (remark || "Abnormal") : "Normal";
+    const pick = (...keys: string[]) => {
+      for (const key of keys) {
+        const value = formData[key];
+        if (value !== undefined && value !== null) return value;
+      }
+      return '';
     };
 
-    // Mapping berdasarkan organ spesifik Smart UI
-    const headNeckDesc = getSystemDesc(['rs_nasal', 'rs_thyroid', 'rs_trachea', 'ea_meatus', 'ea_drums', 'ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi', 'al_teeth', 'al_tongue'], 
-        [formData.rs_comm, formData.ea_comm, formData.ey_comm, formData.al_comm].filter(Boolean).join('. '));
-    
-    const heartDesc = getSystemDesc(['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs', 'cv_varicose'], formData.cv_comm);
-    const lungsDesc = getSystemDesc(['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent'], formData.rs_comm);
-    const extDesc = getSystemDesc(['ms_hands', 'ms_limbs', 'ms_joints'], formData.ms_comm);
+    const str = (...keys: string[]) => {
+      const value = pick(...keys);
+      return value === undefined || value === null ? '' : String(value).trim();
+    };
 
-    // --- RENDER VARIABEL KE TEMPLATE LENGKAP 100% ---
-    doc.render({
-      // 1. Identitas Dasar
-      family_name: formData.familyName || "",
-      first_name: formData.firstName || "", // Telah digabungkan dari UI
-      month_text: dobMonth,
-      day: dobDay,
-      year: dobYear,
-      pob_city: formData.pob_city || "",
-      pob_country: formData.pob_country || formData.nationality || "",
-      g_m: formData.gender === 'Male' ? '☑' : '☐',
-      g_f: formData.gender === 'Female' ? '☑' : '☐',
-      address: formData.address || "",
+    const mark = (condition: boolean) => (condition ? '☑' : '☐');
 
-      // 2. Posisi Pekerjaan (EXAMINATION FOR DUTY AS)
-      pos_mas: formData.ilo_position === 'Master' ? '☑' : '☐',
-      pos_dec: formData.ilo_position === 'Deck Officer' ? '☑' : '☐',
-      pos_eng: formData.ilo_position === 'Engineering Officer' ? '☑' : '☐',
-      pos_rad: (formData.ilo_position === 'Radio Officer' || formData.ilo_position === 'Radio Operator') ? '☑' : '☐',
-      pos_rat: formData.ilo_position === 'Rating' ? '☑' : '☐',
-      pos_ccook: formData.ilo_position === 'Chief Cook' ? '☑' : '☐', 
-      pos_cook: formData.ilo_position === 'Cook' ? '☑' : '☐', 
+    const yesNoMark = (value: any, expected: 'Yes' | 'No') =>
+      String(value || '').trim() === expected ? '☑' : '☐';
 
-      // 3. Tanda-Tanda Vital & Penampilan Fisik
-      h: formData.height || "",
-      w: formData.weight || "",
-      bp: formData.bloodPressure || "",
-      p: formData.pulse || "",
-      rr: formData.rr || formData.respiratoryRate || "-", 
-      gen_app: formData.gen_app === 'Abnormal' ? 'Abnormal' : "Good", 
+    const splitIsoDate = (value: string) => {
+      if (!value || !value.includes('-')) {
+        return { year: '', month: '', day: '' };
+      }
+      const [year, month, day] = value.split('-');
+      return {
+        year: year || '',
+        month: month || '',
+        day: day || '',
+      };
+    };
 
-      // 4. Penglihatan & Pendengaran
-      disr_unc: formData.disr_unc || "-",
-      disl_unc: formData.disl_unc || "-",
-      disr_cor: formData.disr_cor || "-",
-      disl_cor: formData.disl_cor || "-",
-      hear_r: formData.hear_r || (getSystemDesc(['ea_meatus', 'ea_drums'], '') === 'Normal' ? 'Normal' : 'Abnormal'),
-      hear_l: formData.hear_l || (getSystemDesc(['ea_meatus', 'ea_drums'], '') === 'Normal' ? 'Normal' : 'Abnormal'),
+    const monthNames = [
+      'JANUARY',
+      'FEBRUARY',
+      'MARCH',
+      'APRIL',
+      'MAY',
+      'JUNE',
+      'JULY',
+      'AUGUST',
+      'SEPTEMBER',
+      'OCTOBER',
+      'NOVEMBER',
+      'DECEMBER',
+    ];
 
-      // 5. Tes Warna & Kacamata 
-      col_book: formData.color_test_type === 'Book' ? '☑' : '☐', 
-      col_lant: formData.color_test_type === 'Lantern' ? '☑' : '☐',
-      cv_y: formData.color_vision === 'Normal' ? '☑' : '☐',
-      cv_n: (formData.color_vision === 'Partial' || formData.color_vision === 'Total') ? '☑' : '☐',
-      glass_y: (formData.disr_cor || formData.disl_cor) ? '☑' : '☐',
-      glass_n: !(formData.disr_cor || formData.disl_cor) ? '☑' : '☐',
+    const dobRaw = str('dob');
+    const { year, month, day } = splitIsoDate(dobRaw);
+    const month_text =
+      month && Number(month) >= 1 && Number(month) <= 12
+        ? monthNames[Number(month) - 1]
+        : '';
 
-      // 6. Pemeriksaan Fisik Sistemik (MENGGUNAKAN SMART UI ROLL-UP)
-      head_neck: headNeckDesc,
-      heart_desc: heartDesc,
-      lungs_desc: lungsDesc,
-      speech_desc: "Yes", // Default Speech Unimpaired = Yes
-      ext_up: extDesc,
-      ext_low: extDesc,
+    const getSystemDesc = (fields: string[], remark?: string) => {
+      const isAbnormal = fields.some((field) => str(field) === 'Abnormal');
+      return isAbnormal ? (remark?.trim() || 'Abnormal') : 'Normal';
+    };
 
-      // 7. Kuesioner Medis
-      vac_y: formData.vaccinated === 'Yes' ? '☑' : '☐', 
-      vac_n: formData.vaccinated === 'No' ? '☑' : '☐',
-      
-      // Mencegah kontradiksi: Jika bebas penyakit menular (Yes), maka menderita penyakit (No)
-      suffer_y: formData.free_cond === 'No' ? '☑' : '☐',
-      suffer_n: formData.free_cond === 'Yes' ? '☑' : '☐',
-      
-      meds_y: formData.q_meds === 'Yes' ? '☑' : '☐',
-      meds_n: formData.q_meds === 'No' ? '☑' : '☐',
+    const head_neck = getSystemDesc(
+      [
+        'rs_nasal',
+        'rs_thyroid',
+        'rs_trachea',
+        'ea_meatus',
+        'ea_drums',
+        'ey_light',
+        'ey_accom',
+        'ey_nyst',
+        'ey_fundi',
+        'al_teeth',
+        'al_tongue',
+      ],
+      [str('rs_comm'), str('ea_comm'), str('ey_comm'), str('al_comm')]
+        .filter(Boolean)
+        .join('. ')
+    );
 
-      // 8. Bagian Tanda Tangan & Sertifikasi Dokter
-      name: `${formData.firstName || ""} ${formData.familyName || ""}`.trim(),
-      date: formData.date || new Date().toLocaleDateString('en-GB'),
-      exp_date: formData.exp_date || "", 
-      
-      com_y: formData.free_cond === 'Yes' ? '☑' : '☐',
-      com_n: formData.free_cond === 'No' ? '☑' : '☐',
-      
-      fit_y: formData.fit_lookout === 'Fit' ? '☑' : '☐',
-      fit_n: formData.fit_lookout === 'Unfit' ? '☑' : '☐',
-      
-      rest_no: formData.restrictions === 'No' ? '☑' : '☐', 
-      rest_yes: formData.restrictions === 'Yes' ? '☑' : '☐',
-      rest_desc: formData.restrictions === 'Yes' ? (formData.rest_desc || "No Specific Restrictions") : "Tidak ada",
-      
-      eps: formData.eps || "",
-      hospital: formData.hospital || "",
-      cert_auth: formData.cert_auth || "Medical Council", 
+    const heart_desc = getSystemDesc(
+      ['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs', 'cv_varicose'],
+      str('cv_comm')
+    );
+
+    const lungs_desc = getSystemDesc(
+      ['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent'],
+      str('rs_comm')
+    );
+
+    const ext_desc = getSystemDesc(
+      ['ms_hands', 'ms_limbs', 'ms_joints', 'ms_inj'],
+      str('ms_comm')
+    );
+
+    const earNormal = getSystemDesc(['ea_meatus', 'ea_drums'], str('ea_comm')) === 'Normal';
+
+    const fullName = `${str('firstName', 'first_name')} ${str('familyName', 'family_name')}`.trim();
+    const position = str('ilo_position', 'position');
+
+    const renderData = {
+      // Identitas dasar
+      family_name: str('familyName', 'family_name'),
+      first_name: str('firstName', 'first_name'),
+      month_text,
+      day,
+      year,
+      pob_city: str('pob_city', 'place_of_birth_city'),
+      pob_country: str('pob_country', 'place_of_birth_country', 'nationality'),
+      g_m: mark(str('gender') === 'Male'),
+      g_f: mark(str('gender') === 'Female'),
+      address: str('address'),
+
+      // Position / duty as
+      pos_mas: mark(position === 'Master'),
+      pos_dec: mark(position === 'Deck Officer'),
+      pos_eng: mark(position === 'Engineering Officer'),
+      pos_rad: mark(position === 'Radio Officer' || position === 'Radio Operator'),
+      pos_rat: mark(position === 'Rating'),
+      pos_ccook: mark(position === 'Chief Cook'),
+      pos_cook: mark(position === 'Cook'),
+
+      // Vitals
+      h: str('height'),
+      w: str('weight'),
+      bp: str('bloodPressure', 'blood_pressure'),
+      p: str('pulse'),
+      rr: str('rr', 'respiratoryRate', 'respiratory_rate') || '-',
+      gen_app: str('gen_app') === 'Abnormal' ? 'Abnormal' : 'Good',
+
+      // Vision / hearing
+      disr_unc: str('disr_unc') || '-',
+      disl_unc: str('disl_unc') || '-',
+      disr_cor: str('disr_cor') || '-',
+      disl_cor: str('disl_cor') || '-',
+      hear_r: str('hear_r') || (earNormal ? 'Normal' : 'Abnormal'),
+      hear_l: str('hear_l') || (earNormal ? 'Normal' : 'Abnormal'),
+
+      // Color test / glasses
+      col_book: mark(str('color_test_type') === 'Book'),
+      col_lant: mark(str('color_test_type') === 'Lantern'),
+      cv_y: mark(str('color_vision') === 'Normal'),
+      cv_n: mark(str('color_vision') === 'Partial' || str('color_vision') === 'Total'),
+      glass_y: mark(Boolean(str('disr_cor') || str('disl_cor'))),
+      glass_n: mark(!(str('disr_cor') || str('disl_cor'))),
+
+      // Systemic physical exam
+      head_neck,
+      heart_desc,
+      lungs_desc,
+      speech_desc: 'Yes',
+      ext_up: ext_desc,
+      ext_low: ext_desc,
+
+      // Questionnaire
+      vac_y: yesNoMark(pick('vaccinated'), 'Yes'),
+      vac_n: yesNoMark(pick('vaccinated'), 'No'),
+
+      suffer_y: yesNoMark(pick('free_cond'), 'No'),
+      suffer_n: yesNoMark(pick('free_cond'), 'Yes'),
+
+      meds_y: yesNoMark(pick('q_meds', 'qmeds'), 'Yes'),
+      meds_n: yesNoMark(pick('q_meds', 'qmeds'), 'No'),
+
+      // Signature and certification
+      date: str('date') || new Date().toLocaleDateString('en-GB'),
+      exp_date: str('exp_date'),
+      name: fullName,
+
+      com_y: yesNoMark(pick('free_cond'), 'Yes'),
+      com_n: yesNoMark(pick('free_cond'), 'No'),
+
+      fit_y: mark(str('fit_lookout') === 'Fit'),
+      fit_n: mark(str('fit_lookout') === 'Unfit'),
+
+      rest_no: mark(str('restrictions') === 'No'),
+      rest_yes: mark(str('restrictions') === 'Yes'),
+      rest_desc:
+        str('restrictions') === 'Yes'
+          ? str('rest_desc') || 'No Specific Restrictions'
+          : 'Tidak ada',
+
+      eps: str('eps'),
+      hospital: str('hospital'),
+      cert_auth: str('cert_auth') || 'Medical Council',
+    };
+
+    doc.render(renderData);
+
+    const buf = doc.getZip().generate({
+      type: 'uint8array',
+      compression: 'DEFLATE',
     });
 
-    // Menghasilkan dokumen biner
-    const buf = doc.getZip().generate({ type: 'uint8array', compression: 'DEFLATE' });
-    
     return new NextResponse(buf as unknown as BodyInit, {
       status: 200,
       headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': 'attachment; filename="Marshall_Report.docx"',
       },
     });
   } catch (error: any) {
-    console.error('Error generating document:', error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan internal backend.' }, { status: 500 });
+    console.error('Error generating Marshall document:', error);
+    return NextResponse.json(
+      { error: error?.message || 'Terjadi kesalahan internal backend.' },
+      { status: 500 }
+    );
   }
 }

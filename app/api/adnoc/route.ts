@@ -6,10 +6,18 @@ import path from 'path';
 
 export async function POST(request: Request) {
   try {
-    const { formData } = await request.json();
-    
-    const fileName = '6. ADNOC Medical Form.docx'; 
+    const { formData = {} } = await request.json();
+
+    const fileName = '6. ADNOC Medical Form.docx';
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
+
+    if (!fs.existsSync(templatePath)) {
+      return NextResponse.json(
+        { error: `Template tidak ditemukan: ${fileName}` },
+        { status: 404 }
+      );
+    }
+
     const content = fs.readFileSync(templatePath, 'binary');
     const zip = new PizZip(content);
 
@@ -18,268 +26,354 @@ export async function POST(request: Request) {
       paragraphLoop: true,
       linebreaks: true,
       delimiters: { start: '{{', end: '}}' },
-      nullGetter: function() { return ""; } // Mencegah muncul teks "undefined"
+      nullGetter: () => '',
     });
 
-    // --- LOGIKA PEMISAH NAMA DEPAN & TENGAH KHUSUS ADNOC ---
-    let realFirstName = formData.firstName || "";
-    const middle = formData.middleName || "";
-    if (middle && realFirstName.endsWith(middle)) {
-        realFirstName = realFirstName.slice(0, -(middle.length)).trim();
-    }
+    const val = (...keys: string[]) => {
+      for (const key of keys) {
+        const v = formData[key];
+        if (v !== undefined && v !== null) return v;
+      }
+      return '';
+    };
 
-    // --- PEMISAH TEKANAN DARAH (120/80 menjadi Sys: 120, Dia: 80) ---
-    const bpParts = (formData.bloodPressure || "").split("/");
-    const bp_sys = bpParts[0] || "";
-    const bp_dia = bpParts[1] || "";
+    const str = (...keys: string[]) => {
+      const v = val(...keys);
+      return v === undefined || v === null ? '' : String(v).trim();
+    };
 
-    // --- HELPER FUNCTIONS ---
-    const isY = (val: any) => (val === 'Yes' || val === true) ? '☑' : '☐';
-    const isN = (val: any) => (val === 'No' || val === false) ? '☑' : '☐';
-    const isFemale = formData.gender === 'Female';
+    const isY = (v: any) =>
+      String(v).trim() === 'Yes' || v === true ? '☑' : '☐';
 
-    // --- PENGECEKAN STATUS DIABETES ---
-    const isDiabetes = formData.mh_diabetes === 'Yes';
+    const isN = (v: any) =>
+      String(v).trim() === 'No' || v === false ? '☑' : '☐';
 
-    // --- RENDER VARIABEL 100% MENGIKUTI TEMPLATE WORD ---
+    const formatDate = (dateStr: string) => {
+      if (!dateStr || !dateStr.includes('-')) return dateStr || '';
+      const [yyyy, mm, dd] = dateStr.split('-');
+      if (!yyyy || !mm || !dd) return dateStr || '';
+      return `${dd}/${mm}/${yyyy}`;
+    };
+
+    const cleanJoinedName = (firstNameRaw: string, middleNameRaw: string) => {
+      const first = String(firstNameRaw || '').trim();
+      const middle = String(middleNameRaw || '').trim();
+      if (!first || !middle) return { first, middle };
+
+      const full = `${first} ${middle}`.trim();
+      if (first === full) return { first, middle };
+
+      if (first.endsWith(` ${middle}`)) {
+        return {
+          first: first.slice(0, -(middle.length + 1)).trim(),
+          middle,
+        };
+      }
+
+      return { first, middle };
+    };
+
+    const { first: realFirstName, middle: middleName } = cleanJoinedName(
+      str('firstName'),
+      str('middleName')
+    );
+
+    const bpRaw = str('bloodPressure', 'blood_pressure', 'cv_bp');
+    const bpParts = bpRaw.split('/');
+    const bp_sys = bpParts[0]?.trim() || '';
+    const bp_dia = bpParts[1]?.trim() || '';
+
+    const isFemale = str('gender') === 'Female';
+    const isDiabetes = str('mh_diabetes') === 'Yes';
+
+    const hepBValue =
+      str('hep_b_ag') ||
+      str('hep_b_ab') ||
+      '';
+
+    const bgRh = `${str('bloodGroupType', 'bg_type')}${str('bloodGroupRh', 'bg_rh')}`.trim();
+
+    const examDate = formatDate(str('date'));
+    const dobFormatted = formatDate(str('dob'));
+
     doc.render({
       // 1. IDENTITAS & PEKERJAAN
-      first_name: realFirstName || "",
-      middle_name: middle,
-      family_name: formData.familyName || "",
-      dob: formData.dob || "",
-      gender: formData.gender || "",
-      nationality: formData.nationality || "",
-      company: formData.company || "",
-      position: formData.position || formData.ilo_position || "",
-      marital_status: formData.maritalStatus || "",
-      address: formData.address || "",
-      contact_number: formData.contactNumber || "",
-      email: formData.email || "",
-      reason_exam: formData.reason_exam || "",
+      first_name: realFirstName,
+      middle_name: middleName,
+      family_name: str('familyName'),
+      dob: dobFormatted,
+      gender: str('gender'),
+      nationality: str('nationality'),
+      company: str('company'),
+      position: str('position', 'ilo_position'),
+      marital_status: str('maritalStatus', 'marital_status'),
+      address: str('address'),
+      contact_number: str('contactNumber', 'contact_number'),
+      email: str('email'),
+      reason_exam: str('reason_exam'),
 
       // Previous Employment
-      job1: formData.job1 || "", comp1: formData.comp1 || "", from1: formData.from1 || "", to1: formData.to1 || "",
-      job2: formData.job2 || "", comp2: formData.comp2 || "", from2: formData.from2 || "", to2: formData.to2 || "",
-      job3: formData.job3 || "", comp3: formData.comp3 || "", from3: formData.from3 || "", to3: formData.to3 || "",
-      job4: formData.job4 || "", comp4: formData.comp4 || "", from4: formData.from4 || "", to4: formData.to4 || "",
+      job1: str('job1'), comp1: str('comp1'), from1: str('from1'), to1: str('to1'),
+      job2: str('job2'), comp2: str('comp2'), from2: str('from2'), to2: str('to2'),
+      job3: str('job3'), comp3: str('comp3'), from3: str('from3'), to3: str('to3'),
+      job4: str('job4'), comp4: str('comp4'), from4: str('from4'), to4: str('to4'),
 
       // 2. EXPOSURE & KELUARGA
-      ex_noise: isY(formData.exp_noise),
-      ex_metal: isY(formData.exp_heavy_metals),
-      ex_skin: isY(formData.exp_skin_infections),
-      ex_comp: isY(formData.exp_compensation),
-      ex_chem: isY(formData.exp_chemicals),
-      ex_rad: isY(formData.exp_radiation),
-      ex_dust: isY(formData.exp_dust),
-      ex_unfit: isY(formData.q_omfc), 
-      ex_dis: isY(formData.exp_disable), 
-      dis_no: formData.exp_disable_no || "",
+      ex_noise: isY(val('exp_noise')),
+      ex_metal: isY(val('exp_heavy_metals')),
+      ex_skin: isY(val('exp_skin_infections')),
+      ex_comp: isY(val('exp_compensation')),
+      ex_chem: isY(val('exp_chemicals')),
+      ex_rad: isY(val('exp_radiation')),
+      ex_dust: isY(val('exp_dust')),
+      ex_unfit: isY(val('q_omfc')),
+      ex_dis: isY(val('exp_disable')),
+      dis_no: str('exp_disable_no'),
 
-      fh_heart: isY(formData.fm_heart),
-      fh_asthma: isY(formData.fm_asthma),
-      fh_diab: isY(formData.fm_diabetes),
-      fh_hbp: isY(formData.fm_hypertension),
-      fh_tb: isY(formData.fm_tb),
-      fh_allergy: isY(formData.fm_allergy),
-      fh_mental: isY(formData.fm_mental),
-      fh_cancer: isY(formData.fm_cancer),
-      fh_other: formData.fm_others ? '☑' : '☐',
-      fm_others: formData.fm_others || '',
-      
-      // Umur & Status Kesehatan Keluarga
-      fa_age: formData.fa_age || "", fa_state: formData.fa_state || "", 
-      spo_age: formData.spo_age || "", spo_state: formData.spo_state || "",
-      mo_age: formData.mo_age || "", mo_state: formData.mo_state || "", 
-      chi_age: formData.chi_age || "", chi_state: formData.chi_state || "",
-      sib_age: formData.sib_age || "", sib_state: formData.sib_state || "",
+      fh_heart: isY(val('fm_heart')),
+      fh_asthma: isY(val('fm_asthma')),
+      fh_diab: isY(val('fm_diabetes')),
+      fh_hbp: isY(val('fm_hypertension')),
+      fh_tb: isY(val('fm_tb')),
+      fh_allergy: isY(val('fm_allergy')),
+      fh_mental: isY(val('fm_mental')),
+      fh_cancer: isY(val('fm_cancer')),
+      fh_other: str('fm_others') ? '☑' : '☐',
+      fm_others: str('fm_others'),
 
-      // 3. RIWAYAT MEDIS PRIBADI (PERSONAL HISTORY)
-      ph_hbp_y: isY(formData.mh_hbp), ph_hbp_n: isN(formData.mh_hbp),
-      ph_ang_y: isY(formData.mh_angina), ph_ang_n: isN(formData.mh_angina),
-      ph_hrt_y: isY(formData.mh_heart), ph_hrt_n: isN(formData.mh_heart),
-      ph_csurg_y: isY(formData.mh_cardiac_surgery), ph_csurg_n: isN(formData.mh_cardiac_surgery),
-      ph_asthma_y: isY(formData.mh_asthma), ph_asthma_n: isN(formData.mh_asthma),
-      
-      ph_bron_y: isY(formData.mh_bronchitis), ph_bron_n: isN(formData.mh_bronchitis),
-      ph_tb_y: isY(formData.mh_tb), ph_tb_n: isN(formData.mh_tb),
-      ph_ulcer_y: isY(formData.mh_ulcer), ph_ulcer_n: isN(formData.mh_ulcer),
-      ph_hep_y: isY(formData.mh_hep), ph_hep_n: isN(formData.mh_hep),
-      
-      ph_piles_y: isY(formData.mh_piles), ph_piles_n: isN(formData.mh_piles),
-      ph_hernia_y: isY(formData.mh_hernia), ph_hernia_n: isN(formData.mh_hernia),
-      ph_const_y: isY(formData.mh_constipation), ph_const_n: isN(formData.mh_constipation),
-      ph_diar_y: isY(formData.mh_diarrhea), ph_diar_n: isN(formData.mh_diarrhea),
-      ph_bowel_y: isY(formData.mh_bowel), ph_bowel_n: isN(formData.mh_bowel),
-      
-      ph_epil_y: isY(formData.mh_epilepsy), ph_epil_n: isN(formData.mh_epilepsy),
-      ph_stroke_y: isY(formData.mh_stroke), ph_stroke_n: isN(formData.mh_stroke),
-      ph_mig_y: isY(formData.mh_headache), ph_mig_n: isN(formData.mh_headache),
-      ph_vert_y: isY(formData.mh_fainting), ph_vert_n: isN(formData.mh_fainting),
-      ph_back_y: isY(formData.mh_musculo), ph_back_n: isN(formData.mh_musculo),
-      ph_joint_y: isY(formData.mh_rheumatism), ph_joint_n: isN(formData.mh_rheumatism),
-      ph_frac_y: isY(formData.mh_accident), ph_frac_n: isN(formData.mh_accident),
-      
-      ph_ecz_y: isY(formData.mh_eczema), ph_ecz_n: isN(formData.mh_eczema),
-      ph_viti_y: isY(formData.mh_vitiligo), ph_viti_n: isN(formData.mh_vitiligo),
+      fa_age: str('fa_age'),
+      fa_state: str('fa_state'),
+      spo_age: str('spo_age'),
+      spo_state: str('spo_state'),
+      mo_age: str('mo_age'),
+      mo_state: str('mo_state'),
+      chi_age: str('chi_age'),
+      chi_state: str('chi_state'),
+      sib_age: str('sib_age'),
+      sib_state: str('sib_state'),
 
-      ph_kid_y: isY(formData.mh_kidney), ph_kid_n: isN(formData.mh_kidney),
-      ph_ksto_y: isY(formData.mh_kidney_stone), ph_ksto_n: isN(formData.mh_kidney_stone),
-      ph_anx_y: isY(formData.mh_anxiety), ph_anx_n: isN(formData.mh_anxiety),
-      ph_slp_y: isY(formData.mh_sleep), ph_slp_n: isN(formData.mh_sleep),
-      
-      ph_eye1_y: isY(formData.mh_eye), ph_eye1_n: isN(formData.mh_eye),
-      ph_eye2_y: isY(formData.mh_eye2), ph_eye2_n: isN(formData.mh_eye2),
-      ph_hear1_y: isY(formData.mh_ear), ph_hear1_n: isN(formData.mh_ear),
-      ph_tin_y: isY(formData.mh_tinnitus), ph_tin_n: isN(formData.mh_tinnitus),
-      ph_ear2_y: isY(formData.mh_ear2), ph_ear2_n: isN(formData.mh_ear2),
-      
-      // === LOGIKA DIABETES INSULIN & NON-INSULIN ===
-      diab_ins: (isDiabetes && formData.diab_ins === 'Yes') ? '☑' : '☐',
-      diab_non: (isDiabetes && formData.diab_non === 'Yes') ? '☑' : '☐',
-      ph_diab_y: isY(formData.mh_diabetes), 
-      ph_diab_n: isN(formData.mh_diabetes),
-      
-      ph_thyr_y: isY(formData.mh_thyroid), ph_thyr_n: isN(formData.mh_thyroid),
+      // 3. PERSONAL HISTORY
+      ph_hbp_y: isY(val('mh_hbp')), ph_hbp_n: isN(val('mh_hbp')),
+      ph_ang_y: isY(val('mh_angina')), ph_ang_n: isN(val('mh_angina')),
+      ph_hrt_y: isY(val('mh_heart')), ph_hrt_n: isN(val('mh_heart')),
+      ph_csurg_y: isY(val('mh_cardiac_surgery')), ph_csurg_n: isN(val('mh_cardiac_surgery')),
+      ph_asthma_y: isY(val('mh_asthma')), ph_asthma_n: isN(val('mh_asthma')),
 
-      ph_ane_y: isY(formData.mh_anemia), ph_ane_n: isN(formData.mh_anemia),
-      ph_thal_y: isY(formData.mh_thal), ph_thal_n: isN(formData.mh_thal),
-      ph_sick_y: isY(formData.mh_sickle), ph_sick_n: isN(formData.mh_sickle),
-      ph_alrg_y: isY(formData.mh_allergy_med), ph_alrg_n: isN(formData.mh_allergy_med),
+      ph_bron_y: isY(val('mh_bronchitis')), ph_bron_n: isN(val('mh_bronchitis')),
+      ph_tb_y: isY(val('mh_tb')), ph_tb_n: isN(val('mh_tb')),
+      ph_ulcer_y: isY(val('mh_ulcer')), ph_ulcer_n: isN(val('mh_ulcer')),
+      ph_hep_y: isY(val('mh_hep')), ph_hep_n: isN(val('mh_hep')),
 
-      // BAGIAN BAWAH PERSONAL HISTORY
-      ph_meds_y: isY(formData.q_meds), ph_meds_n: isN(formData.q_meds),
-      ph_hosp1_y: isY(formData.q_illness), ph_hosp1_n: isN(formData.q_illness),
-      ph_hosp2_y: isY(formData.q_hosp_wait), ph_hosp2_n: isN(formData.q_hosp_wait),
-      ph_oth_y: formData.mh_others ? '☑' : '☐', ph_oth_n: '☐', 
-      ph_smoke_y: isY(formData.q_smoke), ph_smoke_n: isN(formData.q_smoke),
-      ph_alc_y: isY(formData.q_alcohol), ph_alc_n: isN(formData.q_alcohol),
-      ph_drug_y: isY(formData.mh_drug), ph_drug_n: isN(formData.mh_drug),
-      ph_skin_y: isY(formData.mh_skin), ph_skin_n: isN(formData.mh_skin),
+      ph_piles_y: isY(val('mh_piles')), ph_piles_n: isN(val('mh_piles')),
+      ph_hernia_y: isY(val('mh_hernia')), ph_hernia_n: isN(val('mh_hernia')),
+      ph_const_y: isY(val('mh_constipation')), ph_const_n: isN(val('mh_constipation')),
+      ph_diar_y: isY(val('mh_diarrhea')), ph_diar_n: isN(val('mh_diarrhea')),
+      ph_bowel_y: isY(val('mh_bowel')), ph_bowel_n: isN(val('mh_bowel')),
 
-      // 4. KHUSUS WANITA (FEMALES)
-      f_lmp: isFemale ? (formData.f_lmp || '') : '',
-      f_heavy_y: isFemale ? isY(formData.f_heavy) : '☐', 
-      f_heavy_n: isFemale ? isN(formData.f_heavy) : '☐',
-      f_reg_y: isFemale ? isY(formData.f_reg) : '☐', 
-      f_reg_n: isFemale ? isN(formData.f_reg) : '☐',
-      f_pain_y: isFemale ? isY(formData.f_pain) : '☐', 
-      f_pain_n: isFemale ? isN(formData.f_pain) : '☐',
-      f_pill_y: isFemale ? isY(formData.f_pill) : '☐', 
-      f_pill_n: isFemale ? isN(formData.f_pill) : '☐',
-      f_preg_no: isFemale ? (formData.f_preg_no || '') : '',
-      f_live_birth: isFemale ? (formData.f_live_birth || '') : '',
+      ph_epil_y: isY(val('mh_epilepsy')), ph_epil_n: isN(val('mh_epilepsy')),
+      ph_stroke_y: isY(val('mh_stroke')), ph_stroke_n: isN(val('mh_stroke')),
+      ph_mig_y: isY(val('mh_headache')), ph_mig_n: isN(val('mh_headache')),
+      ph_vert_y: isY(val('mh_fainting')), ph_vert_n: isN(val('mh_fainting')),
+      ph_back_y: isY(val('mh_musculo')), ph_back_n: isN(val('mh_musculo')),
+      ph_joint_y: isY(val('mh_rheumatism')), ph_joint_n: isN(val('mh_rheumatism')),
+      ph_frac_y: isY(val('mh_accident')), ph_frac_n: isN(val('mh_accident')),
 
-      date: formData.date || "",
+      ph_ecz_y: isY(val('mh_eczema')), ph_ecz_n: isN(val('mh_eczema')),
+      ph_viti_y: isY(val('mh_vitiligo')), ph_viti_n: isN(val('mh_vitiligo')),
 
-      // 5. PEMERIKSAAN FISIK DOKTER (FORM B) - LOGIKA SMART UI TERBARU
-      g_m: formData.gender === 'Male' ? '☑' : '☐',
+      ph_kid_y: isY(val('mh_kidney')), ph_kid_n: isN(val('mh_kidney')),
+      ph_ksto_y: isY(val('mh_kidney_stone')), ph_ksto_n: isN(val('mh_kidney_stone')),
+      ph_anx_y: isY(val('mh_anxiety')), ph_anx_n: isN(val('mh_anxiety')),
+      ph_slp_y: isY(val('mh_sleep')), ph_slp_n: isN(val('mh_sleep')),
+
+      ph_eye1_y: isY(val('mh_eye')), ph_eye1_n: isN(val('mh_eye')),
+      ph_eye2_y: isY(val('mh_eye2')), ph_eye2_n: isN(val('mh_eye2')),
+      ph_hear1_y: isY(val('mh_ear')), ph_hear1_n: isN(val('mh_ear')),
+      ph_tin_y: isY(val('mh_tinnitus')), ph_tin_n: isN(val('mh_tinnitus')),
+      ph_ear2_y: isY(val('mh_ear2')), ph_ear2_n: isN(val('mh_ear2')),
+
+      diab_ins: isDiabetes && str('diab_ins') === 'Yes' ? '☑' : '☐',
+      diab_non: isDiabetes && str('diab_non') === 'Yes' ? '☑' : '☐',
+      ph_diab_y: isY(val('mh_diabetes')),
+      ph_diab_n: isN(val('mh_diabetes')),
+
+      ph_thyr_y: isY(val('mh_thyroid')), ph_thyr_n: isN(val('mh_thyroid')),
+
+      ph_ane_y: isY(val('mh_anemia')), ph_ane_n: isN(val('mh_anemia')),
+      ph_thal_y: isY(val('mh_thal')), ph_thal_n: isN(val('mh_thal')),
+      ph_sick_y: isY(val('mh_sickle')), ph_sick_n: isN(val('mh_sickle')),
+      ph_alrg_y: isY(val('mh_allergy_med')), ph_alrg_n: isN(val('mh_allergy_med')),
+
+      ph_meds_y: isY(val('q_meds')), ph_meds_n: isN(val('q_meds')),
+      ph_hosp1_y: isY(val('q_illness')), ph_hosp1_n: isN(val('q_illness')),
+      ph_hosp2_y: isY(val('q_hosp_wait')), ph_hosp2_n: isN(val('q_hosp_wait')),
+      ph_oth_y: str('mh_others') ? '☑' : '☐',
+      ph_oth_n: str('mh_others') ? '☐' : '☑',
+      ph_smoke_y: isY(val('q_smoke')), ph_smoke_n: isN(val('q_smoke')),
+      ph_alc_y: isY(val('q_alcohol')), ph_alc_n: isN(val('q_alcohol')),
+      ph_drug_y: isY(val('mh_drug')), ph_drug_n: isN(val('mh_drug')),
+      ph_skin_y: isY(val('mh_skin')), ph_skin_n: isN(val('mh_skin')),
+
+      // 4. FEMALES
+      f_lmp: isFemale ? str('f_lmp') : '',
+      f_heavy_y: isFemale ? isY(val('f_heavy')) : '☐',
+      f_heavy_n: isFemale ? isN(val('f_heavy')) : '☐',
+      f_reg_y: isFemale ? isY(val('f_reg')) : '☐',
+      f_reg_n: isFemale ? isN(val('f_reg')) : '☐',
+      f_pain_y: isFemale ? isY(val('f_pain')) : '☐',
+      f_pain_n: isFemale ? isN(val('f_pain')) : '☐',
+      f_pill_y: isFemale ? isY(val('f_pill')) : '☐',
+      f_pill_n: isFemale ? isN(val('f_pill')) : '☐',
+      f_preg_no: isFemale ? str('f_preg_no') : '',
+      f_live_birth: isFemale ? str('f_live_birth') : '',
+
+      date: examDate,
+
+      // 5. FORM B
+      g_m: str('gender') === 'Male' ? '☑' : '☐',
       g_f: isFemale ? '☑' : '☐',
-      illness_last: formData.illness_last || "", 
+      illness_last: str('illness_last'),
 
-      cv_pulse: formData.cv_pulse || "", cv_comm: formData.cv_comm || "",
-      cv_bp: formData.cv_bp || "",
-      cv_apex: formData.cv_apex || "",
-      cv_sounds: formData.cv_sounds || "",
-      cv_murmurs: formData.cv_murmurs || "",
-      cv_varicose: formData.cv_varicose || "",
+      cv_pulse: str('cv_pulse'),
+      cv_comm: str('cv_comm'),
+      cv_bp: str('cv_bp') || bpRaw,
+      cv_apex: str('cv_apex'),
+      cv_sounds: str('cv_sounds'),
+      cv_murmurs: str('cv_murmurs'),
+      cv_varicose: str('cv_varicose'),
 
-      rs_nasal: formData.rs_nasal || "", rs_comm: formData.rs_comm || "",
-      rs_thyroid: formData.rs_thyroid || "",
-      rs_trachea: formData.rs_trachea || "",
-      rs_chest: formData.rs_chest || "",
-      rs_perc: formData.rs_perc || "",
-      rs_air: formData.rs_air || "",
-      rs_breath: formData.rs_breath || "",
-      rs_advent: formData.rs_advent || "",
+      rs_nasal: str('rs_nasal'),
+      rs_comm: str('rs_comm'),
+      rs_thyroid: str('rs_thyroid'),
+      rs_trachea: str('rs_trachea'),
+      rs_chest: str('rs_chest'),
+      rs_perc: str('rs_perc'),
+      rs_air: str('rs_air'),
+      rs_breath: str('rs_breath'),
+      rs_advent: str('rs_advent'),
 
-      al_teeth: formData.al_teeth || "", al_comm: formData.al_comm || "",
-      al_tongue: formData.al_tongue || "",
-      al_abd: formData.al_abd || "",
-      al_liver: formData.al_liver || "",
-      al_spleen: formData.al_spleen || "",
-      al_lymph: formData.al_lymph || "",
-      al_hernia: formData.al_hernia || "",
-      al_anus: formData.al_anus || "",
+      al_teeth: str('al_teeth'),
+      al_comm: str('al_comm'),
+      al_tongue: str('al_tongue'),
+      al_abd: str('al_abd'),
+      al_liver: str('al_liver'),
+      al_spleen: str('al_spleen'),
+      al_lymph: str('al_lymph'),
+      al_hernia: str('al_hernia'),
+      al_anus: str('al_anus'),
 
-      gu_kidney: formData.gu_kidney || "", gu_comm: formData.gu_comm || "",
-      gu_gen: formData.gu_gen || "",
+      gu_kidney: str('gu_kidney'),
+      gu_comm: str('gu_comm'),
+      gu_gen: str('gu_gen'),
 
-      in_hair: formData.in_hair || "", in_comm: formData.in_comm || "",
-      in_skin: formData.in_skin || "",
-      in_nails: formData.in_nails || "",
+      in_hair: str('in_hair'),
+      in_comm: str('in_comm'),
+      in_skin: str('in_skin'),
+      in_nails: str('in_nails'),
 
-      ms_hands: formData.ms_hands || "", ms_comm: formData.ms_comm || "",
-      ms_limbs: formData.ms_limbs || "",
-      ms_back: formData.ms_back || "",
-      ms_joints: formData.ms_joints || "",
-      ms_inj: formData.ms_inj || "",
+      ms_hands: str('ms_hands'),
+      ms_comm: str('ms_comm'),
+      ms_limbs: str('ms_limbs'),
+      ms_back: str('ms_back'),
+      ms_joints: str('ms_joints'),
+      ms_inj: str('ms_inj'),
 
-      ns_comm: formData.ns_comm || "",
-      r_bl_r: "", r_tl_r: "", r_sup_r: "", r_kn_r: "", r_an_r: "", r_pl_r: "",
-      r_bl_l: "", r_tl_l: "", r_sup_l: "", r_kn_l: "", r_an_l: "", r_pl_l: "",
-      ns_power: formData.ns_power || "",
-      ns_tone: formData.ns_tone || "",
-      ns_coord: formData.ns_coord || "",
-      ns_sens: formData.ns_sens || "",
-      ns_emot: formData.mh_mental || "", 
-      ns_intel: formData.ns_intel || "",
+      ns_comm: str('ns_comm'),
+      r_bl_r: str('r_bl_r'),
+      r_tl_r: str('r_tl_r'),
+      r_sup_r: str('r_sup_r'),
+      r_kn_r: str('r_kn_r'),
+      r_an_r: str('r_an_r'),
+      r_pl_r: str('r_pl_r'),
+      r_bl_l: str('r_bl_l'),
+      r_tl_l: str('r_tl_l'),
+      r_sup_l: str('r_sup_l'),
+      r_kn_l: str('r_kn_l'),
+      r_an_l: str('r_an_l'),
+      r_pl_l: str('r_pl_l'),
+      ns_power: str('ns_power'),
+      ns_tone: str('ns_tone'),
+      ns_coord: str('ns_coord'),
+      ns_sens: str('ns_sens'),
+      ns_emot: str('ns_emot') || str('mh_mental'),
+      ns_intel: str('ns_intel'),
 
-      ea_meatus: formData.ea_meatus || "", ea_comm: formData.ea_comm || "",
-      ea_drums: formData.ea_drums || "",
-      ea_wr_r: formData.hear_r || "", ea_wr_l: formData.hear_l || "",
-      ea_hr_r: formData.hear_r || "", ea_hr_l: formData.hear_l || "",
+      ea_meatus: str('ea_meatus'),
+      ea_comm: str('ea_comm'),
+      ea_drums: str('ea_drums'),
+      ea_wr_r: str('ea_wr_r') || str('hear_r'),
+      ea_wr_l: str('ea_wr_l') || str('hear_l'),
+      ea_hr_r: str('ea_hr_r') || str('hear_r'),
+      ea_hr_l: str('ea_hr_l') || str('hear_l'),
 
-      ey_light: formData.ey_light || "", ey_comm: formData.ey_comm || "",
-      ey_accom: formData.ey_accom || "",
-      ey_nyst: formData.ey_nyst || "",
-      ey_fundi: formData.ey_fundi || "",
+      ey_light: str('ey_light'),
+      ey_comm: str('ey_comm'),
+      ey_accom: str('ey_accom'),
+      ey_nyst: str('ey_nyst'),
+      ey_fundi: str('ey_fundi'),
 
-      // 6. VISUAL ACUITY & LABORATORIUM
-      nearr_unc: formData.nearr_unc || "", nearl_unc: formData.nearl_unc || "",
-      disr_unc: formData.disr_unc || "", disl_unc: formData.disl_unc || "",
-      nearr_cor: formData.nearr_cor || "", nearl_cor: formData.nearl_cor || "",
-      disr_cor: formData.disr_cor || "", disl_cor: formData.disl_cor || "",
-      
-      cv_n: formData.color_vision === 'Normal' ? '☑' : '☐',
-      cv_df: (formData.color_vision === 'Partial' || formData.color_vision === 'Total') ? '☑' : '☐',
+      // 6. VISUAL ACUITY & LAB
+      nearr_unc: str('nearr_unc'),
+      nearl_unc: str('nearl_unc'),
+      disr_unc: str('disr_unc'),
+      disl_unc: str('disl_unc'),
+      nearr_cor: str('nearr_cor'),
+      nearl_cor: str('nearl_cor'),
+      disr_cor: str('disr_cor'),
+      disl_cor: str('disl_cor'),
 
-      // FORMAT TAMBAHAN UNTUK TINGGI, BERAT, DENYUT NADI
-      height: formData.height ? `${formData.height} cm` : "", 
-      weight: formData.weight ? `${formData.weight} kg` : "", 
-      bmi: formData.bmi || "",
-      pulse: formData.pulse ? `${formData.pulse} bpm` : "", 
-      bp_sys: bp_sys, bp_dia: bp_dia,
-      
-      chest_exp: formData.chest_exp || "", ft_fvc: formData.ft_fvc || "", ft_fev1: formData.ft_fev1 || "",
-      xray_res: formData.xray || "", oht_result: formData.oht_result || "", diag: formData.diag || "",
-      bg_rh: `${formData.bloodGroupType || ""}${formData.bloodGroupRh || ""}`,
-      lab_hb: formData.lab_hb || "",
-      ur_sugar: formData.ur_sugar || "", albumin: formData.albumin || "",
-      hep_b: formData.hep_b_ag === 'Positive' ? 'Positive' : (formData.hep_b_ag === 'Negative' ? 'Negative' : ''),
-      hep_c: formData.hep_c || "", hep_a: formData.hep_a || "",
+      cv_n: str('color_vision') === 'Normal' ? '☑' : '☐',
+      cv_df: (str('color_vision') === 'Partial' || str('color_vision') === 'Total') ? '☑' : '☐',
 
-      // 7. REKOMENDASI DOKTER (FITNESS)
-      fit_job: formData.fit_lookout === 'Fit' ? '☑' : '☐',
-      unfit_job: formData.fit_lookout === 'Unfit' ? '☑' : '☐',
-      temp_unfit: formData.fit_lookout === 'Temp Unfit' ? '☑' : '☐', 
+      height: str('height') ? `${str('height')} cm` : '',
+      weight: str('weight') ? `${str('weight')} kg` : '',
+      bmi: str('bmi'),
+      pulse: str('pulse') ? `${str('pulse')} bpm` : '',
+      bp_sys,
+      bp_dia,
 
-      eps: formData.eps || "",
-      doc_contact: formData.contactNumber || "",
-      hospital: formData.hospital || "",
+      chest_exp: str('chest_exp'),
+      ft_fvc: str('ft_fvc'),
+      ft_fev1: str('ft_fev1'),
+      xray_res: str('xray') || str('xray_res'),
+      oht_result: str('oht_result'),
+      diag: str('diag'),
+      bg_rh: bgRh,
+      lab_hb: str('lab_hb'),
+      ur_sugar: str('ur_sugar'),
+      albumin: str('albumin'),
+      hep_b: hepBValue,
+      hep_c: str('hep_c'),
+      hep_a: str('hep_a'),
+
+      // 7. FITNESS
+      fit_job: str('fit_lookout') === 'Fit' ? '☑' : '☐',
+      unfit_job: str('fit_lookout') === 'Unfit' ? '☑' : '☐',
+      temp_unfit: str('fit_lookout') === 'Temp Unfit' ? '☑' : '☐',
+
+      eps: str('eps'),
+      doc_contact: str('doc_contact') || str('contactNumber', 'contact_number') || str('email'),
+      hospital: str('hospital'),
     });
 
-    const buf = doc.getZip().generate({ type: 'uint8array', compression: 'DEFLATE' });
-    
+    const buf = doc.getZip().generate({
+      type: 'uint8array',
+      compression: 'DEFLATE',
+    });
+
     return new NextResponse(buf as unknown as BodyInit, {
       status: 200,
       headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': 'attachment; filename="ADNOC_Report.docx"',
       },
     });
   } catch (error: any) {
     console.error('Error generating document:', error);
-    return NextResponse.json({ error: error.message || 'Terjadi kesalahan internal backend.' }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || 'Terjadi kesalahan internal backend.' },
+      { status: 500 }
+    );
   }
 }

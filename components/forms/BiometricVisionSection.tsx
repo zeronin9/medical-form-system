@@ -1,156 +1,279 @@
 import React from 'react';
-import { cardClass, cardHeaderClass, cardTitleClass, cardDescClass, cardContentClass, labelClass, inputClass, radioGroupClass, radioClass, BadgeADNOC, BadgeQatar, BadgeChevron, BadgeILO, BadgeMLC, BadgeMarshall } from './FormConstants';
+import {
+  cardClass,
+  cardHeaderClass,
+  cardTitleClass,
+  cardDescClass,
+  cardContentClass,
+  labelClass,
+  inputClass,
+  BadgeADNOC,
+  BadgeQatar,
+  BadgeChevron,
+  BadgeILO,
+  BadgeMLC,
+  BadgeMarshall,
+} from './FormConstants';
 
-export default function BiometricVisionSection({ formData, handleChange, selectedFormats }: any) {
-  const isChevron = selectedFormats.includes('chevron');
-  const isQatar = selectedFormats.includes('qatarenergy');
-  const isMlc = selectedFormats.includes('mlc');
+interface BiometricVisionSectionProps {
+  formData: any;
+  handleChange: (e: any) => void;
+  selectedFormats: string[];
+  activeFields: string[]; // <-- BARU: daftar field yang lolos filter dari page.tsx
+}
+
+export default function BiometricVisionSection({
+  formData,
+  handleChange,
+  selectedFormats,
+  activeFields,
+}: BiometricVisionSectionProps) {
+  // Helper tunggal untuk cek apakah sebuah field boleh ditampilkan
+  const isActive = (fieldName: string) => activeFields.includes(fieldName);
+
   const isIlo = selectedFormats.includes('ilo');
-  const isMarshall = selectedFormats.includes('marshall');
+  const isMlc = selectedFormats.includes('mlc');
 
   return (
     <div className={cardClass}>
       <div className={cardHeaderClass}>
-          <h3 className={cardTitleClass}>Biometrik, Penglihatan & Pendengaran</h3>
-          <p className={cardDescClass}>Tanda-tanda vital dan tes sensorik dasar. (Hanya masukkan angka murni untuk pengukuran)</p>
+        <h3 className={cardTitleClass}>Biometrik, Penglihatan & Pendengaran</h3>
+        <p className={cardDescClass}>
+          Tanda-tanda vital dan tes sensorik dasar. (Hanya masukkan angka murni untuk pengukuran)
+        </p>
       </div>
       <div className={cardContentClass}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          
-          {/* Biometrik Dasar */}
+
           <div className="space-y-4">
             <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">Tanda Vital & Biometrik</h4>
-            
+
             <div className="grid grid-cols-2 gap-4">
-              <div><label className={labelClass}>Tinggi Badan (cm)</label><input type="number" name="height" value={formData.height || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 170" /></div>
-              <div><label className={labelClass}>Berat Badan (kg)</label><input type="number" name="weight" value={formData.weight || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 70" /></div>
-              <div><label className={labelClass}>BMI (Otomatis)</label><input type="text" name="bmi" value={formData.bmi || ''} readOnly className={`${inputClass} bg-slate-100 font-semibold text-slate-600`} /></div>
-              {(isQatar || isChevron) && (
+              {isActive('height') && (
+                <div><label className={labelClass}>Tinggi Badan (cm)</label><input type="number" name="height" value={formData.height || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 170" /></div>
+              )}
+              {isActive('weight') && (
+                <div><label className={labelClass}>Berat Badan (kg)</label><input type="number" name="weight" value={formData.weight || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 70" /></div>
+              )}
+
+              {isActive('bmi') && (
+                <div><label className={labelClass}>BMI (Otomatis)</label><input type="text" name="bmi" value={formData.bmi || ''} readOnly className={`${inputClass} bg-slate-100 font-semibold text-slate-600`} /></div>
+              )}
+
+              {isActive('waist') && (
                 <div><label className={labelClass}>Lingkar Pinggang (cm) <BadgeQatar/></label><input type="number" name="waist" value={formData.waist || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 85" /></div>
               )}
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
-              {/* Blood Pressure dibiarkan tipe text karena harus menerima garis miring (/) */}
-              <div><label className={labelClass}>Tekanan Darah (mmHg)</label><input type="text" name="bloodPressure" value={formData.bloodPressure || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 120/80" /></div>
-              <div><label className={labelClass}>Denyut Nadi (x/mnt)</label><input type="number" name="pulse" value={formData.pulse || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 80" /></div>
-              <div><label className={labelClass}>Pernapasan (RR)</label><input type="number" name="rr" value={formData.rr || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 18" /></div>
-              <div><label className={labelClass}>Suhu Tubuh (°C)</label><input type="number" step="0.1" name="temp" value={formData.temp || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 36.5" /></div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div>
-                <label className={labelClass}>Golongan Darah</label>
-                <select name="bloodGroupType" value={formData.bloodGroupType || ''} onChange={handleChange} className={inputClass}>
-                  <option value="">- Pilih -</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="AB">AB</option>
-                  <option value="O">O</option>
-                </select>
-              </div>
-              <div>
-                <label className={labelClass}>Rhesus (Rh)</label>
-                <select name="bloodGroupRh" value={formData.bloodGroupRh || ''} onChange={handleChange} className={inputClass}>
-                  <option value="">- Pilih -</option>
-                  <option value="+">Positif (+)</option>
-                  <option value="-">Negatif (-)</option>
-                </select>
-              </div>
-            </div>
-            
-            {/* PERBAIKAN: Penambahan kontrol untuk Penampilan Umum (General Appearance) */}
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div>
-                <label className={labelClass}>Ekspansi Dada (Chest Exp) <BadgeADNOC/></label>
-                <input type="number" name="chest_exp" value={formData.chest_exp || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 5" />
-              </div>
-              <div>
-                <label className={labelClass}>Penampilan Umum (Gen. App)</label>
-                <select name="gen_app" value={formData.gen_app || ''} onChange={handleChange} className={inputClass}>
-                  <option value="">- Pilih -</option>
-                  <option value="Good">Normal / Good</option>
-                  <option value="Abnormal">Abnormal</option>
-                </select>
-              </div>
+              {isActive('bloodPressure') && (
+                <div><label className={labelClass}>Tekanan Darah (mmHg)</label><input type="text" name="bloodPressure" value={formData.bloodPressure || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 120/80" /></div>
+              )}
+              {isActive('pulse') && (
+                <div><label className={labelClass}>Denyut Nadi (x/mnt)</label><input type="number" name="pulse" value={formData.pulse || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 80" /></div>
+              )}
+
+              {isActive('rr') && (
+                <div><label className={labelClass}>Pernapasan (RR)</label><input type="number" name="rr" value={formData.rr || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 18" /></div>
+              )}
+              {isActive('temp') && (
+                <div><label className={labelClass}>Suhu Tubuh (°C)</label><input type="number" step="0.1" name="temp" value={formData.temp || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 36.5" /></div>
+              )}
             </div>
 
+            {(isActive('bloodGroupType') || isActive('bloodGroupRh')) && (
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                {isActive('bloodGroupType') && (
+                  <div>
+                    <label className={labelClass}>Golongan Darah</label>
+                    <select name="bloodGroupType" value={formData.bloodGroupType || ''} onChange={handleChange} className={inputClass}>
+                      <option value="">- Pilih -</option><option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="O">O</option>
+                    </select>
+                  </div>
+                )}
+                {isActive('bloodGroupRh') && (
+                  <div>
+                    <label className={labelClass}>Rhesus (Rh)</label>
+                    <select name="bloodGroupRh" value={formData.bloodGroupRh || ''} onChange={handleChange} className={inputClass}>
+                      <option value="">- Pilih -</option><option value="+">Positif (+)</option><option value="-">Negatif (-)</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              {isActive('chest_exp') && (
+                <div>
+                  <label className={labelClass}>Ekspansi Dada (Chest Exp) <BadgeADNOC/></label>
+                  <input type="number" name="chest_exp" value={formData.chest_exp || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 5" />
+                </div>
+              )}
+              {isActive('gen_app') && (
+                <div>
+                  <label className={labelClass}>Penampilan Umum (Gen. App)</label>
+                  <select name="gen_app" value={formData.gen_app || ''} onChange={handleChange} className={inputClass}>
+                    <option value="">- Pilih -</option><option value="Good">Normal / Good</option><option value="Abnormal">Abnormal</option>
+                  </select>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Penglihatan & Pendengaran */}
           <div className="space-y-4">
             <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">Penglihatan (Visual Acuity)</h4>
-            
-            <div className="grid grid-cols-3 gap-2">
-              <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Jauh (Tanpa Kacamata)</label>
-              <div><label className={labelClass}>Kanan</label><input type="text" name="disr_unc" value={formData.disr_unc || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>
-              <div><label className={labelClass}>Kiri</label><input type="text" name="disl_unc" value={formData.disl_unc || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>
-              <div><label className={labelClass}>Binocular <BadgeMLC/><BadgeChevron/></label><input type="text" name="bv_unc" value={formData.bv_unc || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Jauh (Dengan Kacamata)</label>
-              <div><label className={labelClass}>Kanan</label><input type="text" name="disr_cor" value={formData.disr_cor || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>
-              <div><label className={labelClass}>Kiri</label><input type="text" name="disl_cor" value={formData.disl_cor || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>
-              <div><label className={labelClass}>Binocular <BadgeMLC/><BadgeChevron/></label><input type="text" name="bv_cor" value={formData.bv_cor || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 mt-2">
-              <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Dekat (Tanpa Kacamata)</label>
-              <div><label className={labelClass}>Kanan</label><input type="text" name="nearr_unc" value={formData.nearr_unc || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>
-              <div><label className={labelClass}>Kiri</label><input type="text" name="nearl_unc" value={formData.nearl_unc || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>
-              <div><label className={labelClass}>Binocular <BadgeMLC/></label><input type="text" name="near_bv_unc" value={formData.near_bv_unc || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Dekat (Dengan Kacamata)</label>
-              <div><label className={labelClass}>Kanan</label><input type="text" name="nearr_cor" value={formData.nearr_cor || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>
-              <div><label className={labelClass}>Kiri</label><input type="text" name="nearl_cor" value={formData.nearl_cor || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>
-              <div><label className={labelClass}>Binocular <BadgeMLC/></label><input type="text" name="near_bv_cor" value={formData.near_bv_cor || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div>
-                <label className={labelClass}>Tes Buta Warna</label>
-                {/* PERBAIKAN: value="-" diganti menjadi value="" */}
-                <select name="color_vision" value={formData.color_vision || ''} onChange={handleChange} className={inputClass}>
-                  <option value="">- Pilih -</option>
-                  <option value="Normal">Normal</option>
-                  <option value="Partial">Parsial (Partial Defect)</option>
-                  <option value="Total">Total (Total Defect)</option>
-                </select>
+            {(isActive('disr_unc') || isActive('disl_unc') || isActive('bv_unc')) && (
+              <div className="grid grid-cols-3 gap-2">
+                <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Jauh (Tanpa Kacamata)</label>
+                {isActive('disr_unc') && <div><label className={labelClass}>Kanan</label><input type="text" name="disr_unc" value={formData.disr_unc || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>}
+                {isActive('disl_unc') && <div><label className={labelClass}>Kiri</label><input type="text" name="disl_unc" value={formData.disl_unc || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>}
+                {isActive('bv_unc') && <div><label className={labelClass}>Binocular <BadgeMLC/><BadgeChevron/></label><input type="text" name="bv_unc" value={formData.bv_unc || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>}
               </div>
-              <div>
-                <label className={labelClass}>Tipe Tes Warna <BadgeILO/><BadgeMarshall/></label>
-                {/* PERBAIKAN: value="-" diganti menjadi value="" */}
-                <select name="color_test_type" value={formData.color_test_type || ''} onChange={handleChange} className={inputClass}>
-                  <option value="">- Pilih -</option>
-                  <option value="Book">Ishihara Book</option>
-                  <option value="Lantern">Lantern</option>
-                </select>
-              </div>
-            </div>
+            )}
 
-            <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2 mt-6">Pendengaran (Bicara/Bisik)</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={labelClass}>Telinga Kanan</label>
-                <select name="hear_r" value={formData.hear_r || ''} onChange={handleChange} className={inputClass}>
-                  <option value="">- Pilih -</option>
-                  <option value="Normal">Normal</option>
-                  <option value="Abnormal">Abnormal</option>
-                </select>
+            {(isActive('disr_cor') || isActive('disl_cor') || isActive('bv_cor')) && (
+              <div className="grid grid-cols-3 gap-2">
+                <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Jauh (Dengan Kacamata)</label>
+                {isActive('disr_cor') && <div><label className={labelClass}>Kanan</label><input type="text" name="disr_cor" value={formData.disr_cor || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>}
+                {isActive('disl_cor') && <div><label className={labelClass}>Kiri</label><input type="text" name="disl_cor" value={formData.disl_cor || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>}
+                {isActive('bv_cor') && <div><label className={labelClass}>Binocular <BadgeMLC/><BadgeChevron/></label><input type="text" name="bv_cor" value={formData.bv_cor || ''} onChange={handleChange} className={inputClass} placeholder="6/6" /></div>}
               </div>
-              <div>
-                <label className={labelClass}>Telinga Kiri</label>
-                <select name="hear_l" value={formData.hear_l || ''} onChange={handleChange} className={inputClass}>
-                  <option value="">- Pilih -</option>
-                  <option value="Normal">Normal</option>
-                  <option value="Abnormal">Abnormal</option>
-                </select>
-              </div>
-            </div>
+            )}
 
+            {(isActive('nearr_unc') || isActive('nearl_unc') || isActive('near_bv_unc')) && (
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Dekat (Tanpa Kacamata)</label>
+                {isActive('nearr_unc') && <div><label className={labelClass}>Kanan</label><input type="text" name="nearr_unc" value={formData.nearr_unc || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>}
+                {isActive('nearl_unc') && <div><label className={labelClass}>Kiri</label><input type="text" name="nearl_unc" value={formData.nearl_unc || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>}
+                {isActive('near_bv_unc') && <div><label className={labelClass}>Binocular <BadgeMLC/></label><input type="text" name="near_bv_unc" value={formData.near_bv_unc || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>}
+              </div>
+            )}
+
+            {(isActive('nearr_cor') || isActive('nearl_cor') || isActive('near_bv_cor')) && (
+              <div className="grid grid-cols-3 gap-2">
+                <label className="text-xs font-semibold text-slate-500 col-span-3">Jarak Dekat (Dengan Kacamata)</label>
+                {isActive('nearr_cor') && <div><label className={labelClass}>Kanan</label><input type="text" name="nearr_cor" value={formData.nearr_cor || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>}
+                {isActive('nearl_cor') && <div><label className={labelClass}>Kiri</label><input type="text" name="nearl_cor" value={formData.nearl_cor || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>}
+                {isActive('near_bv_cor') && <div><label className={labelClass}>Binocular <BadgeMLC/></label><input type="text" name="near_bv_cor" value={formData.near_bv_cor || ''} onChange={handleChange} className={inputClass} placeholder="N6" /></div>}
+              </div>
+            )}
+
+            {(isActive('color_vision') || isActive('color_test_type')) && (
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                {isActive('color_vision') && (
+                  <div>
+                    <label className={labelClass}>Tes Buta Warna</label>
+                    <select name="color_vision" value={formData.color_vision || ''} onChange={handleChange} className={inputClass}>
+                      <option value="">- Pilih -</option>
+                      <option value="Normal">Normal</option>
+                      <option value="Partial">Parsial (Partial Defect)</option>
+                      <option value="Total">Total (Total Defect)</option>
+                    </select>
+                  </div>
+                )}
+                {isActive('color_test_type') && (
+                  <div>
+                    <label className={labelClass}>Tipe Tes Warna <BadgeILO/><BadgeMarshall/></label>
+                    <select name="color_test_type" value={formData.color_test_type || ''} onChange={handleChange} className={inputClass}>
+                      <option value="">- Pilih -</option>
+                      <option value="Book">Ishihara Book</option>
+                      <option value="Lantern">Lantern</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isActive('color_y') && (
+              <div className="pt-4 mt-2 border-t border-slate-100 animate-in fade-in zoom-in duration-300">
+                <label className={labelClass}>Kemampuan Membedakan Warna <BadgeILO/><BadgeMLC/></label>
+                <div className="flex flex-wrap gap-4 mt-2">
+                  <label className="flex items-center space-x-2 cursor-pointer text-sm text-slate-700">
+                    <input type="checkbox" name="color_y" checked={formData.color_y === true} onChange={handleChange} className="h-4 w-4 rounded-sm border-slate-300 accent-slate-900" />
+                    <span>Kuning (Yellow)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer text-sm text-slate-700">
+                    <input type="checkbox" name="color_r" checked={formData.color_r === true} onChange={handleChange} className="h-4 w-4 rounded-sm border-slate-300 accent-slate-900" />
+                    <span>Merah (Red)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer text-sm text-slate-700">
+                    <input type="checkbox" name="color_g" checked={formData.color_g === true} onChange={handleChange} className="h-4 w-4 rounded-sm border-slate-300 accent-slate-900" />
+                    <span>Hijau (Green)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer text-sm text-slate-700">
+                    <input type="checkbox" name="color_b" checked={formData.color_b === true} onChange={handleChange} className="h-4 w-4 rounded-sm border-slate-300 accent-slate-900" />
+                    <span>Biru (Blue)</span>
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {(isActive('hear_r') || isActive('hear_l')) && (
+              <>
+                <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2 mt-6">Pendengaran (Bicara/Bisik)</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  {isActive('hear_r') && (
+                    <div>
+                      <label className={labelClass}>Telinga Kanan</label>
+                      <select name="hear_r" value={formData.hear_r || ''} onChange={handleChange} className={inputClass}>
+                        <option value="">- Pilih -</option><option value="Normal">Normal</option><option value="Abnormal">Abnormal</option>
+                      </select>
+                    </div>
+                  )}
+                  {isActive('hear_l') && (
+                    <div>
+                      <label className={labelClass}>Telinga Kiri</label>
+                      <select name="hear_l" value={formData.hear_l || ''} onChange={handleChange} className={inputClass}>
+                        <option value="">- Pilih -</option><option value="Normal">Normal</option><option value="Abnormal">Abnormal</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {isActive('hr_stcw') && (
+              <div className="rounded-lg border border-blue-200 bg-blue-50/30 p-4 mt-6 space-y-4 animate-in fade-in zoom-in duration-300">
+                <h4 className="text-sm font-bold text-blue-900 border-b border-blue-100 pb-2">Standar STCW Code, Section A-I/9 <BadgeILO/><BadgeMLC/></h4>
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
+                  <span className="text-sm text-slate-700">Hearing meets the standards in STCW?</span>
+                  <div className="flex gap-3">
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="hr_stcw" value="Yes" checked={formData.hr_stcw === 'Yes'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">Yes</span></label>
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="hr_stcw" value="No" checked={formData.hr_stcw === 'No'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">No</span></label>
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="hr_stcw" value="NA" checked={formData.hr_stcw === 'NA'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">N/A</span></label>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
+                  <span className="text-sm text-slate-700">Unaided hearing satisfactory?</span>
+                  <div className="flex gap-3">
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="hr_unaid" value="Yes" checked={formData.hr_unaid === 'Yes'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">Yes</span></label>
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="hr_unaid" value="No" checked={formData.hr_unaid === 'No'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">No</span></label>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
+                  <span className="text-sm text-slate-700">Visual acuity meets standards in STCW?</span>
+                  <div className="flex gap-3">
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="vis_stcw" value="Yes" checked={formData.vis_stcw === 'Yes'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">Yes</span></label>
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="vis_stcw" value="No" checked={formData.vis_stcw === 'No'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">No</span></label>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
+                  <span className="text-sm text-slate-700">Colour vision meets standards in STCW?</span>
+                  <div className="flex gap-3">
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="col_stcw" value="Yes" checked={formData.col_stcw === 'Yes'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">Yes</span></label>
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="col_stcw" value="No" checked={formData.col_stcw === 'No'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">No</span></label>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-2">
+                  <span className="text-sm text-slate-700">Are glasses or contact lenses necessary?</span>
+                  <div className="flex gap-3">
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="glasses_nec" value="Yes" checked={formData.glasses_nec === 'Yes'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">Yes</span></label>
+                    <label className="flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700"><input type="radio" name="glasses_nec" value="No" checked={formData.glasses_nec === 'No'} onChange={handleChange} className="h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors" /><span className="text-xs">No</span></label>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

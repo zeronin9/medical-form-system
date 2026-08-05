@@ -1,5 +1,14 @@
 import React from 'react';
-import { cardClass, cardHeaderClass, cardTitleClass, cardDescClass, cardContentClass, radioGroupClass, radioClass, inputClass } from './FormConstants';
+import {
+  cardClass,
+  cardHeaderClass,
+  cardTitleClass,
+  cardDescClass,
+  cardContentClass,
+  radioGroupClass,
+  radioClass,
+  inputClass,
+} from './FormConstants';
 
 // Konfigurasi Kategori Pemeriksaan Fisik Spesifik (Smart UI)
 const examCategories = [
@@ -102,104 +111,176 @@ const examCategories = [
   },
 ];
 
-export default function PhysicalExamSection({ formData, handleChange }: any) {
-  // PERBAIKAN 1: Tambahkan parameter remarkKey untuk mengosongkan catatan
-  const handleSetAllNormal = (e: React.MouseEvent, items: any[], remarkKey: string) => {
-    e.preventDefault(); 
-    items.forEach(item => {
-      handleChange({ target: { name: item.id, value: 'Normal', type: 'radio', checked: true } });
+interface PhysicalExamSectionProps {
+  formData: any;
+  handleChange: (e: any) => void;
+  activeFields: string[];
+}
+
+export default function PhysicalExamSection({
+  formData,
+  handleChange,
+  activeFields = [],
+}: PhysicalExamSectionProps) {
+  const isActive = (fieldName: string) => activeFields.includes(fieldName);
+
+  const visibleCategories = examCategories
+    .map((category) => {
+      const visibleItems = category.items.filter((item) => isActive(item.id));
+      const showRemark = isActive(category.remarkKey);
+
+      if (visibleItems.length === 0 && !showRemark) {
+        return null;
+      }
+
+      return {
+        ...category,
+        items: visibleItems,
+        showRemark,
+      };
+    })
+    .filter(Boolean) as Array<{
+      title: string;
+      remarkKey: string;
+      items: { id: string; label: string }[];
+      showRemark: boolean;
+    }>;
+
+  const handleSetAllNormal = (
+    e: React.MouseEvent,
+    items: { id: string; label: string }[],
+    remarkKey: string,
+    showRemark: boolean
+  ) => {
+    e.preventDefault();
+
+    items.forEach((item) => {
+      handleChange({
+        target: {
+          name: item.id,
+          value: 'Normal',
+          type: 'radio',
+          checked: true,
+        },
+      });
     });
-    // Kosongkan teks catatan karena status sudah Normal
-    handleChange({ target: { name: remarkKey, value: '' } });
+
+    if (showRemark) {
+      handleChange({ target: { name: remarkKey, value: '' } });
+    }
   };
 
-  // PERBAIKAN 2: Tambahkan parameter remarkKey untuk mereset catatan
-  const handleSetAllEmpty = (e: React.MouseEvent, items: any[], remarkKey: string) => {
+  const handleSetAllEmpty = (
+    e: React.MouseEvent,
+    items: { id: string; label: string }[],
+    remarkKey: string,
+    showRemark: boolean
+  ) => {
     e.preventDefault();
-    items.forEach(item => {
-      handleChange({ target: { name: item.id, value: '' } }); 
+
+    items.forEach((item) => {
+      handleChange({ target: { name: item.id, value: '' } });
     });
-    // Kosongkan teks catatan karena form di-reset
-    handleChange({ target: { name: remarkKey, value: '' } });
+
+    if (showRemark) {
+      handleChange({ target: { name: remarkKey, value: '' } });
+    }
   };
+
+  if (visibleCategories.length === 0) {
+    return null;
+  }
 
   return (
     <div className={cardClass}>
       <div className={cardHeaderClass}>
         <h3 className={cardTitleClass}>Pemeriksaan Klinis (Fisik) Rinci</h3>
-        <p className={cardDescClass}>Rincian organ spesifik. Gunakan tombol "Set Semua Normal" untuk mempercepat pengisian atau "Reset" untuk mengosongkannya kembali.</p>
+        <p className={cardDescClass}>
+          Rincian organ spesifik. Gunakan tombol "Set Semua Normal" untuk mempercepat pengisian atau "Reset" untuk mengosongkannya kembali.
+        </p>
       </div>
+
       <div className={cardContentClass}>
-        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {examCategories.map((category, idx) => (
-            <div key={idx} className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col hover:border-slate-300 transition-colors">
-              
-              {/* Header Kategori */}
+          {visibleCategories.map((category, idx) => (
+            <div
+              key={`${category.remarkKey}-${idx}`}
+              className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col hover:border-slate-300 transition-colors"
+            >
               <div className="bg-slate-50 border-b border-slate-200 p-3 flex flex-col sm:flex-row gap-2 justify-between items-start sm:items-center">
                 <span className="font-bold text-slate-800 text-sm">{category.title}</span>
+
                 <div className="flex gap-2 w-full sm:w-auto">
-                  {/* Tombol Reset 3-State */}
-                  <button 
-                    // PERBAIKAN 3: Kirim category.remarkKey ke fungsi
-                    onClick={(e) => handleSetAllEmpty(e, category.items, category.remarkKey)}
+                  <button
+                    onClick={(e) =>
+                      handleSetAllEmpty(e, category.items, category.remarkKey, category.showRemark)
+                    }
                     className="flex-1 sm:flex-none text-xs bg-red-50 hover:bg-red-100 text-red-600 font-medium py-1.5 px-3 rounded border border-red-100 transition-colors shadow-sm"
+                    type="button"
                   >
                     Reset (Kosong)
                   </button>
-                  <button 
-                    // PERBAIKAN 4: Kirim category.remarkKey ke fungsi
-                    onClick={(e) => handleSetAllNormal(e, category.items, category.remarkKey)}
+
+                  <button
+                    onClick={(e) =>
+                      handleSetAllNormal(e, category.items, category.remarkKey, category.showRemark)
+                    }
                     className="flex-1 sm:flex-none text-xs bg-slate-800 hover:bg-slate-700 text-white font-medium py-1.5 px-3 rounded transition-colors shadow-sm"
+                    type="button"
                   >
                     Set Semua Normal
                   </button>
                 </div>
               </div>
 
-              {/* List Sub-Organ */}
               <div className="p-4 flex-1 flex flex-col gap-2">
-                {category.items.map(item => (
-                  <div key={item.id} className="flex justify-between items-center py-2 border-b border-slate-100 last:border-0">
+                {category.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-center py-2 border-b border-slate-100 last:border-0"
+                  >
                     <span className="text-sm font-medium text-slate-700">{item.label}</span>
+
                     <div className="flex gap-4 shrink-0">
                       <label className={radioGroupClass}>
-                        <input 
-                          type="radio" 
-                          name={item.id} 
-                          value="Normal" 
-                          checked={formData[item.id] === 'Normal'} 
-                          onChange={handleChange} 
-                          className={radioClass} 
+                        <input
+                          type="radio"
+                          name={item.id}
+                          value="Normal"
+                          checked={formData[item.id] === 'Normal'}
+                          onChange={handleChange}
+                          className={radioClass}
                         />
                         <span className="text-sm">Normal</span>
                       </label>
+
                       <label className={radioGroupClass}>
-                        <input 
-                          type="radio" 
-                          name={item.id} 
-                          value="Abnormal" 
-                          checked={formData[item.id] === 'Abnormal'} 
-                          onChange={handleChange} 
-                          className={radioClass} 
+                        <input
+                          type="radio"
+                          name={item.id}
+                          value="Abnormal"
+                          checked={formData[item.id] === 'Abnormal'}
+                          onChange={handleChange}
+                          className={radioClass}
                         />
                         <span className="text-sm text-red-600">Abnormal</span>
                       </label>
                     </div>
                   </div>
                 ))}
-                
-                {/* Input Catatan Kelainan (Komentar Abnormal) per Kategori */}
-                <div className="pt-4 mt-auto border-t border-slate-100">
-                  <input 
-                    type="text" 
-                    name={category.remarkKey} 
-                    value={formData[category.remarkKey] || ''} 
-                    onChange={handleChange} 
-                    className={inputClass} 
-                    placeholder={`Keterangan jika ada yang abnormal pada ${category.title.split(' ')[0]}...`} 
-                  />
-                </div>
+
+                {category.showRemark && (
+                  <div className="pt-4 mt-auto border-t border-slate-100">
+                    <input
+                      type="text"
+                      name={category.remarkKey}
+                      value={formData[category.remarkKey] || ''}
+                      onChange={handleChange}
+                      className={inputClass}
+                      placeholder={`Keterangan jika ada yang abnormal pada ${category.title.split(' ')[0]}...`}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}
