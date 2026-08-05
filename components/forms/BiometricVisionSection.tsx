@@ -20,6 +20,7 @@ export default function BiometricVisionSection({ formData, handleChange, selecte
           {/* Biometrik Dasar */}
           <div className="space-y-4">
             <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">Tanda Vital & Biometrik</h4>
+            
             <div className="grid grid-cols-2 gap-4">
               <div><label className={labelClass}>Tinggi Badan (cm)</label><input type="number" name="height" value={formData.height || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 170" /></div>
               <div><label className={labelClass}>Berat Badan (kg)</label><input type="number" name="weight" value={formData.weight || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 70" /></div>
@@ -40,17 +41,40 @@ export default function BiometricVisionSection({ formData, handleChange, selecte
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div>
                 <label className={labelClass}>Golongan Darah</label>
-                <select name="bloodGroupType" value={formData.bloodGroupType || ''} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="O">O</option></select>
+                <select name="bloodGroupType" value={formData.bloodGroupType || ''} onChange={handleChange} className={inputClass}>
+                  <option value="">- Pilih -</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="AB">AB</option>
+                  <option value="O">O</option>
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Rhesus (Rh)</label>
-                <select name="bloodGroupRh" value={formData.bloodGroupRh || ''} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="+">Positif (+)</option><option value="-">Negatif (-)</option></select>
+                <select name="bloodGroupRh" value={formData.bloodGroupRh || ''} onChange={handleChange} className={inputClass}>
+                  <option value="">- Pilih -</option>
+                  <option value="+">Positif (+)</option>
+                  <option value="-">Negatif (-)</option>
+                </select>
               </div>
             </div>
             
-            <div className="pt-2">
-              <div><label className={labelClass}>Ekspansi Dada (Chest Exp) <BadgeADNOC/></label><input type="number" name="chest_exp" value={formData.chest_exp || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 5" /></div>
+            {/* PERBAIKAN: Penambahan kontrol untuk Penampilan Umum (General Appearance) */}
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className={labelClass}>Ekspansi Dada (Chest Exp) <BadgeADNOC/></label>
+                <input type="number" name="chest_exp" value={formData.chest_exp || ''} onChange={handleChange} className={inputClass} placeholder="Cth: 5" />
+              </div>
+              <div>
+                <label className={labelClass}>Penampilan Umum (Gen. App)</label>
+                <select name="gen_app" value={formData.gen_app || ''} onChange={handleChange} className={inputClass}>
+                  <option value="">- Pilih -</option>
+                  <option value="Good">Normal / Good</option>
+                  <option value="Abnormal">Abnormal</option>
+                </select>
+              </div>
             </div>
+
           </div>
 
           {/* Penglihatan & Pendengaran */}
@@ -88,11 +112,22 @@ export default function BiometricVisionSection({ formData, handleChange, selecte
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div>
                 <label className={labelClass}>Tes Buta Warna</label>
-                <select name="color_vision" value={formData.color_vision || ''} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="Normal">Normal</option><option value="Partial">Parsial (Partial Defect)</option><option value="Total">Total (Total Defect)</option></select>
+                {/* PERBAIKAN: value="-" diganti menjadi value="" */}
+                <select name="color_vision" value={formData.color_vision || ''} onChange={handleChange} className={inputClass}>
+                  <option value="">- Pilih -</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Partial">Parsial (Partial Defect)</option>
+                  <option value="Total">Total (Total Defect)</option>
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Tipe Tes Warna <BadgeILO/><BadgeMarshall/></label>
-                <select name="color_test_type" value={formData.color_test_type || ''} onChange={handleChange} className={inputClass}><option value="Book">Ishihara Book</option><option value="Lantern">Lantern</option></select>
+                {/* PERBAIKAN: value="-" diganti menjadi value="" */}
+                <select name="color_test_type" value={formData.color_test_type || ''} onChange={handleChange} className={inputClass}>
+                  <option value="">- Pilih -</option>
+                  <option value="Book">Ishihara Book</option>
+                  <option value="Lantern">Lantern</option>
+                </select>
               </div>
             </div>
 
@@ -100,11 +135,19 @@ export default function BiometricVisionSection({ formData, handleChange, selecte
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Telinga Kanan</label>
-                <select name="hear_r" value={formData.hear_r || ''} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="Normal">Normal</option><option value="Abnormal">Abnormal</option></select>
+                <select name="hear_r" value={formData.hear_r || ''} onChange={handleChange} className={inputClass}>
+                  <option value="">- Pilih -</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Abnormal">Abnormal</option>
+                </select>
               </div>
               <div>
                 <label className={labelClass}>Telinga Kiri</label>
-                <select name="hear_l" value={formData.hear_l || ''} onChange={handleChange} className={inputClass}><option value="">- Pilih -</option><option value="Normal">Normal</option><option value="Abnormal">Abnormal</option></select>
+                <select name="hear_l" value={formData.hear_l || ''} onChange={handleChange} className={inputClass}>
+                  <option value="">- Pilih -</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Abnormal">Abnormal</option>
+                </select>
               </div>
             </div>
 

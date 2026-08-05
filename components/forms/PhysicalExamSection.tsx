@@ -103,20 +103,31 @@ const examCategories = [
 ];
 
 export default function PhysicalExamSection({ formData, handleChange }: any) {
-  
-  // Fungsi Smart UI: Set semua item di dalam satu kategori menjadi 'Normal' sekaligus
-  const handleSetAllNormal = (e: React.MouseEvent, items: any[]) => {
-    e.preventDefault(); // Mencegah form tersubmit jika tombol ditekan
+  // PERBAIKAN 1: Tambahkan parameter remarkKey untuk mengosongkan catatan
+  const handleSetAllNormal = (e: React.MouseEvent, items: any[], remarkKey: string) => {
+    e.preventDefault(); 
     items.forEach(item => {
       handleChange({ target: { name: item.id, value: 'Normal', type: 'radio', checked: true } });
     });
+    // Kosongkan teks catatan karena status sudah Normal
+    handleChange({ target: { name: remarkKey, value: '' } });
+  };
+
+  // PERBAIKAN 2: Tambahkan parameter remarkKey untuk mereset catatan
+  const handleSetAllEmpty = (e: React.MouseEvent, items: any[], remarkKey: string) => {
+    e.preventDefault();
+    items.forEach(item => {
+      handleChange({ target: { name: item.id, value: '' } }); 
+    });
+    // Kosongkan teks catatan karena form di-reset
+    handleChange({ target: { name: remarkKey, value: '' } });
   };
 
   return (
     <div className={cardClass}>
       <div className={cardHeaderClass}>
         <h3 className={cardTitleClass}>Pemeriksaan Klinis (Fisik) Rinci</h3>
-        <p className={cardDescClass}>Rincian organ spesifik. Gunakan tombol "Set Semua Normal" untuk mempercepat pengisian.</p>
+        <p className={cardDescClass}>Rincian organ spesifik. Gunakan tombol "Set Semua Normal" untuk mempercepat pengisian atau "Reset" untuk mengosongkannya kembali.</p>
       </div>
       <div className={cardContentClass}>
         
@@ -125,14 +136,25 @@ export default function PhysicalExamSection({ formData, handleChange }: any) {
             <div key={idx} className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col hover:border-slate-300 transition-colors">
               
               {/* Header Kategori */}
-              <div className="bg-slate-50 border-b border-slate-200 p-3 flex justify-between items-center">
+              <div className="bg-slate-50 border-b border-slate-200 p-3 flex flex-col sm:flex-row gap-2 justify-between items-start sm:items-center">
                 <span className="font-bold text-slate-800 text-sm">{category.title}</span>
-                <button 
-                  onClick={(e) => handleSetAllNormal(e, category.items)}
-                  className="text-xs bg-slate-800 hover:bg-slate-700 text-white font-medium py-1.5 px-3 rounded transition-colors shadow-sm"
-                >
-                  Set Semua Normal
-                </button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  {/* Tombol Reset 3-State */}
+                  <button 
+                    // PERBAIKAN 3: Kirim category.remarkKey ke fungsi
+                    onClick={(e) => handleSetAllEmpty(e, category.items, category.remarkKey)}
+                    className="flex-1 sm:flex-none text-xs bg-red-50 hover:bg-red-100 text-red-600 font-medium py-1.5 px-3 rounded border border-red-100 transition-colors shadow-sm"
+                  >
+                    Reset (Kosong)
+                  </button>
+                  <button 
+                    // PERBAIKAN 4: Kirim category.remarkKey ke fungsi
+                    onClick={(e) => handleSetAllNormal(e, category.items, category.remarkKey)}
+                    className="flex-1 sm:flex-none text-xs bg-slate-800 hover:bg-slate-700 text-white font-medium py-1.5 px-3 rounded transition-colors shadow-sm"
+                  >
+                    Set Semua Normal
+                  </button>
+                </div>
               </div>
 
               {/* List Sub-Organ */}
@@ -179,11 +201,9 @@ export default function PhysicalExamSection({ formData, handleChange }: any) {
                   />
                 </div>
               </div>
-
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );

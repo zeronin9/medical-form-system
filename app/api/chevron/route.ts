@@ -22,88 +22,107 @@ export async function POST(request: Request) {
       nullGetter: function() { return ""; } // Mencegah muncul teks "undefined"
     });
 
-    // --- HELPER FUNCTIONS ---
-    const isY = (val: any) => (val === 'Yes' || val === true) ? '☑' : '☐';
-    const isN = (val: any) => (val === 'No' || val === false) ? '☑' : '☐';
-    
-    const isChecked = (condition: boolean) => condition ? '☑' : '☐';
-    const isUnchecked = (condition: boolean) => condition ? '☐' : '☑';
+    // --- HELPER FUNCTIONS (3-STATE LOGIC) ---
+    // PENTING: Ganti charChecked dan charUnchecked di bawah ini sesuai karakter 
+    // kotak/centang yang Anda gunakan di dalam template Word Docxtemplater.
+    const charChecked = '☑';   // Karakter jika dicentang
+    const charUnchecked = '☐'; // Karakter jika dibiarkan kosong/tidak dicentang
 
-    // --- 1. ROLL-UP LOGIC UNTUK PHYSICAL EXAM ---
-    // Chevron meminta kategori besar (Mata, THT, Paru, dll). 
-    // Logika ini mengecek: Jika ada satu saja sub-organ di Smart UI yang "Abnormal", 
-    // maka kategori Chevron tersebut dicentang "Abnormal". Jika tidak ada, maka "Normal".
-    const checkAbnormal = (fields: string[]) => fields.some(field => formData[field] === 'Abnormal');
-    
-    const eyes_isAbnormal = checkAbnormal(['ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi']);
-    const ears_isAbnormal = checkAbnormal(['ea_meatus', 'ea_drums']);
-    const nose_isAbnormal = checkAbnormal(['rs_nasal']);
-    const throat_isAbnormal = checkAbnormal(['al_tongue']);
-    const dental_isAbnormal = checkAbnormal(['al_teeth']);
-    const neck_isAbnormal = checkAbnormal(['rs_thyroid', 'rs_trachea']);
-    const lung_isAbnormal = checkAbnormal(['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent']);
-    const heart_isAbnormal = checkAbnormal(['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs', 'cv_varicose']);
-    const abdomen_isAbnormal = checkAbnormal(['al_abd', 'al_liver', 'al_spleen']);
-    const hernia_isAbnormal = checkAbnormal(['al_hernia']);
-    const genitalia_isAbnormal = checkAbnormal(['gu_gen']);
-    const rectal_isAbnormal = checkAbnormal(['al_anus']);
-    const lymph_isAbnormal = checkAbnormal(['al_lymph']);
-    const skin_isAbnormal = checkAbnormal(['in_hair', 'in_skin', 'in_nails']);
-    const muscul_isAbnormal = checkAbnormal(['ms_hands', 'ms_limbs', 'ms_back', 'ms_joints', 'ms_inj']);
-    const reflex_isAbnormal = checkAbnormal(['ns_power', 'ns_tone', 'ns_coord', 'ns_sens', 'ns_intel']);
-    
-    // --- 2. ROLL-UP LOGIC UNTUK 44 KUESIONER CHEVRON ---
-    const cq = (condition: boolean) => ({
-        y: condition ? '☑' : '☐',
-        n: condition ? '☐' : '☑'
+    const isY = (val: any) => (val === 'Yes' || val === true) ? charChecked : charUnchecked;
+    const isN = (val: any) => (val === 'No' || val === false) ? charChecked : charUnchecked;
+
+    // Helper Kuesioner (Medical History) - Mengembalikan 'Yes', 'No', atau null jika kosong
+    const evaluateQ = (fields: string[], conditionFn: (val: any) => boolean = (val) => val === 'Yes') => {
+        // Jika SEMUA field pembentuk kosong, kembalikan null (Tidak ada yang dicentang)
+        if (fields.every(f => formData[f] === undefined || formData[f] === '')) return null;
+        // Jika ADA minimal satu field yang memenuhi kondisi, kembalikan 'Yes'
+        if (fields.some(f => conditionFn(formData[f]))) return 'Yes';
+        // Jika sudah diisi tapi tidak ada yang memenuhi kondisi, kembalikan 'No'
+        return 'No';
+    };
+
+    const cq = (val: string | null) => ({
+        y: val === 'Yes' ? charChecked : charUnchecked,
+        n: val === 'No' ? charChecked : charUnchecked
     });
 
-    // Menerjemahkan isian Master Form ke 44 Kuesioner Chevron secara otomatis:
-    const q1 = formData.mh_fainting === 'Yes' || formData.mh_epilepsy === 'Yes';
-    const q2 = formData.mh_headache === 'Yes';
-    const q3 = formData.mh_anxiety === 'Yes' || formData.fm_mental === 'Yes';
-    const q4 = formData.mh_allergy_med === 'Yes' || formData.rs_nasal === 'Abnormal';
-    const q5 = formData.al_tongue === 'Abnormal'; 
-    const q6 = formData.mh_ear === 'Yes' || formData.mh_ear2 === 'Yes' || formData.mh_tinnitus === 'Yes';
-    const q7 = formData.mh_thyroid === 'Yes' || formData.rs_thyroid === 'Abnormal';
-    const q8 = formData.mh_hbp === 'Yes';
-    const q9 = formData.mh_heart === 'Yes' || formData.mh_angina === 'Yes';
-    const q10 = formData.mh_asthma === 'Yes' || formData.mh_bronchitis === 'Yes';
-    const q11 = formData.mh_tb === 'Yes';
-    const q12 = formData.mh_ulcer === 'Yes';
-    const q13 = formData.mh_hep === 'Yes' || formData.al_liver === 'Abnormal';
-    const q14 = formData.mh_diarrhea === 'Yes' || formData.mh_bowel === 'Yes';
-    const q15 = formData.mh_piles === 'Yes';
-    const q16 = formData.mh_kidney === 'Yes' || formData.mh_kidney_stone === 'Yes';
-    const q17 = formData.ur_sugar === 'Positive' || formData.albumin === 'Positive' || formData.urin_b === 'Positive';
-    const q18 = formData.vdrl_res === 'Reactive' || formData.hiv_res === 'Reactive';
-    const q19 = formData.mh_diabetes === 'Yes';
-    const q20 = false; // Change in weight
-    const q21 = formData.mh_rheumatism === 'Yes' || formData.cv_varicose === 'Abnormal';
-    const q22 = formData.mh_accident === 'Yes';
-    const q23 = formData.mh_musculo === 'Yes' || formData.ms_back === 'Abnormal';
-    const q24 = formData.mh_skin === 'Yes' || formData.mh_eczema === 'Yes';
-    const q25 = formData.fm_cancer === 'Yes'; 
-    const q26 = !!formData.xray; // Any X-Rays
-    const q27 = !!formData.nearr_cor || !!formData.disr_cor; // Memakai Kacamata
-    const q28 = formData.mh_eye === 'Yes' || formData.mh_eye2 === 'Yes';
-    const q29 = formData.q_illness === 'Yes' || formData.mh_surgery === 'Yes';
-    const q30 = formData.q_meds === 'Yes' || formData.q_illness === 'Yes';
-    const q31 = formData.q_meds === 'Yes';
-    const q32 = formData.mh_allergy_med === 'Yes';
-    const q33 = !!formData.mh_others;
-    const q34 = formData.exp_compensation === 'Yes';
-    const q35 = formData.exp_disable === 'Yes';
-    const q36 = formData.q_illness === 'Yes';
-    const q37 = formData.q_omfc === 'Yes';
-    const q38 = formData.mh_accident === 'Yes'; 
-    const q39 = formData.exp_radiation === 'Yes';
-    const q40 = formData.exp_heavy_metals === 'Yes' || formData.exp_chemicals === 'Yes';
-    const q41 = formData.exp_dust === 'Yes';
-    const q42 = formData.exp_chemicals === 'Yes';
-    const q43 = formData.exp_skin_infections === 'Yes';
-    const q44 = !!formData.f_preg_no && parseInt(formData.f_preg_no) > 0; // Hamil
-    
+    // Helper Pemeriksaan Fisik (Physical Exam) - Mengembalikan 'Abnormal', 'Normal', atau null jika kosong
+    const getExamCategoryStatus = (fields: string[]) => {
+        if (fields.every(f => formData[f] === undefined || formData[f] === '')) return null; // Kosong 100%
+        if (fields.some(field => formData[field] === 'Abnormal')) return 'Abnormal';
+        if (fields.some(field => formData[field] === 'Normal')) return 'Normal';
+        return null;
+    };
+
+    const checkEx = (status: string | null) => ({
+        n: status === 'Normal' ? charChecked : charUnchecked,
+        a: status === 'Abnormal' ? charChecked : charUnchecked
+    });
+
+    // --- 1. ROLL-UP LOGIC UNTUK PHYSICAL EXAM (MENGGUNAKAN 3-STATE) ---
+    const eyes_status = getExamCategoryStatus(['ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi']);
+    const ears_status = getExamCategoryStatus(['ea_meatus', 'ea_drums']);
+    const nose_status = getExamCategoryStatus(['rs_nasal']);
+    const throat_status = getExamCategoryStatus(['al_tongue']);
+    const dental_status = getExamCategoryStatus(['al_teeth']);
+    const neck_status = getExamCategoryStatus(['rs_thyroid', 'rs_trachea']);
+    const lung_status = getExamCategoryStatus(['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent']);
+    const heart_status = getExamCategoryStatus(['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs', 'cv_varicose']);
+    const abdomen_status = getExamCategoryStatus(['al_abd', 'al_liver', 'al_spleen']);
+    const hernia_status = getExamCategoryStatus(['al_hernia']);
+    const genitalia_status = getExamCategoryStatus(['gu_gen']);
+    const rectal_status = getExamCategoryStatus(['al_anus']);
+    const lymph_status = getExamCategoryStatus(['al_lymph']);
+    const skin_status = getExamCategoryStatus(['in_hair', 'in_skin', 'in_nails']);
+    const muscul_status = getExamCategoryStatus(['ms_hands', 'ms_limbs', 'ms_back', 'ms_joints', 'ms_inj']);
+    const reflex_status = getExamCategoryStatus(['ns_power', 'ns_tone', 'ns_coord', 'ns_sens', 'ns_intel']);
+
+    // --- 2. ROLL-UP LOGIC UNTUK 44 KUESIONER CHEVRON (MENGGUNAKAN 3-STATE) ---
+    const q1 = evaluateQ(['mh_fainting', 'mh_epilepsy']);
+    const q2 = evaluateQ(['mh_headache']);
+    const q3 = evaluateQ(['mh_anxiety', 'fm_mental']);
+    const q4 = evaluateQ(['mh_allergy_med', 'rs_nasal'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q5 = evaluateQ(['al_tongue'], (val) => val === 'Abnormal');
+    const q6 = evaluateQ(['mh_ear', 'mh_ear2', 'mh_tinnitus']);
+    const q7 = evaluateQ(['mh_thyroid', 'rs_thyroid'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q8 = evaluateQ(['mh_hbp']);
+    const q9 = evaluateQ(['mh_heart', 'mh_angina']);
+    const q10 = evaluateQ(['mh_asthma', 'mh_bronchitis']);
+    const q11 = evaluateQ(['mh_tb']);
+    const q12 = evaluateQ(['mh_ulcer']);
+    const q13 = evaluateQ(['mh_hep', 'al_liver'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q14 = evaluateQ(['mh_diarrhea', 'mh_bowel']);
+    const q15 = evaluateQ(['mh_piles']);
+    const q16 = evaluateQ(['mh_kidney', 'mh_kidney_stone']);
+    const q17 = evaluateQ(['ur_sugar', 'albumin', 'urin_b'], (val) => val === 'Positive');
+    const q18 = evaluateQ(['vdrl_res', 'hiv_res'], (val) => val === 'Reactive');
+    const q19 = evaluateQ(['mh_diabetes']);
+    const q20 = evaluateQ([], () => false); // Change in weight (Otomatis Kosong jika tidak ada input UI)
+    const q21 = evaluateQ(['mh_rheumatism', 'cv_varicose'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q22 = evaluateQ(['mh_accident']);
+    const q23 = evaluateQ(['mh_musculo', 'ms_back'], (val) => val === 'Yes' || val === 'Abnormal');
+    const q24 = evaluateQ(['mh_skin', 'mh_eczema']);
+    const q25 = evaluateQ(['fm_cancer']);
+    const q26 = evaluateQ(['xray'], (val) => !!val);
+    const q27 = evaluateQ(['nearr_cor', 'disr_cor'], (val) => !!val);
+    const q28 = evaluateQ(['mh_eye', 'mh_eye2']);
+    const q29 = evaluateQ(['q_illness', 'mh_surgery']);
+    const q30 = evaluateQ(['q_meds', 'q_illness']);
+    const q31 = evaluateQ(['q_meds']);
+    const q32 = evaluateQ(['mh_allergy_med']);
+    const q33 = evaluateQ(['mh_others'], (val) => !!val);
+    const q34 = evaluateQ(['exp_compensation']);
+    const q35 = evaluateQ(['exp_disable']);
+    const q36 = evaluateQ(['q_illness']);
+    const q37 = evaluateQ(['q_omfc']);
+    const q38 = evaluateQ(['mh_accident']);
+    const q39 = evaluateQ(['exp_radiation']);
+    const q40 = evaluateQ(['exp_heavy_metals', 'exp_chemicals']);
+    const q41 = evaluateQ(['exp_dust']);
+    const q42 = evaluateQ(['exp_chemicals']);
+    const q43 = evaluateQ(['exp_skin_infections']);
+    const q44 = evaluateQ(['f_preg_no'], (val) => !!val && parseInt(val) > 0);
+
     doc.render({
       // SECTION I: IDENTITAS PRIBADI
       name: `${formData.firstName || ''} ${formData.middleName || ''} ${formData.familyName || ''}`.trim(),
@@ -195,25 +214,25 @@ export async function POST(request: Request) {
       va_be: formData.bv_unc || formData.bv_cor || "",
       color_blindness: formData.color_vision || "",
       
-      // MAPPING KE TABEL PHYSICAL EXAM CHEVRON (Smart UI -> Standard)
-      eyes_a: isChecked(eyes_isAbnormal), eyes_n: isUnchecked(eyes_isAbnormal),
-      ears_a: isChecked(ears_isAbnormal), ears_n: isUnchecked(ears_isAbnormal),
-      nose_a: isChecked(nose_isAbnormal), nose_n: isUnchecked(nose_isAbnormal),
-      throat_a: isChecked(throat_isAbnormal), throat_n: isUnchecked(throat_isAbnormal),
-      den_c_a: isChecked(dental_isAbnormal), den_c_n: isUnchecked(dental_isAbnormal),
-      n_t_a: isChecked(neck_isAbnormal), n_t_n: isUnchecked(neck_isAbnormal),
-      breast_a: '☐', breast_n: '☑', // Karena tidak ada di Master UI, di-default ke Normal
-      lung_a: isChecked(lung_isAbnormal), lung_n: isUnchecked(lung_isAbnormal),
-      heart_a: isChecked(heart_isAbnormal), heart_n: isUnchecked(heart_isAbnormal),
-      abdomen_a: isChecked(abdomen_isAbnormal), abdomen_n: isUnchecked(abdomen_isAbnormal),
-      hernia_a: isChecked(hernia_isAbnormal), hernia_n: isUnchecked(hernia_isAbnormal),
-      genit_a: isChecked(genitalia_isAbnormal), genit_n: isUnchecked(genitalia_isAbnormal),
-      rectal_a: isChecked(rectal_isAbnormal), rectal_n: isUnchecked(rectal_isAbnormal),
-      pelvic_e_a: '☐', pelvic_e_n: '☑', // Default ke Normal
-      lymph_a: isChecked(lymph_isAbnormal), lymph_n: isUnchecked(lymph_isAbnormal),
-      skin_a: isChecked(skin_isAbnormal), skin_n: isUnchecked(skin_isAbnormal),
-      muscul_a: isChecked(muscul_isAbnormal), muscul_n: isUnchecked(muscul_isAbnormal),
-      reflex_a: isChecked(reflex_isAbnormal), reflex_n: isUnchecked(reflex_isAbnormal),
+      // MAPPING KE TABEL PHYSICAL EXAM CHEVRON (MENGGUNAKAN 3-STATE)
+      eyes_a: checkEx(eyes_status).a, eyes_n: checkEx(eyes_status).n,
+      ears_a: checkEx(ears_status).a, ears_n: checkEx(ears_status).n,
+      nose_a: checkEx(nose_status).a, nose_n: checkEx(nose_status).n,
+      throat_a: checkEx(throat_status).a, throat_n: checkEx(throat_status).n,
+      den_c_a: checkEx(dental_status).a, den_c_n: checkEx(dental_status).n,
+      n_t_a: checkEx(neck_status).a, n_t_n: checkEx(neck_status).n,
+      breast_a: charUnchecked, breast_n: charUnchecked, // Default kosong, tidak ada di Smart UI
+      lung_a: checkEx(lung_status).a, lung_n: checkEx(lung_status).n,
+      heart_a: checkEx(heart_status).a, heart_n: checkEx(heart_status).n,
+      abdomen_a: checkEx(abdomen_status).a, abdomen_n: checkEx(abdomen_status).n,
+      hernia_a: checkEx(hernia_status).a, hernia_n: checkEx(hernia_status).n,
+      genit_a: checkEx(genitalia_status).a, genit_n: checkEx(genitalia_status).n,
+      rectal_a: checkEx(rectal_status).a, rectal_n: checkEx(rectal_status).n,
+      pelvic_e_a: charUnchecked, pelvic_e_n: charUnchecked, // Default kosong
+      lymph_a: checkEx(lymph_status).a, lymph_n: checkEx(lymph_status).n,
+      skin_a: checkEx(skin_status).a, skin_n: checkEx(skin_status).n,
+      muscul_a: checkEx(muscul_status).a, muscul_n: checkEx(muscul_status).n,
+      reflex_a: checkEx(reflex_status).a, reflex_n: checkEx(reflex_status).n,
 
       // 2. PULMONARY FUNCTION TEST (PFT)
       ft_fvc: formData.ft_fvc || "",

@@ -20,7 +20,7 @@ export default function Home() {
     firstName: '', middleName: '', familyName: '', dob: '', pob: '', pob_city: '', pob_country: '', idPassport: '', nationality: '', gender: '', maritalStatus: '', address: '', contactNumber: '', email: '',
     position: '', department: '', company: '', workLocation: '', date: new Date().toLocaleDateString('id-ID'),
     serviceDate: '', medNo: '', typeOfShip: '', tradeArea: '', ilo_position: '', seaman_book: '', 
-    reason_exam: 'Pre-Employment', // Tujuan Pemeriksaan
+    reason_exam: '', // Tujuan Pemeriksaan
 
     // --- VARIABEL PREVIOUS EMPLOYMENT ADNOC ---
     job1: '', comp1: '', from1: '', to1: '',
@@ -33,7 +33,7 @@ export default function Home() {
     exp_chemicals: '', exp_radiation: '', exp_dust: '', exp_disable: '', exp_disable_no: '',
     
     // Biometrik & Tanda Vital
-    height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', rr: '', temp: '', chest_exp: '', gen_app: 'Good', bloodGroupType: '', bloodGroupRh: '',
+    height: '', weight: '', waist: '', bmi: '', pulse: '', bloodPressure: '', respiratoryRate: '', rr: '', temp: '', chest_exp: '', gen_app: '', bloodGroupType: '', bloodGroupRh: '',
     
     // --- VARIABEL RINCIAN PEMERIKSAAN FISIK (SMART UI) ---
     cv_pulse: '', cv_bp: '', cv_apex: '', cv_sounds: '', cv_murmurs: '', cv_varicose: '', cv_comm: '',
@@ -47,10 +47,10 @@ export default function Home() {
     ey_light: '', ey_accom: '', ey_nyst: '', ey_fundi: '', ey_comm: '',
 
     // Penglihatan & Pendengaran
-    disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '', color_test_type: 'Book', hear_r: '', hear_l: '',
+    disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '', disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '', color_vision: '', color_test_type: '', hear_r: '', hear_l: '',
     
     // Kuesioner Medis & Gaya Hidup Umum
-    q_illness: '', q_hosp_wait: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: 'Yes', 
+    q_illness: '', q_hosp_wait: '', q_medevac: '', q_meds: '', q_smoke: '', q_alcohol: '', q_fit: '', q_fear: '', q_stress: '', q_stressful: '', q_omfc: '', nw_others: '', mh_others: '', fm_others: '', vaccinated: '', 
     fm_tb: '', fm_allergy: '', fm_mental: '', fm_heart: '', fm_asthma: '', fm_diabetes: '', fm_hypertension: '', fm_cancer: '', illness_last: '', 
 
     // --- VARIABEL RIWAYAT PENYAKIT PRIBADI ---
