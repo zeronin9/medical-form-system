@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   try {
     const { formData = {} } = await request.json();
 
-    const fileName = '1.-ILO.docx';
+    const fileName = '1. ILO.docx';
     const templatePath = path.join(process.cwd(), 'public', 'templates', fileName);
 
     if (!fs.existsSync(templatePath)) {
@@ -265,8 +265,8 @@ export async function POST(request: Request) {
       i_q2_n: isN(val('mh_hbp')),
       i_q3_y: isY(val('mh_heart')),
       i_q3_n: isN(val('mh_heart')),
-      i_q4_y: isY(val('mh_cardiac_surgery')),
-      i_q4_n: isN(val('mh_cardiac_surgery')),
+      i_q4_y: isY(val('mhcardiacsurgery')),
+      i_q4_n: isN(val('mhcardiacsurgery')),
       i_q5_y: isY(val('mh_varicose')),
       i_q5_n: isN(val('mh_varicose')),
       i_q6_y: isY(val('mh_asthma')),
@@ -292,19 +292,19 @@ export async function POST(request: Request) {
       i_q16_y: isY(val('mh_genital')),
       i_q16_n: isN(val('mh_genital')),
 
-      i_q17_y: isFemale ? isY(val('mh_pregnancy')) : '☐',
-      i_q17_n: isFemale ? isN(val('mh_pregnancy')) : '☐',
+      i_q17_y: isFemale ? isY(val('mhpregnancy')) : '☐',
+      i_q17_n: isFemale ? isN(val('mhpregnancy')) : '☐',
 
-      i_q18_y: isY(val('mh_sleep')),
-      i_q18_n: isN(val('mh_sleep')),
+      i_q18_y: isY(val('mhsleep')),
+      i_q18_n: isN(val('mhsleep')),
       i_q19_y: isY(val('q_smoke', 'qsmoke')),
       i_q19_n: isN(val('q_smoke', 'qsmoke')),
-      i_q20_y: isY(val('mh_surgery')),
-      i_q20_n: isN(val('mh_surgery')),
+      i_q20_y: isY(val('mhsurgery')),
+      i_q20_n: isN(val('mhsurgery')),
       i_q21_y: isY(val('mh_epilepsy')),
       i_q21_n: isN(val('mh_epilepsy')),
-      i_q22_y: isY(val('mh_fainting')),
-      i_q22_n: isN(val('mh_fainting')),
+      i_q22_y: isY(val('mhfainting')),
+      i_q22_n: isN(val('mhfainting')),
       i_q23_y: isY(val('mh_loss_consc')),
       i_q23_n: isN(val('mh_loss_consc')),
       i_q24_y: isY(val('mh_psychiatric')),

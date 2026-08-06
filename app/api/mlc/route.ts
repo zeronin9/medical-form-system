@@ -353,8 +353,8 @@ export async function POST(request: Request) {
       q3_y: isY(pick('mh_heart')),
       q3_n: isN(pick('mh_heart')),
 
-      q4_y: isY(pick('mh_cardiac_surgery')),
-      q4_n: isN(pick('mh_cardiac_surgery')),
+      q4_y: isY(pick('mhcardiacsurgery')),
+      q4_n: isN(pick('mhcardiacsurgery')),
 
       q5_y: isY(pick('mh_varicose')),
       q5_n: isN(pick('mh_varicose')),
@@ -392,29 +392,29 @@ export async function POST(request: Request) {
       q16_y: isY(pick('mh_genital')),
       q16_n: isN(pick('mh_genital')),
 
-      q17_y: isFemale ? isY(pick('mh_pregnancy')) : '☐',
-      q17_n: isFemale ? isN(pick('mh_pregnancy')) : '☐',
+      q17_y: isFemale ? isY(pick('mhpregnancy')) : '☐',
+      q17_n: isFemale ? isN(pick('mhpregnancy')) : '☐',
 
-      q18_y: isY(pick('mh_sleep')),
-      q18_n: isN(pick('mh_sleep')),
+      q18_y: isY(pick('mhsleep')),
+      q18_n: isN(pick('mhsleep')),
 
       q19_y:
-        str('q_smoke') === 'Yes' || str('q_alcohol') === 'Yes' || str('mh_drug') === 'Yes'
+        str('qsmoke', 'q_smoke') === 'Yes' || str('qalcohol', 'q_alcohol') === 'Yes' || str('mh_drug') === 'Yes'
           ? '☑'
           : '☐',
       q19_n:
-        str('q_smoke') === 'No' && str('q_alcohol') === 'No' && str('mh_drug') !== 'Yes'
+        str('qsmoke', 'q_smoke') === 'No' && str('qalcohol', 'q_alcohol') === 'No' && str('mh_drug') !== 'Yes'
           ? '☑'
           : '☐',
 
-      q20_y: isY(pick('mh_surgery')),
-      q20_n: isN(pick('mh_surgery')),
+      q20_y: isY(pick('mhsurgery')),
+      q20_n: isN(pick('mhsurgery')),
 
       q21_y: isY(pick('mh_epilepsy')),
       q21_n: isN(pick('mh_epilepsy')),
 
-      q22_y: isY(pick('mh_fainting')),
-      q22_n: isN(pick('mh_fainting')),
+      q22_y: isY(pick('mhfainting')),
+      q22_n: isN(pick('mhfainting')),
 
       q23_y: isY(pick('mh_loss_consc')),
       q23_n: isN(pick('mh_loss_consc')),
@@ -454,32 +454,32 @@ export async function POST(request: Request) {
       q34_y: isY(pick('mh_accident')),
       q34_n: isN(pick('mh_accident')),
 
-      q35_y: isY(pick('q_medevac')),
-      q35_n: isN(pick('q_medevac')),
+      q35_y: isY(pick('qmedevac', 'q_medevac')),
+      q35_n: isN(pick('qmedevac', 'q_medevac')),
 
-      q36_y: isY(pick('q_illness')),
-      q36_n: isN(pick('q_illness')),
+      q36_y: isY(pick('qillness', 'q_illness')),
+      q36_n: isN(pick('qillness', 'q_illness')),
 
-      q37_y: isY(pick('q_omfc')),
-      q37_n: isN(pick('q_omfc')),
+      q37_y: isY(pick('qomfc', 'q_omfc')),
+      q37_n: isN(pick('qomfc', 'q_omfc')),
 
-      q38_y: isY(pick('q_cert_revoked')),
-      q38_n: isN(pick('q_cert_revoked')),
+      q38_y: isY(pick('qcertrevoked', 'q_cert_revoked')),
+      q38_n: isN(pick('qcertrevoked', 'q_cert_revoked')),
 
-      q39_y: isY(pick('q_aware_medical')),
-      q39_n: isN(pick('q_aware_medical')),
+      q39_y: isY(pick('qawaremedical', 'q_aware_medical')),
+      q39_n: isN(pick('qawaremedical', 'q_aware_medical')),
 
-      q40_y: isY(pick('q_fit')),
-      q40_n: isN(pick('q_fit')),
+      q40_y: isY(pick('qfit', 'q_fit')),
+      q40_n: isN(pick('qfit', 'q_fit')),
 
       q41_y: isY(pick('mh_allergy_med')),
       q41_n: isN(pick('mh_allergy_med')),
 
-      q42_y: isY(pick('q_meds')),
-      q42_n: isN(pick('q_meds')),
+      q42_y: isY(pick('qmeds', 'q_meds')),
+      q42_n: isN(pick('qmeds', 'q_meds')),
 
       epd_comments: str('comments'),
-      meds_text: str('q_meds_text'),
+      meds_text: str('qmedstext', 'q_meds_text'),
 
       // ==========================================
       // 7. FINAL DECLARATION

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
   cardClass,
@@ -6,18 +8,19 @@ import {
   cardDescClass,
   cardContentClass,
   checkboxClass,
+  type SelectedFormat,
 } from './FormConstants';
 
 interface FormatSelectorProps {
   selectedFormats: string[];
-  handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // Mengubah tipe handler agar lebih aman dan eksplisit
+  handleCheckboxChange: (format: SelectedFormat, checked: boolean) => void;
 }
 
-// Peta warna statis agar Tailwind bisa mendeteksi class saat build
-const COLOR_STYLES: Record<
-  string,
-  { container: string; text: string }
-> = {
+type ColorKey = 'teal' | 'orange' | 'blue' | 'purple' | 'indigo' | 'rose';
+type FormatId = 'chevron' | 'qatarenergy' | 'ilo' | 'mlc' | 'adnoc' | 'marshall';
+
+const COLOR_STYLES: Record<ColorKey, { container: string; text: string }> = {
   teal: {
     container: 'bg-teal-50 border-teal-300 ring-1 ring-teal-300',
     text: 'text-teal-900',
@@ -44,7 +47,11 @@ const COLOR_STYLES: Record<
   },
 };
 
-const FORMATS = [
+const FORMATS: ReadonlyArray<{
+  id: FormatId;
+  label: string;
+  color: ColorKey;
+}> = [
   { id: 'chevron', label: 'Format Chevron', color: 'teal' },
   { id: 'qatarenergy', label: 'Format QatarEnergy', color: 'orange' },
   { id: 'ilo', label: 'Format ILO (Pelaut)', color: 'blue' },
@@ -75,15 +82,14 @@ export default function FormatSelector({
               <label
                 key={fmt.id}
                 className={`flex items-center space-x-3 border border-slate-200 rounded-lg p-4 cursor-pointer transition-colors w-full sm:w-64 ${
-                  isSelected
-                    ? colorStyle.container
-                    : 'hover:bg-slate-50'
+                  isSelected ? colorStyle.container : 'hover:bg-slate-50'
                 }`}
               >
                 <input
                   type="checkbox"
                   value={fmt.id}
-                  onChange={handleCheckboxChange}
+                  // Mengirimkan data secara langsung tanpa bergantung pada event e.target.value
+                  onChange={(e) => handleCheckboxChange(fmt.id, e.target.checked)}
                   className={checkboxClass}
                   checked={isSelected}
                 />

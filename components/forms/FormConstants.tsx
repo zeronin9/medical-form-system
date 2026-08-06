@@ -1,11 +1,34 @@
 'use client';
+
 import React, { createContext, useContext } from 'react';
 
-// === 1. CONTEXT UNTUK BADGE DINAMIS ===
-export const FormatContext = createContext<string[]>([]);
+// ==============================
+// TYPES
+// ==============================
+export type SelectedFormat =
+  | 'chevron'
+  | 'qatarenergy'
+  | 'ilo'
+  | 'mlc'
+  | 'adnoc'
+  | 'marshall';
 
-// === MASTER DATA ===
-export const natureOfWork = [
+export interface OptionItem {
+  id: string;
+  label: string;
+}
+
+// ==============================
+// CONTEXT UNTUK BADGE DINAMIS
+// ==============================
+export const FormatContext = createContext<SelectedFormat[]>([]);
+
+export const useSelectedFormats = (): SelectedFormat[] => useContext(FormatContext);
+
+// ==============================
+// MASTER DATA
+// ==============================
+export const natureOfWork: OptionItem[] = [
   { id: 'nw_confined', label: 'Ruang Terbatas (Confined Space)' },
   { id: 'nw_diving', label: 'Menyelam (Diving)' },
   { id: 'nw_height', label: 'Bekerja di Ketinggian' },
@@ -19,7 +42,7 @@ export const natureOfWork = [
   { id: 'nw_radiation', label: 'Radiasi Pengion' },
 ];
 
-export const vaccines = [
+export const vaccines: OptionItem[] = [
   { id: 'vac_hepa', label: 'Hepatitis A' },
   { id: 'vac_tet', label: 'Tetanus' },
   { id: 'vac_hepb', label: 'Hepatitis B' },
@@ -30,11 +53,9 @@ export const vaccines = [
 ];
 
 // CATATAN: mh_back & mh_musculo, serta mh_eye/mh_eye2 dan mh_ear/mh_ear2
-// SENGAJA dipertahankan terpisah karena masing-masing punya konteks
+// sengaja dipertahankan terpisah karena masing-masing punya konteks
 // pemeriksaan berbeda di formulir sumber ADNOC/ILO/MLC/Chevron.
-// Field ini TIDAK didesain sebagai duplikat, tapi variasi rinci per format.
-// Jika kamu ingin menyatukan, silakan konfirmasi field mana yang identik 100%.
-export const medicalHistory = [
+export const medicalHistory: OptionItem[] = [
   { id: 'mh_varicose', label: 'Varises (Varicose veins)' },
   { id: 'mh_digestive', label: 'Gangguan Pencernaan (Digestive disorder)' },
   { id: 'mh_infectious', label: 'Penyakit Menular (Infectious/contagious diseases)' },
@@ -86,7 +107,7 @@ export const medicalHistory = [
   { id: 'mh_drug', label: 'Penyalahgunaan Obat / Narkoba (Drugs)' },
 ];
 
-export const familyHistory = [
+export const familyHistory: OptionItem[] = [
   { id: 'fm_diabetes', label: 'Diabetes' },
   { id: 'fm_hypertension', label: 'Darah Tinggi' },
   { id: 'fm_epilepsy', label: 'Epilepsi / Kejang' },
@@ -98,53 +119,110 @@ export const familyHistory = [
   { id: 'fm_mental', label: 'Gangguan Mental (Mental Disorder)' },
 ];
 
-// === CSS TOKENS (tidak berubah) ===
-export const inputClass = "flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 transition-colors";
-export const labelClass = "text-sm font-medium leading-none text-slate-700 mb-2 block flex items-center flex-wrap gap-1.5";
-export const cardClass = "rounded-xl border border-slate-200 bg-white text-slate-950 shadow-sm overflow-hidden animate-in fade-in duration-500";
-export const cardHeaderClass = "flex flex-col space-y-1.5 p-6 border-b border-slate-100 bg-slate-50/50";
-export const cardTitleClass = "font-semibold text-lg text-slate-900";
-export const cardDescClass = "text-sm text-slate-500 mt-1";
-export const cardContentClass = "p-6 space-y-6 bg-white";
-export const radioGroupClass = "flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700";
-export const radioClass = "h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors";
-export const checkboxGroupClass = "flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700 p-2 rounded-md hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-colors";
-export const checkboxClass = "h-4 w-4 shrink-0 rounded-sm border border-slate-300 accent-slate-900 cursor-pointer transition-colors";
-export const textareaClass = "flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 transition-colors";
+// ==============================
+// CSS TOKENS
+// ==============================
+export const inputClass =
+  'flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 transition-colors';
 
-// === 2. BADGE COMPONENTS (tidak berubah, sudah benar) ===
-export const BadgeChevron = () => {
-  const formats = useContext(FormatContext);
-  if (!formats.includes('chevron')) return null;
-  return <span className="text-teal-600 font-bold tracking-wide text-[10px] bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100 uppercase animate-in fade-in zoom-in duration-300">Chevron</span>;
-};
+export const labelClass =
+  'text-sm font-medium leading-none text-slate-700 mb-2 block flex items-center flex-wrap gap-1.5';
 
-export const BadgeQatar = () => {
-  const formats = useContext(FormatContext);
-  if (!formats.includes('qatarenergy')) return null;
-  return <span className="text-orange-600 font-bold tracking-wide text-[10px] bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100 uppercase animate-in fade-in zoom-in duration-300">Qatar</span>;
-};
+export const cardClass =
+  'rounded-xl border border-slate-200 bg-white text-slate-950 shadow-sm overflow-hidden animate-in fade-in duration-500';
 
-export const BadgeILO = () => {
-  const formats = useContext(FormatContext);
-  if (!formats.includes('ilo')) return null;
-  return <span className="text-blue-500 font-bold tracking-wide text-[10px] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 uppercase animate-in fade-in zoom-in duration-300">ILO</span>;
-};
+export const cardHeaderClass =
+  'flex flex-col space-y-1.5 p-6 border-b border-slate-100 bg-slate-50/50';
 
-export const BadgeMLC = () => {
-  const formats = useContext(FormatContext);
-  if (!formats.includes('mlc')) return null;
-  return <span className="text-purple-600 font-bold tracking-wide text-[10px] bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100 uppercase animate-in fade-in zoom-in duration-300">MLC</span>;
-};
+export const cardTitleClass = 'font-semibold text-lg text-slate-900';
+export const cardDescClass = 'text-sm text-slate-500 mt-1';
+export const cardContentClass = 'p-6 space-y-6 bg-white';
 
-export const BadgeADNOC = () => {
-  const formats = useContext(FormatContext);
-  if (!formats.includes('adnoc')) return null;
-  return <span className="text-indigo-600 font-bold tracking-wide text-[10px] bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 uppercase animate-in fade-in zoom-in duration-300">ADNOC</span>;
-};
+export const radioGroupClass =
+  'flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700';
 
-export const BadgeMarshall = () => {
-  const formats = useContext(FormatContext);
-  if (!formats.includes('marshall')) return null;
-  return <span className="text-rose-600 font-bold tracking-wide text-[10px] bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100 uppercase animate-in fade-in zoom-in duration-300">Marshall</span>;
-};
+export const radioClass =
+  'h-4 w-4 shrink-0 rounded-full border border-slate-300 text-slate-900 accent-slate-900 cursor-pointer transition-colors';
+
+export const checkboxGroupClass =
+  'flex items-center space-x-2 cursor-pointer text-sm font-medium text-slate-700 p-2 rounded-md hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-colors';
+
+export const checkboxClass =
+  'h-4 w-4 shrink-0 rounded-sm border border-slate-300 accent-slate-900 cursor-pointer transition-colors';
+
+export const textareaClass =
+  'flex min-h-[80px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 transition-colors';
+
+// ==============================
+// BADGE BASE
+// ==============================
+interface BadgeProps {
+  format: SelectedFormat;
+  text: string;
+  className: string;
+}
+
+function FormatBadge({ format, text, className }: BadgeProps) {
+  const formats = useSelectedFormats();
+
+  if (!formats.includes(format)) return null;
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${className}`}
+    >
+      {text}
+    </span>
+  );
+}
+
+// ==============================
+// BADGE COMPONENTS
+// ==============================
+export const BadgeChevron = () => (
+  <FormatBadge
+    format="chevron"
+    text="Chevron"
+    className="bg-teal-100 text-teal-800 border border-teal-200"
+  />
+);
+
+export const BadgeQatar = () => (
+  <FormatBadge
+    format="qatarenergy"
+    text="Qatar"
+    className="bg-orange-100 text-orange-800 border border-orange-200"
+  />
+);
+
+export const BadgeILO = () => (
+  <FormatBadge
+    format="ilo"
+    text="ILO"
+    className="bg-blue-100 text-blue-800 border border-blue-200"
+  />
+);
+
+export const BadgeMLC = () => (
+  <FormatBadge
+    format="mlc"
+    text="MLC"
+    className="bg-purple-100 text-purple-800 border border-purple-200"
+  />
+);
+
+export const BadgeADNOC = () => (
+  <FormatBadge
+    format="adnoc"
+    text="ADNOC"
+    className="bg-indigo-100 text-indigo-800 border border-indigo-200"
+  />
+);
+
+export const BadgeMarshall = () => (
+  <FormatBadge
+    format="marshall"
+    text="Marshall"
+    className="bg-rose-100 text-rose-800 border border-rose-200"
+  />
+);
