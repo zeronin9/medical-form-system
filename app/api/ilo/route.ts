@@ -29,9 +29,6 @@ export async function POST(request: Request) {
       nullGetter: () => '',
     });
 
-    // =========================
-    // Helpers
-    // =========================
     const val = (...keys: string[]) => {
       for (const key of keys) {
         const v = formData[key];
@@ -51,8 +48,16 @@ export async function POST(request: Request) {
       return '';
     };
 
+    const fitStatus = (input: any): 'Fit' | 'Unfit' | '' => {
+      if (input === 'Fit') return 'Fit';
+      if (input === 'Unfit') return 'Unfit';
+      return '';
+    };
+
     const isY = (input: any) => (yn(input) === 'Yes' ? '☑' : '☐');
     const isN = (input: any) => (yn(input) === 'No' ? '☑' : '☐');
+    const isFit = (input: any) => (fitStatus(input) === 'Fit' ? '☑' : '☐');
+    const isUnfit = (input: any) => (fitStatus(input) === 'Unfit' ? '☑' : '☐');
 
     const ex = (input: any): 'Normal' | 'Abnormal' | null => {
       if (input === 'Normal') return 'Normal';
@@ -63,15 +68,16 @@ export async function POST(request: Request) {
     const isExN = (input: any) => (ex(input) === 'Normal' ? '☑' : '☐');
     const isExA = (input: any) => (ex(input) === 'Abnormal' ? '☑' : '☐');
 
-    const splitDate = (dateValue: string) => {
-      if (!dateValue || !dateValue.includes('-')) {
-        return { year: '', month: '', day: '' };
+    const splitDate = (value: string) => {
+      if (!value || !value.includes('-')) {
+        return { year: '', month: '', day: '', ddmmyyyy: '' };
       }
-      const [year, month, day] = dateValue.split('-');
+      const [year, month, day] = value.split('-');
       return {
         year: year || '',
         month: month || '',
         day: day || '',
+        ddmmyyyy: `${day || ''}/${month || ''}/${year || ''}`, // Format ddmmyyyy
       };
     };
 
@@ -102,9 +108,6 @@ export async function POST(request: Request) {
       return null;
     };
 
-    // =========================
-    // Basic derived values
-    // =========================
     const dob = str('dob');
     const { year: dobY, month: dobM, day: dobD } = splitDate(dob);
     const ddmmyy = formatDob(dob);
@@ -120,30 +123,11 @@ export async function POST(request: Request) {
     const colorVision = str('color_vision', 'colorVision');
     const xray = str('xray');
     const restrictions = str('restrictions');
+    const colorTestType = str('color_test_type', 'colortesttype');
 
-    // =========================
-    // Physical exam roll-up
-    // =========================
-    const headStatus = evaluateExam([
-      'rs_nasal',
-      'al_teeth',
-      'al_tongue',
-      'ea_meatus',
-      'ea_drums',
-      'ey_light',
-      'ey_accom',
-      'ey_nyst',
-      'ey_fundi',
-    ]);
-
-    const entStatus = evaluateExam([
-      'rs_nasal',
-      'rs_thyroid',
-      'rs_trachea',
-      'ea_meatus',
-      'ea_drums',
-    ]);
-
+    // Variabel evaluasi lama dibiarkan untuk menjaga stabilitas file jika ada yg bergantung padanya
+    const headStatus = evaluateExam(['rs_nasal','al_teeth','al_tongue','ea_meatus','ea_drums','ey_light','ey_accom','ey_nyst','ey_fundi']);
+    const entStatus = evaluateExam(['rs_nasal','rs_thyroid','rs_trachea','ea_meatus','ea_drums']);
     const oralStatus = evaluateExam(['al_teeth', 'al_tongue']);
     const earStatus = evaluateExam(['ea_meatus', 'ea_drums']);
     const tympStatus = evaluateExam(['ea_drums']);
@@ -170,94 +154,232 @@ export async function POST(request: Request) {
       genAppRaw === 'Abnormal'
         ? 'Abnormal'
         : genAppRaw
-          ? 'Normal'
-          : null;
+        ? 'Normal'
+        : null;
 
-    // =========================
-    // Final render data
-    // Semua key di bawah disamakan dengan placeholder template ILO
-    // =========================
     const renderData = {
-      // 1. IDENTITAS & PEKERJAAN
+      // =========================
+      // IDENTITAS - placeholder template ILO
+      // =========================
+      familyname: str('familyName', 'family_name', 'familyname'),
+      firstname: str('firstName', 'first_name', 'firstname'),
       family_name: str('familyName', 'family_name', 'familyname'),
       first_name: str('firstName', 'first_name', 'firstname'),
 
       day: dobD,
       month: dobM,
       year: dobY,
+      pobcity: str('pob_city', 'pobCity'),
+      pobcountry: str('pob_country', 'pobCountry'),
       pob_city: str('pob_city', 'pobCity'),
       pob_country: str('pob_country', 'pobCountry'),
 
+      gm: gender === 'Male' ? '☑' : '☐',
+      gf: gender === 'Female' ? '☑' : '☐',
       g_m: gender === 'Male' ? '☑' : '☐',
       g_f: gender === 'Female' ? '☑' : '☐',
 
       address: str('address'),
-      id_passport: str('idPassport', 'id_passport'),
-      type_of_ship: str('typeOfShip', 'type_of_ship'),
-      trade_area: str('tradeArea', 'trade_area'),
+      idpassport: str('idPassport', 'id_passport', 'idpassport'),
+      id_passport: str('idPassport', 'id_passport', 'idpassport'),
+      typeofship: str('typeOfShip', 'type_of_ship', 'typeofship'),
+      tradearea: str('tradeArea', 'trade_area', 'tradearea'),
+      type_of_ship: str('typeOfShip', 'type_of_ship', 'typeofship'),
+      trade_area: str('tradeArea', 'trade_area', 'tradearea'),
 
+      posmas: str('ilo_position') === 'Master' ? '☑' : '☐',
+      posdec: str('ilo_position') === 'Deck Officer' ? '☑' : '☐',
+      poseng: str('ilo_position') === 'Engineering Officer' ? '☑' : '☐',
+      posrad: ['Radio Officer', 'Radio Operator'].includes(str('ilo_position')) ? '☑' : '☐',
+      posrat: str('ilo_position') === 'Rating' ? '☑' : '☐',
       pos_mas: str('ilo_position') === 'Master' ? '☑' : '☐',
       pos_dec: str('ilo_position') === 'Deck Officer' ? '☑' : '☐',
       pos_eng: str('ilo_position') === 'Engineering Officer' ? '☑' : '☐',
       pos_rad: ['Radio Officer', 'Radio Operator'].includes(str('ilo_position')) ? '☑' : '☐',
       pos_rat: str('ilo_position') === 'Rating' ? '☑' : '☐',
 
-      // 2. DECLARATION OF AUTHORIZED PHYSICIAN
+      // =========================
+      // DECLARATION OF AUTHORIZED PHYSICIAN
+      // =========================
+      disrunc: str('disr_unc'),
+      dislunc: str('disl_unc'),
+      discr: str('disr_cor'),
+      dislcr: str('disl_cor'),
       disr_unc: str('disr_unc'),
       disl_unc: str('disl_unc'),
       disr_cor: str('disr_cor'),
       disl_cor: str('disl_cor'),
 
-      col_book: str('color_test_type') === 'Book' ? '☑' : '☐',
-      col_lant: str('color_test_type') === 'Lantern' ? '☑' : '☐',
+      colbook: colorTestType === 'Book' || colorTestType === 'Ishihara' ? '☑' : '☐',
+      collant: colorTestType === 'Lantern' ? '☑' : '☐',
+      col_book: colorTestType === 'Book' || colorTestType === 'Ishihara' ? '☑' : '☐',
+      col_lant: colorTestType === 'Lantern' ? '☑' : '☐',
+
+      coly: isY(val('color_y')),
+      colr: isY(val('color_r')),
+      colg: isY(val('color_g')),
+      colb: isY(val('color_b')),
       col_y: isY(val('color_y')),
       col_r: isY(val('color_r')),
       col_g: isY(val('color_g')),
       col_b: isY(val('color_b')),
 
+      hearr: str('hear_r'),
+      hearl: str('hear_l'),
       hear_r: str('hear_r'),
       hear_l: str('hear_l'),
 
+      idy: isY(val('id_checked')),
+      idn: isN(val('id_checked')),
       id_y: isY(val('id_checked')),
       id_n: isN(val('id_checked')),
 
+      hrstcwy: isY(val('hr_stcw')),
+      hrstcwn: isN(val('hr_stcw')),
+      hrstcwna: str('hr_stcw') === 'NA' ? '☑' : '☐',
       hr_stcw_y: isY(val('hr_stcw')),
       hr_stcw_n: isN(val('hr_stcw')),
       hr_stcw_na: str('hr_stcw') === 'NA' ? '☑' : '☐',
 
+      hrunaidy: isY(val('hr_unaid')),
+      hrunaidn: isN(val('hr_unaid')),
       hr_unaid_y: isY(val('hr_unaid')),
       hr_unaid_n: isN(val('hr_unaid')),
 
+      visstcwy: isY(val('vis_stcw')),
+      visstcwn: isN(val('vis_stcw')),
       vis_stcw_y: isY(val('vis_stcw')),
       vis_stcw_n: isN(val('vis_stcw')),
 
+      colstcwy: isY(val('col_stcw')),
+      colstcwn: isN(val('col_stcw')),
       col_stcw_y: isY(val('col_stcw')),
       col_stcw_n: isN(val('col_stcw')),
+
+      datevt: str('date_vt', 'date'),
       date_vt: str('date_vt', 'date'),
 
+      glassy: isY(val('glasses_nec')),
+      glassn: isN(val('glasses_nec')),
       glass_y: isY(val('glasses_nec')),
       glass_n: isN(val('glasses_nec')),
 
+      watchy: isY(val('watch_able')),
+      watchn: isN(val('watch_able')),
       watch_y: isY(val('watch_able')),
       watch_n: isN(val('watch_able')),
 
+      medsy: isY(val('q_meds', 'qmeds')),
+      medsn: isN(val('q_meds', 'qmeds')),
       meds_y: isY(val('q_meds', 'qmeds')),
       meds_n: isN(val('q_meds', 'qmeds')),
 
+      freey: isY(val('free_cond')),
+      freen: isN(val('free_cond')),
       free_y: isY(val('free_cond')),
       free_n: isN(val('free_cond')),
 
+      restdesc: restrictions === 'Yes' ? str('rest_desc', 'restdesc') : '',
       rest_desc: restrictions === 'Yes' ? str('rest_desc', 'restdesc') : '',
 
       eps: str('eps'),
       hospital: str('hospital'),
+      certauth: str('cert_auth', 'certauth'),
       cert_auth: str('cert_auth', 'certauth'),
       date: str('date'),
+      expdate: str('exp_date', 'expdate'),
       exp_date: str('exp_date', 'expdate'),
 
-      // 3. EXAMINEE PERSONAL DECLARATION
+      // =========================
+      // EXAMINEE PERSONAL DECLARATION
+      // =========================
       ddmmyy,
       ddmmyyyy: str('date'),
+
+      iq1y: isY(val('mh_eye')),
+      iq1n: isN(val('mh_eye')),
+      iq2y: isY(val('mh_hbp')),
+      iq2n: isN(val('mh_hbp')),
+      iq3y: isY(val('mh_heart')),
+      iq3n: isN(val('mh_heart')),
+      iq4y: isY(val('mhcardiacsurgery')),
+      iq4n: isN(val('mhcardiacsurgery')),
+      iq5y: isY(val('mh_varicose')),
+      iq5n: isN(val('mh_varicose')),
+      iq6y: isY(val('mh_asthma')),
+      iq6n: isN(val('mh_asthma')),
+      iq7y: isY(val('mh_blood')),
+      iq7n: isN(val('mh_blood')),
+      iq8y: isY(val('mh_diabetes')),
+      iq8n: isN(val('mh_diabetes')),
+      iq9y: isY(val('mh_thyroid')),
+      iq9n: isN(val('mh_thyroid')),
+      iq10y: isY(val('mh_digestive')),
+      iq10n: isN(val('mh_digestive')),
+      iq11y: isY(val('mh_kidney')),
+      iq11n: isN(val('mh_kidney')),
+      iq12y: isY(val('mh_skin')),
+      iq12n: isN(val('mh_skin')),
+      iq13y: isY(val('mh_allergy_med')),
+      iq13n: isN(val('mh_allergy_med')),
+      iq14y: isY(val('mh_infectious')),
+      iq14n: isN(val('mh_infectious')),
+      iq15y: isY(val('mh_hernia')),
+      iq15n: isN(val('mh_hernia')),
+      iq16y: isY(val('mh_genital')),
+      iq16n: isN(val('mh_genital')),
+      iq17y: isY(val('mhpregnancy')),
+      iq17n: isN(val('mhpregnancy')),
+      iq18y: isY(val('mhsleep')),
+      iq18n: isN(val('mhsleep')),
+      iq19y: isY(val('q_smoke', 'qsmoke')),
+      iq19n: isN(val('q_smoke', 'qsmoke')),
+      iq20y: isY(val('mhsurgery')),
+      iq20n: isN(val('mhsurgery')),
+      iq21y: isY(val('mh_epilepsy')),
+      iq21n: isN(val('mh_epilepsy')),
+      iq22y: isY(val('mhfainting')),
+      iq22n: isN(val('mhfainting')),
+      iq23y: isY(val('mh_loss_consc')),
+      iq23n: isN(val('mh_loss_consc')),
+      iq24y: isY(val('mh_psychiatric')),
+      iq24n: isN(val('mh_psychiatric')),
+      iq25y: isY(val('mh_depression')),
+      iq25n: isN(val('mh_depression')),
+      iq26y: isY(val('mh_suicide')),
+      iq26n: isN(val('mh_suicide')),
+      iq27y: isY(val('mh_memory')),
+      iq27n: isN(val('mh_memory')),
+      iq28y: isY(val('mh_balance')),
+      iq28n: isN(val('mh_balance')),
+      iq29y: isY(val('mh_headache')),
+      iq29n: isN(val('mh_headache')),
+      iq30y: isY(val('mh_ear')),
+      iq30n: isN(val('mh_ear')),
+      iq31y: isY(val('mh_mobility')),
+      iq31n: isN(val('mh_mobility')),
+      iq32y: isY(val('mh_back')),
+      iq32n: isN(val('mh_back')),
+      iq33y: isY(val('mh_amputation')),
+      iq33n: isN(val('mh_amputation')),
+      iq34y: isY(val('mh_accident')),
+      iq34n: isN(val('mh_accident')),
+      iq35y: isY(val('q_medevac', 'qmedevac')),
+      iq35n: isN(val('q_medevac', 'qmedevac')),
+      iq36y: isY(val('q_illness', 'qillness')),
+      iq36n: isN(val('q_illness', 'qillness')),
+      iq37y: isY(val('q_omfc', 'qomfc')),
+      iq37n: isN(val('q_omfc', 'qomfc')),
+      iq38y: isY(val('q_cert_revoked', 'qcertrevoked')),
+      iq38n: isN(val('q_cert_revoked', 'qcertrevoked')),
+      iq39y: isY(val('q_aware_medical', 'qawaremedical')),
+      iq39n: isN(val('q_aware_medical', 'qawaremedical')),
+      iq40y: isY(val('q_fit', 'qfit')),
+      iq40n: isN(val('q_fit', 'qfit')),
+      iq41y: isY(val('mh_drug', 'mh_allergy_med')),
+      iq41n: isN(val('mh_drug', 'mh_allergy_med')),
+      iq42y: isY(val('q_meds', 'qmeds')),
+      iq42n: isN(val('q_meds', 'qmeds')),
 
       i_q1_y: isY(val('mh_eye')),
       i_q1_n: isN(val('mh_eye')),
@@ -291,10 +413,8 @@ export async function POST(request: Request) {
       i_q15_n: isN(val('mh_hernia')),
       i_q16_y: isY(val('mh_genital')),
       i_q16_n: isN(val('mh_genital')),
-
-      i_q17_y: isFemale ? isY(val('mhpregnancy')) : '☐',
-      i_q17_n: isFemale ? isN(val('mhpregnancy')) : '☐',
-
+      i_q17_y: isY(val('mhpregnancy')),
+      i_q17_n: isN(val('mhpregnancy')),
       i_q18_y: isY(val('mhsleep')),
       i_q18_n: isN(val('mhsleep')),
       i_q19_y: isY(val('q_smoke', 'qsmoke')),
@@ -329,7 +449,6 @@ export async function POST(request: Request) {
       i_q33_n: isN(val('mh_amputation')),
       i_q34_y: isY(val('mh_accident')),
       i_q34_n: isN(val('mh_accident')),
-
       i_q35_y: isY(val('q_medevac', 'qmedevac')),
       i_q35_n: isN(val('q_medevac', 'qmedevac')),
       i_q36_y: isY(val('q_illness', 'qillness')),
@@ -342,19 +461,34 @@ export async function POST(request: Request) {
       i_q39_n: isN(val('q_aware_medical', 'qawaremedical')),
       i_q40_y: isY(val('q_fit', 'qfit')),
       i_q40_n: isN(val('q_fit', 'qfit')),
-      i_q41_y: isY(val('mh_allergy_med')),
-      i_q41_n: isN(val('mh_allergy_med')),
+      i_q41_y: isY(val('mh_drug', 'mh_allergy_med')),
+      i_q41_n: isN(val('mh_drug', 'mh_allergy_med')),
       i_q42_y: isY(val('q_meds', 'qmeds')),
       i_q42_n: isN(val('q_meds', 'qmeds')),
 
+      epdcomments: str('comments', 'epd_comments'),
       epd_comments: str('comments', 'epd_comments'),
+      medstext: str('q_meds_text', 'qmedstext'),
       meds_text: str('q_meds_text', 'qmedstext'),
 
-      // 4. MEDICAL EXAMINATION
+      // =========================
+      // MEDICAL EXAMINATION
+      // =========================
+      mepsea: reasonExam === 'Pre-Employment' ? '☑' : '☐',
+      meperiodic: reasonExam === 'Periodic' ? '☑' : '☐',
+      meother: reasonExam === 'Other' ? '☑' : '☐',
       me_psea: reasonExam === 'Pre-Employment' ? '☑' : '☐',
       me_periodic: reasonExam === 'Periodic' ? '☑' : '☐',
       me_other: reasonExam === 'Other' ? '☑' : '☐',
 
+      bvunc: str('bv_unc'),
+      bvcor: str('bv_cor'),
+      nearrunc: str('nearr_unc'),
+      nearlunc: str('nearl_unc'),
+      nearbvunc: str('near_bv_unc'),
+      nearrcor: str('nearr_cor'),
+      nearlcor: str('nearl_cor'),
+      nearbvcor: str('near_bv_cor'),
       bv_unc: str('bv_unc'),
       bv_cor: str('bv_cor'),
       nearr_unc: str('nearr_unc'),
@@ -364,11 +498,18 @@ export async function POST(request: Request) {
       nearl_cor: str('nearl_cor'),
       near_bv_cor: str('near_bv_cor'),
 
-      vf_r_n: isExN(eyeStatus),
-      vf_r_d: isExA(eyeStatus),
-      vf_l_n: isExN(eyeStatus),
-      vf_l_d: isExA(eyeStatus),
+      vfrn: formData.vf_r === 'Normal' ? '☑' : '☐',
+      vfrd: formData.vf_r === 'Defective' ? '☑' : '☐',
+      vfln: formData.vf_l === 'Normal' ? '☑' : '☐',
+      vfld: formData.vf_l === 'Defective' ? '☑' : '☐',
+      vf_r_n: formData.vf_r === 'Normal' ? '☑' : '☐',
+      vf_r_d: formData.vf_r === 'Defective' ? '☑' : '☐',
+      vf_l_n: formData.vf_l === 'Normal' ? '☑' : '☐',
+      vf_l_d: formData.vf_l === 'Defective' ? '☑' : '☐',
 
+      cvn: colorVision === 'Normal' ? '☑' : '☐',
+      cvdb: '☐',
+      cvdf: ['Partial', 'Total'].includes(colorVision) ? '☑' : '☐',
       cv_n: colorVision === 'Normal' ? '☑' : '☐',
       cv_db: '☐',
       cv_df: ['Partial', 'Total'].includes(colorVision) ? '☑' : '☐',
@@ -380,7 +521,6 @@ export async function POST(request: Request) {
       r4: str('r4'),
       r6: str('r6'),
       r8: str('r8'),
-
       l05: str('l05'),
       l1: str('l1'),
       l2: str('l2'),
@@ -389,6 +529,10 @@ export async function POST(request: Request) {
       l6: str('l6'),
       l8: str('l8'),
 
+      swrn: str('hear_r') === 'Normal' ? '☑' : '☐',
+      swrw: str('hear_r') === 'Abnormal' ? '☑' : '☐',
+      swln: str('hear_l') === 'Normal' ? '☑' : '☐',
+      swlw: str('hear_l') === 'Abnormal' ? '☑' : '☐',
       sw_r_n: str('hear_r') === 'Normal' ? '☑' : '☐',
       sw_r_w: str('hear_r') === 'Abnormal' ? '☑' : '☐',
       sw_l_n: str('hear_l') === 'Normal' ? '☑' : '☐',
@@ -398,131 +542,221 @@ export async function POST(request: Request) {
       w: str('weight'),
       p: str('pulse'),
       rhyt: str('rhyt'),
-      bp_sys,
-      bp_dia,
+      bp_sys: bp_sys,
+      bp_dia: bp_dia,
+      bpsys: bp_sys,
+      bpdia: bp_dia,
 
-      ur_sugar: str('ur_sugar'),
+      ursugar: str('ur_sugar'),
       albumin: str('albumin'),
+      ur_sugar: str('ur_sugar'),
 
-      head_n: isExN(headStatus),
-      head_a: isExA(headStatus),
+      // --- PEMERIKSAAN FISIK KHUSUS ILO DIRECT MAPPING ---
+      head_n: formData.ilo_head === 'Normal' ? '☑' : '☐',
+      head_a: formData.ilo_head === 'Abnormal' ? '☑' : '☐',
+      headn: formData.ilo_head === 'Normal' ? '☑' : '☐',
+      heada: formData.ilo_head === 'Abnormal' ? '☑' : '☐',
 
-      ent_n: isExN(entStatus),
-      ent_a: isExA(entStatus),
+      ent_n: formData.ilo_ent === 'Normal' ? '☑' : '☐',
+      ent_a: formData.ilo_ent === 'Abnormal' ? '☑' : '☐',
+      entn: formData.ilo_ent === 'Normal' ? '☑' : '☐',
+      enta: formData.ilo_ent === 'Abnormal' ? '☑' : '☐',
 
-      oral_n: isExN(oralStatus),
-      oral_a: isExA(oralStatus),
+      oral_n: formData.ilo_oral === 'Normal' ? '☑' : '☐',
+      oral_a: formData.ilo_oral === 'Abnormal' ? '☑' : '☐',
+      oraln: formData.ilo_oral === 'Normal' ? '☑' : '☐',
+      orala: formData.ilo_oral === 'Abnormal' ? '☑' : '☐',
 
-      ear_n: isExN(earStatus),
-      ear_a: isExA(earStatus),
+      ear_n: formData.ilo_ear === 'Normal' ? '☑' : '☐',
+      ear_a: formData.ilo_ear === 'Abnormal' ? '☑' : '☐',
+      earn: formData.ilo_ear === 'Normal' ? '☑' : '☐',
+      eara: formData.ilo_ear === 'Abnormal' ? '☑' : '☐',
 
-      tymp_n: isExN(tympStatus),
-      tymp_a: isExA(tympStatus),
+      tymp_n: formData.ilo_tymp === 'Normal' ? '☑' : '☐',
+      tymp_a: formData.ilo_tymp === 'Abnormal' ? '☑' : '☐',
+      tympn: formData.ilo_tymp === 'Normal' ? '☑' : '☐',
+      tympa: formData.ilo_tymp === 'Abnormal' ? '☑' : '☐',
 
-      eye_n: isExN(eyeStatus),
-      eye_a: isExA(eyeStatus),
+      eye_n: formData.ilo_eye === 'Normal' ? '☑' : '☐',
+      eye_a: formData.ilo_eye === 'Abnormal' ? '☑' : '☐',
+      eyen: formData.ilo_eye === 'Normal' ? '☑' : '☐',
+      eyea: formData.ilo_eye === 'Abnormal' ? '☑' : '☐',
 
-      oph_n: isExN(ophStatus),
-      oph_a: isExA(ophStatus),
+      oph_n: formData.ilo_oph === 'Normal' ? '☑' : '☐',
+      oph_a: formData.ilo_oph === 'Abnormal' ? '☑' : '☐',
+      ophn: formData.ilo_oph === 'Normal' ? '☑' : '☐',
+      opha: formData.ilo_oph === 'Abnormal' ? '☑' : '☐',
 
-      pupil_n: isExN(pupilStatus),
-      pupil_a: isExA(pupilStatus),
+      pupil_n: formData.ilo_pupil === 'Normal' ? '☑' : '☐',
+      pupil_a: formData.ilo_pupil === 'Abnormal' ? '☑' : '☐',
+      pupiln: formData.ilo_pupil === 'Normal' ? '☑' : '☐',
+      pupila: formData.ilo_pupil === 'Abnormal' ? '☑' : '☐',
 
-      eyem_n: isExN(eyemStatus),
-      eyem_a: isExA(eyemStatus),
+      eyem_n: formData.ilo_eyem === 'Normal' ? '☑' : '☐',
+      eyem_a: formData.ilo_eyem === 'Abnormal' ? '☑' : '☐',
+      eyemn: formData.ilo_eyem === 'Normal' ? '☑' : '☐',
+      eyema: formData.ilo_eyem === 'Abnormal' ? '☑' : '☐',
 
-      lung_n: isExN(lungStatus),
-      lung_a: isExA(lungStatus),
+      lung_n: formData.ilo_lung === 'Normal' ? '☑' : '☐',
+      lung_a: formData.ilo_lung === 'Abnormal' ? '☑' : '☐',
+      lungn: formData.ilo_lung === 'Normal' ? '☑' : '☐',
+      lunga: formData.ilo_lung === 'Abnormal' ? '☑' : '☐',
 
-      breast_n: isExN(breastStatus),
-      breast_a: isExA(breastStatus),
+      breast_n: formData.ilo_breast === 'Normal' ? '☑' : '☐',
+      breast_a: formData.ilo_breast === 'Abnormal' ? '☑' : '☐',
+      breastn: formData.ilo_breast === 'Normal' ? '☑' : '☐',
+      breasta: formData.ilo_breast === 'Abnormal' ? '☑' : '☐',
 
-      heart_n: isExN(heartStatus),
-      heart_a: isExA(heartStatus),
+      heart_n: formData.ilo_heart === 'Normal' ? '☑' : '☐',
+      heart_a: formData.ilo_heart === 'Abnormal' ? '☑' : '☐',
+      heartn: formData.ilo_heart === 'Normal' ? '☑' : '☐',
+      hearta: formData.ilo_heart === 'Abnormal' ? '☑' : '☐',
 
-      var_n: isExN(varStatus),
-      var_a: isExA(varStatus),
+      var_n: formData.ilo_var === 'Normal' ? '☑' : '☐',
+      var_a: formData.ilo_var === 'Abnormal' ? '☑' : '☐',
+      varn: formData.ilo_var === 'Normal' ? '☑' : '☐',
+      vara: formData.ilo_var === 'Abnormal' ? '☑' : '☐',
 
-      vasc_n: isExN(vascStatus),
-      vasc_a: isExA(vascStatus),
+      vasc_n: formData.ilo_vasc === 'Normal' ? '☑' : '☐',
+      vasc_a: formData.ilo_vasc === 'Abnormal' ? '☑' : '☐',
+      vascn: formData.ilo_vasc === 'Normal' ? '☑' : '☐',
+      vasca: formData.ilo_vasc === 'Abnormal' ? '☑' : '☐',
 
-      abd_n: isExN(abdStatus),
-      abd_a: isExA(abdStatus),
+      abd_n: formData.ilo_abd === 'Normal' ? '☑' : '☐',
+      abd_a: formData.ilo_abd === 'Abnormal' ? '☑' : '☐',
+      abdn: formData.ilo_abd === 'Normal' ? '☑' : '☐',
+      abda: formData.ilo_abd === 'Abnormal' ? '☑' : '☐',
 
-      hern_n: isExN(hernStatus),
-      hern_a: isExA(hernStatus),
+      hern_n: formData.ilo_hern === 'Normal' ? '☑' : '☐',
+      hern_a: formData.ilo_hern === 'Abnormal' ? '☑' : '☐',
+      hernn: formData.ilo_hern === 'Normal' ? '☑' : '☐',
+      herna: formData.ilo_hern === 'Abnormal' ? '☑' : '☐',
 
-      anus_n: isExN(anusStatus),
-      anus_a: isExA(anusStatus),
+      anus_n: formData.ilo_anus === 'Normal' ? '☑' : '☐',
+      anus_a: formData.ilo_anus === 'Abnormal' ? '☑' : '☐',
+      anusn: formData.ilo_anus === 'Normal' ? '☑' : '☐',
+      anusa: formData.ilo_anus === 'Abnormal' ? '☑' : '☐',
 
-      gu_n: isExN(guStatus),
-      gu_a: isExA(guStatus),
+      gu_n: formData.ilo_gu === 'Normal' ? '☑' : '☐',
+      gu_a: formData.ilo_gu === 'Abnormal' ? '☑' : '☐',
+      gun: formData.ilo_gu === 'Normal' ? '☑' : '☐',
+      gua: formData.ilo_gu === 'Abnormal' ? '☑' : '☐',
 
-      ext_n: isExN(extStatus),
-      ext_a: isExA(extStatus),
+      ext_n: formData.ilo_ext === 'Normal' ? '☑' : '☐',
+      ext_a: formData.ilo_ext === 'Abnormal' ? '☑' : '☐',
+      extn: formData.ilo_ext === 'Normal' ? '☑' : '☐',
+      exta: formData.ilo_ext === 'Abnormal' ? '☑' : '☐',
 
-      spine_n: isExN(spineStatus),
-      spine_a: isExA(spineStatus),
+      spine_n: formData.ilo_spine === 'Normal' ? '☑' : '☐',
+      spine_a: formData.ilo_spine === 'Abnormal' ? '☑' : '☐',
+      spinen: formData.ilo_spine === 'Normal' ? '☑' : '☐',
+      spinea: formData.ilo_spine === 'Abnormal' ? '☑' : '☐',
 
-      neuro_n: isExN(neuroStatus),
-      neuro_a: isExA(neuroStatus),
+      neuro_n: formData.ilo_neuro === 'Normal' ? '☑' : '☐',
+      neuro_a: formData.ilo_neuro === 'Abnormal' ? '☑' : '☐',
+      neuron: formData.ilo_neuro === 'Normal' ? '☑' : '☐',
+      neuroa: formData.ilo_neuro === 'Abnormal' ? '☑' : '☐',
 
-      psych_n: str('mh_psychiatric') === 'No' ? '☑' : '☐',
-      psych_a: str('mh_psychiatric') === 'Yes' ? '☑' : '☐',
+      psych_n: formData.ilo_psych === 'Normal' ? '☑' : '☐',
+      psych_a: formData.ilo_psych === 'Abnormal' ? '☑' : '☐',
+      psychn: formData.ilo_psych === 'Normal' ? '☑' : '☐',
+      psycha: formData.ilo_psych === 'Abnormal' ? '☑' : '☐',
 
-      gen_n: isExN(genStatus),
-      gen_a: isExA(genStatus),
+      gen_n: formData.ilo_gen === 'Normal' ? '☑' : '☐',
+      gen_a: formData.ilo_gen === 'Abnormal' ? '☑' : '☐',
+      genn: formData.ilo_gen === 'Normal' ? '☑' : '☐',
+      gena: formData.ilo_gen === 'Abnormal' ? '☑' : '☐',
 
-      skin_n: isExN(skinStatus),
-      skin_a: isExA(skinStatus),
+      skin_n: formData.ilo_skin === 'Normal' ? '☑' : '☐',
+      skin_a: formData.ilo_skin === 'Abnormal' ? '☑' : '☐',
+      skinn: formData.ilo_skin === 'Normal' ? '☑' : '☐',
+      skina: formData.ilo_skin === 'Abnormal' ? '☑' : '☐',
 
+      xraynp: !xray ? '☑' : '☐',
+      xrayn: xray === 'Normal' ? '☑' : '☐',
+      xraya: xray === 'Abnormal' ? '☑' : '☐',
       xray_np: !xray ? '☑' : '☐',
       xray_n: xray === 'Normal' ? '☑' : '☐',
       xray_a: xray === 'Abnormal' ? '☑' : '☐',
+      datexray: str('date_xray', 'date'),
       date_xray: str('date_xray', 'date'),
+      xrayres: str('des_abnor'),
       xray_res: str('des_abnor'),
 
+      labhb: str('lab_hb'),
+      labsr: str('lab_sr'),
       lab_hb: str('lab_hb'),
       lab_sr: str('lab_sr'),
 
+      hbabp: str('hep_b_ab') === 'Positive' ? '☑' : '☐',
+      hbabn: str('hep_b_ab') === 'Negative' ? '☑' : '☐',
+      hbagp: str('hep_b_ag') === 'Positive' ? '☑' : '☐',
+      hbagn: str('hep_b_ag') === 'Negative' ? '☑' : '☐',
       hbab_p: str('hep_b_ab') === 'Positive' ? '☑' : '☐',
       hbab_n: str('hep_b_ab') === 'Negative' ? '☑' : '☐',
       hbag_p: str('hep_b_ag') === 'Positive' ? '☑' : '☐',
       hbag_n: str('hep_b_ag') === 'Negative' ? '☑' : '☐',
 
+      bsnp: str('stool_bact') === 'Not Performed' || !str('stool_bact') ? '☑' : '☐',
+      bsneg: str('stool_bact') === 'Negative' ? '☑' : '☐',
+      bspos: str('stool_bact') === 'Positive' ? '☑' : '☐',
       bs_np: str('stool_bact') === 'Not Performed' || !str('stool_bact') ? '☑' : '☐',
       bs_neg: str('stool_bact') === 'Negative' ? '☑' : '☐',
       bs_pos: str('stool_bact') === 'Positive' ? '☑' : '☐',
 
+      psnp: str('stool_para') === 'Not Performed' || !str('stool_para') ? '☑' : '☐',
+      psneg: str('stool_para') === 'Negative' ? '☑' : '☐',
+      pspos: str('stool_para') === 'Positive' ? '☑' : '☐',
       ps_np: str('stool_para') === 'Not Performed' || !str('stool_para') ? '☑' : '☐',
       ps_neg: str('stool_para') === 'Negative' ? '☑' : '☐',
       ps_pos: str('stool_para') === 'Positive' ? '☑' : '☐',
 
       diag: str('diag'),
+      hivres: str('hiv_res'),
       hiv_res: str('hiv_res'),
       comments: str('comments'),
 
+      vacsat: str('vaccinated') === 'Yes' ? '☑' : '☐',
+      vacren: str('vaccinated') === 'No' ? '☑' : '☐',
+      vacdetails: str('vac_details'),
       vac_sat: str('vaccinated') === 'Yes' ? '☑' : '☐',
       vac_ren: str('vaccinated') === 'No' ? '☑' : '☐',
       vac_details: str('vac_details'),
 
-      lo_f: str('fit_lookout') === 'Fit' ? '☑' : '☐',
-      lo_u: str('fit_lookout') === 'Unfit' ? '☑' : '☐',
+      // =========================
+      // ASSESSMENT OF FITNESS
+      // =========================
+      lof: isFit(val('fit_lookout')),
+      lou: isUnfit(val('fit_lookout')),
+      lo_f: isFit(val('fit_lookout')),
+      lo_u: isUnfit(val('fit_lookout')),
 
-      dk_f: str('fit_deck') === 'Fit' ? '☑' : '☐',
-      dk_u: str('fit_deck') === 'Unfit' ? '☑' : '☐',
+      dkf: isFit(val('fit_deck')),
+      dku: isUnfit(val('fit_deck')),
+      dk_f: isFit(val('fit_deck')),
+      dk_u: isUnfit(val('fit_deck')),
 
-      en_f: str('fit_engine') === 'Fit' ? '☑' : '☐',
-      en_u: str('fit_engine') === 'Unfit' ? '☑' : '☐',
+      enf: isFit(val('fit_engine')),
+      enu: isUnfit(val('fit_engine')),
+      en_f: isFit(val('fit_engine')),
+      en_u: isUnfit(val('fit_engine')),
 
-      ct_f: str('fit_catering') === 'Fit' ? '☑' : '☐',
-      ct_u: str('fit_catering') === 'Unfit' ? '☑' : '☐',
+      ctf: isFit(val('fit_catering')),
+      ctu: isUnfit(val('fit_catering')),
+      ct_f: isFit(val('fit_catering')),
+      ct_u: isUnfit(val('fit_catering')),
 
-      ot_f: str('fit_other') === 'Fit' ? '☑' : '☐',
-      ot_u: str('fit_other') === 'Unfit' ? '☑' : '☐',
+      otf: isFit(val('fit_other')),
+      otu: isUnfit(val('fit_other')),
+      ot_f: isFit(val('fit_other')),
+      ot_u: isUnfit(val('fit_other')),
 
+      restno: restrictions === 'No' ? '☑' : '☐',
+      restyes: restrictions === 'Yes' ? '☑' : '☐',
       rest_no: restrictions === 'No' ? '☑' : '☐',
       rest_yes: restrictions === 'Yes' ? '☑' : '☐',
+
+      actiontaken: str('action_taken'),
       action_taken: str('action_taken'),
     };
 

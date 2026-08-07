@@ -21,7 +21,6 @@ import { getVisibleFields } from '@/lib/fieldRegistry';
 type FormValue = string | boolean;
 type FormDataState = Record<string, FormValue>;
 
-// Pastikan semua key di sini SAMA PERSIS dengan name="key_name" di dalam form UI
 const initialFormData: FormDataState = {
   // --- IDENTITAS & PEKERJAAN ---
   firstName: '',
@@ -30,6 +29,7 @@ const initialFormData: FormDataState = {
   dob: '',
   pob_city: '',
   pob_country: '',
+  pob: '',
   idPassport: '',
   nationality: '',
   gender: '',
@@ -41,7 +41,7 @@ const initialFormData: FormDataState = {
   department: '',
   company: '',
   workLocation: '',
-  date: '', // Dikosongkan untuk menghindari Hydration Mismatch
+  date: '',
   serviceDate: '',
   medNo: '',
   typeOfShip: '',
@@ -51,10 +51,22 @@ const initialFormData: FormDataState = {
   reason_exam: '',
 
   // --- RIWAYAT PEKERJAAN (Adnoc) ---
-  job1: '', comp1: '', from1: '', to1: '',
-  job2: '', comp2: '', from2: '', to2: '',
-  job3: '', comp3: '', from3: '', to3: '',
-  job4: '', comp4: '', from4: '', to4: '',
+  job1: '',
+  comp1: '',
+  from1: '',
+  to1: '',
+  job2: '',
+  comp2: '',
+  from2: '',
+  to2: '',
+  job3: '',
+  comp3: '',
+  from3: '',
+  to3: '',
+  job4: '',
+  comp4: '',
+  from4: '',
+  to4: '',
 
   // --- PAPARAN (Exposure) ---
   expnoise: '',
@@ -82,25 +94,102 @@ const initialFormData: FormDataState = {
   bloodGroupRh: '',
 
   // --- PEMERIKSAAN FISIK ---
-  cv_pulse: '', cv_bp: '', cv_apex: '', cv_sounds: '', cv_murmurs: '', cv_varicose: '', cv_comm: '',
-  rs_nasal: '', rs_thyroid: '', rs_trachea: '', rs_chest: '', rs_perc: '', rs_air: '', rs_breath: '', rs_advent: '', rs_comm: '',
-  al_teeth: '', al_tongue: '', al_abd: '', al_liver: '', al_spleen: '', al_lymph: '', al_hernia: '', al_anus: '', al_comm: '',
-  gu_kidney: '', gu_gen: '', gu_comm: '',
-  in_hair: '', in_skin: '', in_nails: '', in_comm: '',
-  ms_hands: '', ms_limbs: '', ms_back: '', ms_joints: '', ms_inj: '', ms_comm: '',
-  ns_power: '', ns_tone: '', ns_coord: '', ns_sens: '', ns_intel: '', ns_emot: '', ns_comm: '',
-  r_bl_r: '', r_tl_r: '', r_sup_r: '', r_kn_r: '', r_an_r: '', r_pl_r: '',
-  r_bl_l: '', r_tl_l: '', r_sup_l: '', r_kn_l: '', r_an_l: '', r_pl_l: '',
+  cv_pulse: '',
+  cv_bp: '',
+  cv_apex: '',
+  cv_sounds: '',
+  cv_murmurs: '',
+  cv_varicose: '',
+  cv_comm: '',
+  rs_nasal: '',
+  rs_thyroid: '',
+  rs_trachea: '',
+  rs_chest: '',
+  rs_perc: '',
+  rs_air: '',
+  rs_breath: '',
+  rs_advent: '',
+  rs_comm: '',
+  al_teeth: '',
+  al_tongue: '',
+  al_abd: '',
+  al_liver: '',
+  al_spleen: '',
+  al_lymph: '',
+  al_hernia: '',
+  al_anus: '',
+  al_comm: '',
+  gu_kidney: '',
+  gu_gen: '',
+  gu_comm: '',
+  in_hair: '',
+  in_skin: '',
+  in_nails: '',
+  in_comm: '',
+  ms_hands: '',
+  ms_limbs: '',
+  ms_back: '',
+  ms_joints: '',
+  ms_inj: '',
+  ms_comm: '',
+  ns_power: '',
+  ns_tone: '',
+  ns_coord: '',
+  ns_sens: '',
+  ns_intel: '',
+  ns_emot: '',
+  ns_comm: '',
+  r_bl_r: '',
+  r_tl_r: '',
+  r_sup_r: '',
+  r_kn_r: '',
+  r_an_r: '',
+  r_pl_r: '',
+  r_bl_l: '',
+  r_tl_l: '',
+  r_sup_l: '',
+  r_kn_l: '',
+  r_an_l: '',
+  r_pl_l: '',
 
   // --- MATA & TELINGA (Fisik Dasar) ---
-  ea_meatus: '', ea_drums: '', ea_comm: '', ea_wr_r: '', ea_wr_l: '', ea_hr_r: '', ea_hr_l: '',
-  ey_light: '', ey_accom: '', ey_nyst: '', ey_fundi: '', ey_comm: '',
+  ea_meatus: '',
+  ea_drums: '',
+  ea_comm: '',
+  ea_wr_r: '',
+  ea_wr_l: '',
+  ea_hr_r: '',
+  ea_hr_l: '',
+  ey_light: '',
+  ey_accom: '',
+  ey_nyst: '',
+  ey_fundi: '',
+  ey_comm: '',
 
-  // --- KETAJAMAN PENGLIHATAN & PENDENGARAN (BiometricVision) ---
-  disr_unc: '', disl_unc: '', nearr_unc: '', nearl_unc: '', bv_unc: '', near_bv_unc: '',
-  disr_cor: '', disl_cor: '', nearr_cor: '', nearl_cor: '', bv_cor: '', near_bv_cor: '',
-  color_vision: '', colortesttype: '', hear_r: '', hear_l: '',
-  color_y: false, color_r: false, color_g: false, color_b: false,
+  // --- KETAJAMAN PENGLIHATAN & PENDENGARAN ---
+  disr_unc: '',
+  disl_unc: '',
+  nearr_unc: '',
+  nearl_unc: '',
+  bv_unc: '',
+  near_bv_unc: '',
+  disr_cor: '',
+  disl_cor: '',
+  nearr_cor: '',
+  nearl_cor: '',
+  vf_r: '',
+  vf_l: '',
+  bv_cor: '',
+  near_bv_cor: '',
+  color_vision: '',
+  color_test_type: '',
+  colortesttype: '',
+  hear_r: '',
+  hear_l: '',
+  color_y: false,
+  color_r: false,
+  color_g: false,
+  color_b: false,
 
   // --- ADMINISTRASI MEDIS STCW ---
   id_checked: '',
@@ -111,64 +200,237 @@ const initialFormData: FormDataState = {
   glasses_nec: '',
   watch_able: '',
 
-  // --- RIWAYAT KESEHATAN (Dari FormConstants) ---
-  mh_varicose: '', mh_digestive: '', mh_infectious: '', mh_genital: '', mh_loss_consc: '',
-  mh_psychiatric: '', mh_depression: '', mh_suicide: '', mh_memory: '', mh_balance: '',
-  mh_mobility: '', mh_back: '', mh_amputation: '', mh_hbp: '', mh_heart: '',
-  mh_asthma: '', mh_bronchitis: '', mh_tb: '', mh_ulcer: '', mh_hep: '',
-  mh_piles: '', mh_hernia: '', mh_constipation: '', mh_diarrhea: '', mh_bowel: '',
-  mh_epilepsy: '', mh_stroke: '', mh_headache: '', mh_musculo: '', mh_rheumatism: '',
-  mh_accident: '', mh_eczema: '', mh_vitiligo: '', mh_kidney: '', mh_eye: '',
-  mh_eye2: '', mh_ear: '', mh_tinnitus: '', mh_ear2: '', mh_diabetes: '',
-  mh_thyroid: '', mh_blood: '', mh_anemia: '', mh_thal: '', mh_sickle: '',
-  mh_allergy_med: '', mh_skin: '', mh_drug: '',
-  
-  // Riwayat Khusus Hardcoded (Bawaan Komponen)
-  mhpregnancy: '', mhcardiacsurgery: '', mhsurgery: '', mhangina: '',
-  mhkidneystone: '', mhanxiety: '', mhsleep: '', mhfainting: '', diabins: '', diabnon: '',
+  // --- RIWAYAT KESEHATAN ---
+  mh_varicose: '',
+  mh_digestive: '',
+  mh_infectious: '',
+  mh_genital: '',
+  mh_loss_consc: '',
+  mh_psychiatric: '',
+  mh_depression: '',
+  mh_suicide: '',
+  mh_memory: '',
+  mh_balance: '',
+  mh_mobility: '',
+  mh_back: '',
+  mh_amputation: '',
+  mh_hbp: '',
+  mh_heart: '',
+  mh_asthma: '',
+  mh_bronchitis: '',
+  mh_tb: '',
+  mh_ulcer: '',
+  mh_hep: '',
+  mh_piles: '',
+  mh_hernia: '',
+  mh_constipation: '',
+  mh_diarrhea: '',
+  mh_bowel: '',
+  mh_epilepsy: '',
+  mh_stroke: '',
+  mh_headache: '',
+  mh_musculo: '',
+  mh_rheumatism: '',
+  mh_accident: '',
+  mh_eczema: '',
+  mh_vitiligo: '',
+  mh_kidney: '',
+  mh_eye: '',
+  mh_eye2: '',
+  mh_ear: '',
+  mh_tinnitus: '',
+  mh_ear2: '',
+  mh_diabetes: '',
+  mh_thyroid: '',
+  mh_blood: '',
+  mh_anemia: '',
+  mh_thal: '',
+  mh_sickle: '',
+  mh_allergy_med: '',
+  mh_skin: '',
+  mh_drug: '',
+  mhpregnancy: '',
+  mhcardiacsurgery: '',
+  mhsurgery: '',
+  mhangina: '',
+  mhkidneystone: '',
+  mhanxiety: '',
+  mhsleep: '',
+  mhfainting: '',
+  diabins: '',
+  diabnon: '',
 
   // --- KUISIONER GAYA HIDUP & MENTAL ---
-  qcertrevoked: '', qawaremedical: '', qillness: '', qhospwait: '', qmedevac: '',
-  qmeds: '', qsmoke: '', qalcohol: '', qfit: '', qfear: '', qstress: '',
-  qstressful: '', qomfc: '', nwothers: '', mhothers: '', fmothers: '',
-  vaccinated: '', illnesslast: '', qstressscore: '', qsmokefreq: '', qsmoketext: '',
-  qalcoholtext: '', qmedevactext: '', qomfctext: '', qmedstext: '',
-  smokery: '', smokerd: '', smokerq: '', smokersy: '',
+  qcertrevoked: '',
+  qawaremedical: '',
+  qillness: '',
+  qhospwait: '',
+  qmedevac: '',
+  qmeds: '',
+  qsmoke: '',
+  qalcohol: '',
+  qfit: '',
+  qfear: '',
+  qstress: '',
+  qstressful: '',
+  qomfc: '',
+  nwothers: '',
+  mhothers: '',
+  fmothers: '',
+  vaccinated: '',
+  illnesslast: '',
+  qstressscore: '',
+  qsmokefreq: '',
+  qsmoketext: '',
+  qalcoholtext: '',
+  qmedevactext: '',
+  qomfctext: '',
+  qmedstext: '',
+  smokery: '',
+  smokerd: '',
+  smokerq: '',
+  smokersy: '',
 
   // --- RIWAYAT KELUARGA & VAKSIN ---
-  fm_diabetes: '', fm_hypertension: '', fm_epilepsy: '', fm_heart: '', fm_asthma: '',
-  fm_cancer: '', fm_tb: '', fm_allergy: '', fm_mental: '',
-  vac_hepa: '', vac_tet: '', vac_hepb: '', vac_mea: '', vac_c19: '', vac_chick: '', vac_typh: '',
-  nw_confined: '', nw_diving: '', nw_height: '', nw_swing: '', nw_heavy: '',
-  nw_office: '', nw_hanging: '', nw_sewage: '', nw_emergency: '', nw_food: '', nw_radiation: '',
+  fm_diabetes: '',
+  fm_hypertension: '',
+  fm_epilepsy: '',
+  fm_heart: '',
+  fm_asthma: '',
+  fm_cancer: '',
+  fm_tb: '',
+  fm_allergy: '',
+  fm_mental: '',
+  vac_hepa: '',
+  vac_tet: '',
+  vac_hepb: '',
+  vac_mea: '',
+  vac_c19: '',
+  vac_chick: '',
+  vac_typh: '',
+  nw_confined: '',
+  nw_diving: '',
+  nw_height: '',
+  nw_swing: '',
+  nw_heavy: '',
+  nw_office: '',
+  nw_hanging: '',
+  nw_sewage: '',
+  nw_emergency: '',
+  nw_food: '',
+  nw_radiation: '',
 
-  // --- DATA KHUSUS WANITA & KELUARGA (Tabel) ---
-  flmp: '', fpregno: '', flivebirth: '', fheavy: '', fregular: '', fpain: '', fpill: '',
-  faage: '', fastate: '', moage: '', mostate: '', sibage: '', sibstate: '',
-  spoage: '', spostate: '', chiage: '', chistate: '',
+  // --- DATA KHUSUS WANITA & KELUARGA ---
+  flmp: '',
+  fpregno: '',
+  flivebirth: '',
+  fheavy: '',
+  fregular: '',
+  fpain: '',
+  fpill: '',
+  faage: '',
+  fastate: '',
+  moage: '',
+  mostate: '',
+  sibage: '',
+  sibstate: '',
+  spoage: '',
+  spostate: '',
+  chiage: '',
+  chistate: '',
 
   // --- HASIL LABORATORIUM (Spirometri, Audio, EKG) ---
-  ft_fvc: '', pre_fvc: '', ft_fev1: '', pre_fev1: '', ev1_vc: '',
-  l05: '', l1: '', l2: '', l3: '', l4: '', l6: '', l8: '',
-  r05: '', r1: '', r2: '', r3: '', r4: '', r6: '', r8: '', oht_result: '',
-  rate: '', rhyt: '', axis: '', pr: '', qrs: '', twv: '', diag: '',
+  ft_fvc: '',
+  pre_fvc: '',
+  ft_fev1: '',
+  pre_fev1: '',
+  ev1_vc: '',
+  l05: '',
+  l1: '',
+  l2: '',
+  l3: '',
+  l4: '',
+  l6: '',
+  l8: '',
+  r05: '',
+  r1: '',
+  r2: '',
+  r3: '',
+  r4: '',
+  r6: '',
+  r8: '',
+  oht_result: '',
+  rate: '',
+  rhyt: '',
+  axis: '',
+  pr: '',
+  qrs: '',
+  twv: '',
+  diag: '',
 
   // --- HASIL LABORATORIUM (Darah & Urin) ---
-  lab_hb: '', lab_hct: '', rbc_m: '', lab_wbc: '', lab_platelet: '', pmn: '',
-  lymph: '', mono: '', eos: '', baso: '', band: '', albumin: '', ur_sugar: '',
-  urin_b: '', wbc: '', rbc: '', casts: '', ur_others: '', val_sugar: '', val_chol: '',
-  val_trig: '', val_hdl: '', val_ldl: '', val_bun: '', val_creat: '', val_sgot: '',
-  val_sgpt: '', val_urig: '', detail_af: '',
+  lab_hb: '',
+  lab_hct: '',
+  rbc_m: '',
+  lab_wbc: '',
+  lab_platelet: '',
+  pmn: '',
+  lymph: '',
+  mono: '',
+  eos: '',
+  baso: '',
+  band: '',
+  albumin: '',
+  ur_sugar: '',
+  urin_b: '',
+  wbc: '',
+  rbc: '',
+  casts: '',
+  ur_others: '',
+  val_sugar: '',
+  val_chol: '',
+  val_trig: '',
+  val_hdl: '',
+  val_ldl: '',
+  val_bun: '',
+  val_creat: '',
+  val_sgot: '',
+  val_sgpt: '',
+  val_urig: '',
+  detail_af: '',
 
   // --- RONTGEN & SEROLOGI ---
-  date_xray: '', xray: '', des_abnor: '', lab_sr: '', hep_b_ab: '', hep_b_ag: '',
-  hep_c: '', hep_a: '', stool_bact: '', stool_para: '', hiv_res: '', vdrl_res: '',
+  date_xray: '',
+  xray: '',
+  des_abnor: '',
+  lab_sr: '',
+  hep_b_ab: '',
+  hep_b_ag: '',
+  hep_c: '',
+  hep_a: '',
+  stool_bact: '',
+  stool_para: '',
+  hiv_res: '',
+  vdrl_res: '',
   only_cg: '',
 
   // --- KESIMPULAN / CONCLUSION ---
-  fit_lookout: '', fit_deck: '', fit_engine: '', fit_catering: '', fit_other: '',
-  restrictions: '', free_cond: '', rest_desc: '', action_taken: '', exp_date: '',
-  summary: '', suggestion: '', eps: '', hospital: '', cert_auth: '', comments: '',
+  fit_lookout: '',
+  fit_deck: '',
+  fit_engine: '',
+  fit_catering: '',
+  fit_other: '',
+  restrictions: '',
+  free_cond: '',
+  rest_desc: '',
+  action_taken: '',
+  exp_date: '',
+  summary: '',
+  suggestion: '',
+  eps: '',
+  hospital: '',
+  cert_auth: '',
+  comments: '',
 };
 
 export default function Home() {
@@ -183,17 +445,15 @@ export default function Home() {
     [selectedFormats]
   );
 
-  // Inisialisasi tanggal aman dari sisi Client untuk cegah Hydration Error
   useEffect(() => {
     const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0]; // Format standar 'YYYY-MM-DD'
+    const formattedDate = today.toISOString().split('T')[0];
     setFormData((prev) => ({
       ...prev,
-      date: prev.date || formattedDate
+      date: prev.date || formattedDate,
     }));
   }, []);
 
-  // Perhitungan otomatis BMI
   useEffect(() => {
     const heightRaw = String(formData.height ?? '').trim();
     const weightRaw = String(formData.weight ?? '').trim();
@@ -245,7 +505,6 @@ export default function Home() {
     }));
   };
 
-  // Gunakan fungsi ini untuk menggantikan handleCheckboxChange sebelumnya di page.tsx
   const handleFormatToggle = (format: SelectedFormat, checked: boolean) => {
     setSelectedFormats((prev) => {
       if (checked) {
@@ -273,10 +532,16 @@ export default function Home() {
       .filter(Boolean)
       .join(', ');
 
+    const syncedColorTestType =
+      String(formData.color_test_type ?? '').trim() ||
+      String(formData.colortesttype ?? '').trim();
+
     const payloadData: FormDataState = {
       ...formData,
       firstName: combinedGivenName || String(formData.firstName ?? ''),
-      pob: combinedPob || String(formData.pob ?? ''),
+      pob: combinedPob || '',
+      color_test_type: syncedColorTestType,
+      colortesttype: syncedColorTestType,
     };
 
     try {
@@ -330,9 +595,9 @@ export default function Home() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <FormatSelector
-    selectedFormats={selectedFormats}
-    handleCheckboxChange={handleFormatToggle}
-  />
+            selectedFormats={selectedFormats}
+            handleCheckboxChange={handleFormatToggle}
+          />
 
           {!showForm && (
             <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center">
@@ -348,7 +613,7 @@ export default function Home() {
 
           {showForm && (
             <FormatContext.Provider value={selectedFormats}>
-              <div className="animate-in slide-in-from-bottom-4 space-y-8 fade-in duration-500">
+              <div className="animate-in slide-in-from-bottom-4 fade-in space-y-8 duration-500">
                 <IdentitySection
                   formData={formData}
                   handleChange={handleInputChange}

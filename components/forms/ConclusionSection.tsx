@@ -23,6 +23,14 @@ interface ConclusionSectionProps {
   activeFields: string[];
 }
 
+const iloFitnessFields = [
+  { id: 'fit_lookout', label: 'Look-out Duty / Watchkeeping' },
+  { id: 'fit_deck', label: 'Deck Service' },
+  { id: 'fit_engine', label: 'Engine Service' },
+  { id: 'fit_catering', label: 'Catering Service' },
+  { id: 'fit_other', label: 'Other Duties' },
+];
+
 export default function ConclusionSection({
   formData,
   handleChange,
@@ -33,6 +41,7 @@ export default function ConclusionSection({
 
   const isIlo = selectedFormats.includes('ilo');
   const isMlc = selectedFormats.includes('mlc');
+  const isIloOnly = selectedFormats.length === 1 && selectedFormats[0] === 'ilo';
 
   const showFitSection =
     isActive('fit_lookout') ||
@@ -60,6 +69,354 @@ export default function ConclusionSection({
 
   const showDoctorNotes =
     isActive('comments') || isActive('suggestion');
+
+  if (isIloOnly) {
+    return (
+      <div className={cardClass}>
+        <div className={cardHeaderClass}>
+          <h3 className={cardTitleClass}>
+            Assessment of Fitness & Certification <BadgeILO />
+          </h3>
+          <p className={cardDescClass}>
+            Input conclusion yang tampil khusus untuk format ILO.
+          </p>
+        </div>
+
+        <div className={cardContentClass}>
+          <div className="space-y-8">
+            {showFitSection && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">
+                  Fitness Assessment
+                </h4>
+
+                <div className="space-y-4">
+                  {iloFitnessFields
+                    .filter((item) => isActive(item.id))
+                    .map((item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                      >
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                          <label className="text-sm font-medium text-slate-800">
+                            {item.label}
+                          </label>
+
+                          <div className="flex gap-4 shrink-0">
+                            <label className={radioGroupClass}>
+                              <input
+                                type="radio"
+                                name={item.id}
+                                value="Fit"
+                                checked={formData[item.id] === 'Fit'}
+                                onChange={handleChange}
+                                className={radioClass}
+                              />
+                              <span>Fit</span>
+                            </label>
+
+                            <label className={radioGroupClass}>
+                              <input
+                                type="radio"
+                                name={item.id}
+                                value="Unfit"
+                                checked={formData[item.id] === 'Unfit'}
+                                onChange={handleChange}
+                                className={radioClass}
+                              />
+                              <span>Unfit</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {showRestrictionSection && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">
+                  Restrictions & Medical Declaration
+                </h4>
+
+                {isActive('restrictions') && (
+                  <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <label className={labelClass}>Any restrictions?</label>
+                    <div className="flex gap-4 mt-2">
+                      <label className={radioGroupClass}>
+                        <input
+                          type="radio"
+                          name="restrictions"
+                          value="Yes"
+                          checked={formData.restrictions === 'Yes'}
+                          onChange={handleChange}
+                          className={radioClass}
+                        />
+                        <span>Yes</span>
+                      </label>
+                      <label className={radioGroupClass}>
+                        <input
+                          type="radio"
+                          name="restrictions"
+                          value="No"
+                          checked={formData.restrictions === 'No'}
+                          onChange={handleChange}
+                          className={radioClass}
+                        />
+                        <span>No</span>
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                {isActive('rest_desc') && formData.restrictions === 'Yes' && (
+                  <div>
+                    <label className={labelClass}>Restriction details</label>
+                    <textarea
+                      name="rest_desc"
+                      value={formData.rest_desc || ''}
+                      onChange={handleChange}
+                      className={`${textareaClass} h-24`}
+                      placeholder="Describe the restriction..."
+                    />
+                  </div>
+                )}
+
+                {isActive('free_cond') && (
+                  <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <label className={labelClass}>
+                      Free from any medical condition likely to be aggravated by service at sea or to render the seafarer unfit?
+                    </label>
+                    <div className="flex gap-4 mt-2">
+                      <label className={radioGroupClass}>
+                        <input
+                          type="radio"
+                          name="free_cond"
+                          value="Yes"
+                          checked={formData.free_cond === 'Yes'}
+                          onChange={handleChange}
+                          className={radioClass}
+                        />
+                        <span>Yes</span>
+                      </label>
+                      <label className={radioGroupClass}>
+                        <input
+                          type="radio"
+                          name="free_cond"
+                          value="No"
+                          checked={formData.free_cond === 'No'}
+                          onChange={handleChange}
+                          className={radioClass}
+                        />
+                        <span>No</span>
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                {isActive('action_taken') && (
+                  <div>
+                    <label className={labelClass}>Action taken / referral</label>
+                    <textarea
+                      name="action_taken"
+                      value={formData.action_taken || ''}
+                      onChange={handleChange}
+                      className={`${textareaClass} h-24`}
+                      placeholder="State action taken or referral..."
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {(showIloMlcAdminSection || showAdminFields) && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">
+                  Certificate Administration
+                </h4>
+
+                {showIloMlcAdminSection && (
+                  <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100 space-y-4">
+                    {isActive('id_checked') && (
+                      <div className="flex flex-col md:flex-row justify-between gap-2">
+                        <span className="text-sm text-slate-700">
+                          Identity document checked at examination?
+                        </span>
+                        <div className="flex gap-4 shrink-0">
+                          <label className={radioGroupClass}>
+                            <input
+                              type="radio"
+                              name="id_checked"
+                              value="Yes"
+                              checked={formData.id_checked === 'Yes'}
+                              onChange={handleChange}
+                              className={radioClass}
+                            />
+                            <span>Yes</span>
+                          </label>
+                          <label className={radioGroupClass}>
+                            <input
+                              type="radio"
+                              name="id_checked"
+                              value="No"
+                              checked={formData.id_checked === 'No'}
+                              onChange={handleChange}
+                              className={radioClass}
+                            />
+                            <span>No</span>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+
+                    {isActive('watch_able') && (
+                      <div className="flex flex-col md:flex-row justify-between gap-2">
+                        <span className="text-sm text-slate-700">
+                          Able to perform routine and emergency duties / watchkeeping?
+                        </span>
+                        <div className="flex gap-4 shrink-0">
+                          <label className={radioGroupClass}>
+                            <input
+                              type="radio"
+                              name="watch_able"
+                              value="Yes"
+                              checked={formData.watch_able === 'Yes'}
+                              onChange={handleChange}
+                              className={radioClass}
+                            />
+                            <span>Yes</span>
+                          </label>
+                          <label className={radioGroupClass}>
+                            <input
+                              type="radio"
+                              name="watch_able"
+                              value="No"
+                              checked={formData.watch_able === 'No'}
+                              onChange={handleChange}
+                              className={radioClass}
+                            />
+                            <span>No</span>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {showAdminFields && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {isActive('date') && (
+                      <div>
+                        <label className={labelClass}>Examination Date</label>
+                        <input
+                          type="date"
+                          name="date"
+                          value={formData.date || ''}
+                          onChange={handleChange}
+                          className={inputClass}
+                        />
+                      </div>
+                    )}
+
+                    {isActive('exp_date') && (
+                      <div>
+                        <label className={labelClass}>Expiry Date</label>
+                        <input
+                          type="date"
+                          name="exp_date"
+                          value={formData.exp_date || ''}
+                          onChange={handleChange}
+                          className={inputClass}
+                        />
+                      </div>
+                    )}
+
+                    {isActive('eps') && (
+                      <div>
+                        <label className={labelClass}>Examining Medical Practitioner</label>
+                        <input
+                          type="text"
+                          name="eps"
+                          value={formData.eps || ''}
+                          onChange={handleChange}
+                          className={inputClass}
+                        />
+                      </div>
+                    )}
+
+                    {isActive('hospital') && (
+                      <div>
+                        <label className={labelClass}>Clinic / Hospital</label>
+                        <input
+                          type="text"
+                          name="hospital"
+                          value={formData.hospital || ''}
+                          onChange={handleChange}
+                          className={inputClass}
+                        />
+                      </div>
+                    )}
+
+                    {isActive('cert_auth') && (
+                      <div className="md:col-span-2">
+                        <label className={labelClass}>Certifying Authority</label>
+                        <input
+                          type="text"
+                          name="cert_auth"
+                          value={formData.cert_auth || ''}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="Authority / institution name"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {showDoctorNotes && (
+              <div className="space-y-4">
+                <h4 className="font-semibold text-slate-900 border-b border-slate-100 pb-2">
+                  Doctor Notes
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {isActive('comments') && (
+                    <div>
+                      <label className={labelClass}>Comments</label>
+                      <textarea
+                        name="comments"
+                        value={formData.comments || ''}
+                        onChange={handleChange}
+                        className={`${textareaClass} h-24`}
+                        placeholder="Additional comments..."
+                      />
+                    </div>
+                  )}
+
+                  {isActive('suggestion') && (
+                    <div>
+                      <label className={labelClass}>Suggestion</label>
+                      <textarea
+                        name="suggestion"
+                        value={formData.suggestion || ''}
+                        onChange={handleChange}
+                        className={`${textareaClass} h-24`}
+                        placeholder="Medical suggestions..."
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cardClass}>

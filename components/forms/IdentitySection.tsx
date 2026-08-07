@@ -235,18 +235,41 @@ export default function IdentitySection({
               )}
 
               {isActive('typeOfShip') && (
-                <div>
-                  <label className={labelClass}>Tipe Kapal {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label>
-                  <input type="text" name="typeOfShip" value={formData.typeOfShip || ''} onChange={handleChange} className={inputClass} />
-                </div>
-              )}
+  <div>
+    <label className={labelClass}>Tipe Kapal</label>
+    <select 
+      name="typeOfShip" 
+      value={formData.typeOfShip || ''} 
+      onChange={handleChange} 
+      className={inputClass}
+    >
+      <option value="">- Pilih Tipe Kapal -</option>
+      <option value="Container">Container</option>
+      <option value="Tanker">Tanker</option>
+      <option value="Passenger">Passenger</option>
+      <option value="Fishing">Fishing</option>
+    </select>
+  </div>
+)}
 
               {isActive('tradeArea') && (
-                <div>
-                  <label className={labelClass}>Area Pelayaran {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}</label>
-                  <input type="text" name="tradeArea" value={formData.tradeArea || ''} onChange={handleChange} className={inputClass} />
-                </div>
-              )}
+  <div>
+    <label className={labelClass}>
+      Area Pelayaran {isIlo && <BadgeILO />} {isMlc && <BadgeMLC />}
+    </label>
+    <select 
+      name="tradeArea" 
+      value={formData.tradeArea || ''} 
+      onChange={handleChange} 
+      className={inputClass}
+    >
+      <option value="">- Pilih Area Pelayaran -</option>
+      <option value="Coastal">Coastal</option>
+      <option value="Tropical">Tropical</option>
+      <option value="Worldwide">Worldwide</option>
+    </select>
+  </div>
+)}
             </>
           )}
 

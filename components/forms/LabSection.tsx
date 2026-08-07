@@ -606,8 +606,71 @@ export default function LabSection({
                       )}
                       {isActive('hep_c') && <div><label className={labelClass}>Hepatitis C <BadgeADNOC /></label><input type="text" name="hep_c" value={formData.hep_c || ''} onChange={handleChange} className={inputClass} /></div>}
                       {isActive('hep_a') && <div><label className={labelClass}>Hepatitis A <BadgeADNOC /></label><input type="text" name="hep_a" value={formData.hep_a || ''} onChange={handleChange} className={inputClass} /></div>}
-                      {isActive('hiv_res') && <div><label className={labelClass}>Hasil HIV (+ve/-ve)</label><input type="text" name="hiv_res" value={formData.hiv_res || ''} onChange={handleChange} className={inputClass} /></div>}
-                      {isActive('vdrl_res') && <div><label className={labelClass}>Hasil VDRL (+ve/-ve)</label><input type="text" name="vdrl_res" value={formData.vdrl_res || ''} onChange={handleChange} className={inputClass} /></div>}
+                      {isActive('hiv_res') && (
+  <div>
+    <label className={labelClass}>Hasil HIV (+ve/-ve)</label>
+    <select 
+      name="hiv_res" 
+      value={formData.hiv_res || ''} 
+      onChange={handleChange} 
+      className={inputClass}
+    >
+      <option value="">- Pilih Hasil HIV -</option>
+      <option value="+ve">Positif (+ve)</option>
+      <option value="-ve">Negatif (-ve)</option>
+    </select>
+  </div>
+)}
+                      {isActive('vdrl_res') && (
+  <div>
+    <label className={labelClass}>Hasil VDRL (+ve/-ve)</label>
+    <select 
+      name="vdrl_res" 
+      value={formData.vdrl_res || ''} 
+      onChange={handleChange} 
+      className={inputClass}
+    >
+      <option value="">- Pilih Hasil VDRL -</option>
+      <option value="+ve">Positif (+ve)</option>
+      <option value="-ve">Negatif (-ve)</option>
+    </select>
+  </div>
+)}
+{(isActive('hep_b_ab') || isActive('hep_b_ag')) && (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-100 mt-4">
+    {isActive('hep_b_ab') && (
+      <div>
+        <label className={labelClass}>Hepatitis B (ab)</label>
+        <select 
+          name="hep_b_ab" 
+          value={formData.hep_b_ab || ''} 
+          onChange={handleChange} 
+          className={inputClass}
+        >
+          <option value="">- Pilih Hasil -</option>
+          <option value="Positive">Positif (+ve)</option>
+          <option value="Negative">Negatif (-ve)</option>
+        </select>
+      </div>
+    )}
+
+    {isActive('hep_b_ag') && (
+      <div>
+        <label className={labelClass}>Hepatitis B (ag)</label>
+        <select 
+          name="hep_b_ag" 
+          value={formData.hep_b_ag || ''} 
+          onChange={handleChange} 
+          className={inputClass}
+        >
+          <option value="">- Pilih Hasil -</option>
+          <option value="Positive">Positif (+ve)</option>
+          <option value="Negative">Negatif (-ve)</option>
+        </select>
+      </div>
+    )}
+  </div>
+)}
                     </div>
                   </>
                 )}
@@ -661,6 +724,46 @@ export default function LabSection({
                           <textarea name="detail_af" value={formData.detail_af || ''} onChange={handleChange} className={textareaClass}></textarea>
                         </div>
                       )}
+
+                      {/* STATUS OF VACCINATION RECORDS */}
+{(isIlo || isActive('vaccinated') || isActive('vac_details')) && (
+  <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50/50 p-4">
+    <h4 className="text-sm font-bold text-slate-800 mb-3 border-b border-slate-200 pb-2">
+      Status of Vaccination Records
+    </h4>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {isActive('vaccinated') && (
+        <div>
+          <label className={labelClass}>Status Vaksinasi</label>
+          <select 
+            name="vaccinated" 
+            value={formData.vaccinated || ''} 
+            onChange={handleChange} 
+            className={inputClass}
+          >
+            <option value="">- Pilih Status -</option>
+            <option value="Yes">Satisfactory</option>
+            <option value="No">To be renewed</option>
+          </select>
+        </div>
+      )}
+
+      {isActive('vac_details') && (
+        <div>
+          <label className={labelClass}>Details (Keterangan)</label>
+          <input 
+            type="text" 
+            name="vac_details" 
+            value={formData.vac_details || ''} 
+            onChange={handleChange} 
+            className={inputClass} 
+            placeholder="Tuliskan detail jika ada..."
+          />
+        </div>
+      )}
+    </div>
+  </div>
+)}
                     </div>
                   </>
                 )}

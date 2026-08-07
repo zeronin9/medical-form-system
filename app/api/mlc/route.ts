@@ -57,27 +57,16 @@ export async function POST(request: Request) {
     const isY = (value: any) => (yn(value) === 'Yes' ? '☑' : '☐');
     const isN = (value: any) => (yn(value) === 'No' ? '☑' : '☐');
 
-    const markChecked = (condition: boolean) => (condition ? '☑' : '☐');
-    const markUnchecked = (condition: boolean) => (condition ? '☐' : '☑');
-
-    const examState = (value: any): 'Normal' | 'Abnormal' | '' => {
-      if (value === 'Normal') return 'Normal';
-      if (value === 'Abnormal') return 'Abnormal';
-      return '';
-    };
-
-    const isExamNormal = (value: any) => (examState(value) === 'Normal' ? '☑' : '☐');
-    const isExamAbnormal = (value: any) => (examState(value) === 'Abnormal' ? '☑' : '☐');
-
     const splitDate = (value: string) => {
       if (!value || !value.includes('-')) {
-        return { year: '', month: '', day: '' };
+        return { year: '', month: '', day: '', ddmmyyyy: '' };
       }
       const [year, month, day] = value.split('-');
       return {
         year: year || '',
         month: month || '',
         day: day || '',
+        ddmmyyyy: `${day || ''}/${month || ''}/${year || ''}`, // Format ddmmyyyy
       };
     };
 
@@ -92,9 +81,6 @@ export async function POST(request: Request) {
       };
     };
 
-    const checkAbnormal = (fields: string[]) =>
-      fields.some((field) => formData[field] === 'Abnormal');
-
     const dob = str('dob');
     const { year: dobY, month: dobM, day: dobD } = splitDate(dob);
     const { sys: bp_sys, dia: bp_dia } = splitBloodPressure(
@@ -104,54 +90,18 @@ export async function POST(request: Request) {
     const gender = str('gender');
     const isFemale = gender === 'Female';
 
-    const headAbn = checkAbnormal([
-      'rs_nasal',
-      'al_teeth',
-      'al_tongue',
-      'ea_meatus',
-      'ea_drums',
-      'ey_light',
-      'ey_accom',
-      'ey_nyst',
-      'ey_fundi',
-    ]);
-
-    const entAbn = checkAbnormal([
-      'rs_nasal',
-      'rs_thyroid',
-      'rs_trachea',
-      'ea_meatus',
-      'ea_drums',
-    ]);
-
-    const oralAbn = checkAbnormal(['al_teeth', 'al_tongue']);
-    const earAbn = checkAbnormal(['ea_meatus', 'ea_drums']);
-    const eyeAbn = checkAbnormal(['ey_light', 'ey_accom', 'ey_nyst', 'ey_fundi']);
-    const ophAbn = checkAbnormal(['ey_fundi']);
-    const pupilAbn = checkAbnormal(['ey_light', 'ey_accom']);
-    const eyemAbn = checkAbnormal(['ey_nyst']);
-    const lungAbn = checkAbnormal(['rs_chest', 'rs_perc', 'rs_air', 'rs_breath', 'rs_advent']);
-    const breastAbn = false;
-    const heartAbn = checkAbnormal(['cv_pulse', 'cv_apex', 'cv_sounds', 'cv_murmurs']);
-    const varAbn = checkAbnormal(['cv_varicose']);
-    const vascAbn = checkAbnormal(['cv_varicose', 'cv_bp']);
-    const abdAbn = checkAbnormal(['al_abd', 'al_liver', 'al_spleen', 'al_lymph']);
-    const hernAbn = checkAbnormal(['al_hernia']);
-    const anusAbn = checkAbnormal(['al_anus']);
-    const guAbn = checkAbnormal(['gu_kidney', 'gu_gen']);
-    const extAbn = checkAbnormal(['ms_hands', 'ms_limbs', 'ms_inj']);
-    const spineAbn = checkAbnormal(['ms_back', 'ms_joints']);
-    const neuroAbn = checkAbnormal(['ns_power', 'ns_tone', 'ns_coord', 'ns_sens', 'ns_intel']);
-    const skinAbn = checkAbnormal(['in_hair', 'in_skin', 'in_nails']);
-
     const renderData = {
       // ==========================================
       // 1. IDENTITAS & CERTIFICATE HEADER
       // ==========================================
       name: `${str('firstName', 'first_name')} ${str('familyName', 'family_name')}`.trim(),
+
+      family_name: str('familyName', 'family_name'),
+      first_name: str('firstName', 'first_name'),
+
       company: str('company'),
       gender: str('gender'),
-      dob: str('dob'),
+      dob: `${dobD}/${dobM}/${dobY}`,
       nationality: str('nationality'),
       id_passport: str('idPassport', 'id_passport'),
       ilo_position: str('ilo_position', 'position'),
@@ -163,18 +113,29 @@ export async function POST(request: Request) {
       // 2. DECLARATION OF THE RECOGNIZED MEDICAL PRACTITIONER
       // ==========================================
       mlc_id: markYesNo(pick('id_checked')),
-      mlc_fit_lookout: str('fit_lookout') === 'Fit' ? 'Yes' : 'No',
+      
+      // FIX: Jika kosong maka biarkan kosong. Jika Fit -> Yes, Unfit -> No.
+      mlc_fit_lookout: str('fit_lookout') === 'Fit' ? 'Yes' : (str('fit_lookout') === 'Unfit' ? 'No' : ''),
+      
       mlc_hr_stcw: markYesNo(pick('hr_stcw')),
-      mlc_fit_sea: str('fit_lookout') === 'Fit' ? 'Yes' : 'No',
+      
+      // FIX: Cek apakah ada departemen yang diisi. Jika belum ada yang diisi, biarkan kosong.
+      mlc_fit_sea: (!str('fit_deck') && !str('fit_engine') && !str('fit_catering') && !str('fit_other')) 
+        ? '' 
+        : (str('fit_deck') === 'Fit' || str('fit_engine') === 'Fit' || str('fit_catering') === 'Fit' || str('fit_other') === 'Fit' ? 'Yes' : 'No'),
+      
       mlc_hr_unaid: markYesNo(pick('hr_unaid')),
       mlc_free: markYesNo(pick('free_cond')),
       mlc_vis_stcw: markYesNo(pick('vis_stcw')),
       mlc_col_stcw: markYesNo(pick('col_stcw')),
-      mlc_limit: str('restrictions') === 'Yes' ? 'Yes' : 'No',
+      
+      // FIX: Jika belum dipilih Yes/No, biarkan kosong.
+      mlc_limit: !str('restrictions') ? '' : (str('restrictions') === 'Yes' ? str('rest_desc') : 'No'),
+      
       date_vt: str('date_vt', 'date'),
 
       // ==========================================
-      // 3. CLINICAL FINDINGS
+      // 3. CLINICAL FINDINGS (VITAL & SENSORY)
       // ==========================================
       h: str('height'),
       w: str('weight'),
@@ -198,98 +159,77 @@ export async function POST(request: Request) {
       near_bv_cor: str('near_bv_cor') || '-',
 
       // Visual field & colour vision
-      vf_r_n: markUnchecked(eyeAbn),
-      vf_r_d: markChecked(eyeAbn),
-      vf_l_n: markUnchecked(eyeAbn),
-      vf_l_d: markChecked(eyeAbn),
+      vf_r_n: formData.vf_r === 'Normal' ? '☑' : '☐',
+      vf_r_d: formData.vf_r === 'Defective' ? '☑' : '☐',
+      vf_l_n: formData.vf_l === 'Normal' ? '☑' : '☐',
+      vf_l_d: formData.vf_l === 'Defective' ? '☑' : '☐',
 
       cv_n: str('color_vision') === 'Normal' ? '☑' : '☐',
-      cv_df:
-        str('color_vision') === 'Partial' || str('color_vision') === 'Total' ? '☑' : '☐',
+      cv_df: str('color_vision') === 'Partial' || str('color_vision') === 'Total' ? '☑' : '☐',
 
       // Hearing
-      hr_r_n: str('hear_r') === 'Normal' ? '☑' : '☐',
-      hr_r_s: str('hear_r') === 'Normal' ? '☑' : '☐',
-      hr_r_o: markUnchecked(entAbn),
+      hr_r_n: formData.hear_r === 'Normal' ? '☑' : '☐',
+      hr_r_s: str('ea_wr_r'),
+      hr_r_o: str('ea_meatus'),
 
-      hr_l_n: str('hear_l') === 'Normal' ? '☑' : '☐',
-      hr_l_s: str('hear_l') === 'Normal' ? '☑' : '☐',
-      hr_l_o: markUnchecked(entAbn),
-
-      // Clinical findings
-      head_n: markUnchecked(headAbn),
-      head_a: markChecked(headAbn),
-
-      var_n: markUnchecked(varAbn),
-      var_a: markChecked(varAbn),
-
-      ent_n: markUnchecked(entAbn),
-      ent_a: markChecked(entAbn),
-
-      vasc_n: markUnchecked(vascAbn),
-      vasc_a: markChecked(vascAbn),
-
-      oral_n: markUnchecked(oralAbn),
-      oral_a: markChecked(oralAbn),
-
-      abd_n: markUnchecked(abdAbn),
-      abd_a: markChecked(abdAbn),
-
-      ear_n: markUnchecked(earAbn),
-      ear_a: markChecked(earAbn),
-
-      hern_n: markUnchecked(hernAbn),
-      hern_a: markChecked(hernAbn),
-
-      eye_n: markUnchecked(eyeAbn),
-      eye_a: markChecked(eyeAbn),
-
-      anus_n: markUnchecked(anusAbn),
-      anus_a: markChecked(anusAbn),
-
-      oph_n: markUnchecked(ophAbn),
-      oph_a: markChecked(ophAbn),
-
-      gu_n: markUnchecked(guAbn),
-      gu_a: markChecked(guAbn),
-
-      pupil_n: markUnchecked(pupilAbn),
-      pupil_a: markChecked(pupilAbn),
-
-      ext_n: markUnchecked(extAbn),
-      ext_a: markChecked(extAbn),
-
-      eyem_n: markUnchecked(eyemAbn),
-      eyem_a: markChecked(eyemAbn),
-
-      spine_n: markUnchecked(spineAbn),
-      spine_a: markChecked(spineAbn),
-
-      lung_n: markUnchecked(lungAbn),
-      lung_a: markChecked(lungAbn),
-
-      neuro_n: markUnchecked(neuroAbn),
-      neuro_a: markChecked(neuroAbn),
-
-      breast_n: markUnchecked(breastAbn),
-      breast_a: markChecked(breastAbn),
-
-      psych_n: str('mh_psychiatric') === 'No' ? '☑' : '☐',
-      psych_a: str('mh_psychiatric') === 'Yes' ? '☑' : '☐',
-
-      heart_n: markUnchecked(heartAbn),
-      heart_a: markChecked(heartAbn),
-
-      gen_n: markUnchecked(str('gen_app') === 'Abnormal'),
-      gen_a: markChecked(str('gen_app') === 'Abnormal'),
-
-      skin_n: markUnchecked(skinAbn),
-      skin_a: markChecked(skinAbn),
+      hr_l_n: formData.hear_l === 'Normal' ? '☑' : '☐',
+      hr_l_s: str('ea_wr_l'),
+      hr_l_o: str('ea_meatus'),
 
       // ==========================================
-      // 4. OTHER DIAGNOSTICS TESTS AND RESULTS
+      // 4. PEMERIKSAAN FISIK UMUM (DIRECT MAPPING 24 ITEM)
       // ==========================================
-      xray_res: str('des_abnor') || str('xray') || 'NORMAL',
+      head_n: formData.ilo_head === 'Normal' ? '☑' : '☐',
+      head_a: formData.ilo_head === 'Abnormal' ? '☑' : '☐',
+      var_n: formData.ilo_var === 'Normal' ? '☑' : '☐',
+      var_a: formData.ilo_var === 'Abnormal' ? '☑' : '☐',
+      ent_n: formData.ilo_ent === 'Normal' ? '☑' : '☐',
+      ent_a: formData.ilo_ent === 'Abnormal' ? '☑' : '☐',
+      vasc_n: formData.ilo_vasc === 'Normal' ? '☑' : '☐',
+      vasc_a: formData.ilo_vasc === 'Abnormal' ? '☑' : '☐',
+      oral_n: formData.ilo_oral === 'Normal' ? '☑' : '☐',
+      oral_a: formData.ilo_oral === 'Abnormal' ? '☑' : '☐',
+      abd_n: formData.ilo_abd === 'Normal' ? '☑' : '☐',
+      abd_a: formData.ilo_abd === 'Abnormal' ? '☑' : '☐',
+      ear_n: formData.ilo_ear === 'Normal' ? '☑' : '☐',
+      ear_a: formData.ilo_ear === 'Abnormal' ? '☑' : '☐',
+      hern_n: formData.ilo_hern === 'Normal' ? '☑' : '☐',
+      hern_a: formData.ilo_hern === 'Abnormal' ? '☑' : '☐',
+      eye_n: formData.ilo_eye === 'Normal' ? '☑' : '☐',
+      eye_a: formData.ilo_eye === 'Abnormal' ? '☑' : '☐',
+      anus_n: formData.ilo_anus === 'Normal' ? '☑' : '☐',
+      anus_a: formData.ilo_anus === 'Abnormal' ? '☑' : '☐',
+      oph_n: formData.ilo_oph === 'Normal' ? '☑' : '☐',
+      oph_a: formData.ilo_oph === 'Abnormal' ? '☑' : '☐',
+      gu_n: formData.ilo_gu === 'Normal' ? '☑' : '☐',
+      gu_a: formData.ilo_gu === 'Abnormal' ? '☑' : '☐',
+      pupil_n: formData.ilo_pupil === 'Normal' ? '☑' : '☐',
+      pupil_a: formData.ilo_pupil === 'Abnormal' ? '☑' : '☐',
+      ext_n: formData.ilo_ext === 'Normal' ? '☑' : '☐',
+      ext_a: formData.ilo_ext === 'Abnormal' ? '☑' : '☐',
+      eyem_n: formData.ilo_eyem === 'Normal' ? '☑' : '☐',
+      eyem_a: formData.ilo_eyem === 'Abnormal' ? '☑' : '☐',
+      spine_n: formData.ilo_spine === 'Normal' ? '☑' : '☐',
+      spine_a: formData.ilo_spine === 'Abnormal' ? '☑' : '☐',
+      lung_n: formData.ilo_lung === 'Normal' ? '☑' : '☐',
+      lung_a: formData.ilo_lung === 'Abnormal' ? '☑' : '☐',
+      neuro_n: formData.ilo_neuro === 'Normal' ? '☑' : '☐',
+      neuro_a: formData.ilo_neuro === 'Abnormal' ? '☑' : '☐',
+      breast_n: formData.ilo_breast === 'Normal' ? '☑' : '☐',
+      breast_a: formData.ilo_breast === 'Abnormal' ? '☑' : '☐',
+      psych_n: formData.ilo_psych === 'Normal' ? '☑' : '☐',
+      psych_a: formData.ilo_psych === 'Abnormal' ? '☑' : '☐',
+      heart_n: formData.ilo_heart === 'Normal' ? '☑' : '☐',
+      heart_a: formData.ilo_heart === 'Abnormal' ? '☑' : '☐',
+      gen_n: formData.ilo_gen === 'Normal' ? '☑' : '☐',
+      gen_a: formData.ilo_gen === 'Abnormal' ? '☑' : '☐',
+      skin_n: formData.ilo_skin === 'Normal' ? '☑' : '☐',
+      skin_a: formData.ilo_skin === 'Abnormal' ? '☑' : '☐',
+
+      // ==========================================
+      // 5. OTHER DIAGNOSTICS TESTS AND RESULTS
+      // ==========================================
+      xray_res: str('des_abnor') || str('xray') || '-',
       hiv_res: str('hiv_res') || '-',
       vdrl_res: str('vdrl_res') || '-',
       ur_sugar: str('ur_sugar') || '-',
@@ -298,7 +238,7 @@ export async function POST(request: Request) {
       diag: str('diag') || '-',
 
       // ==========================================
-      // 5. FITNESS / RESTRICTIONS
+      // 6. FITNESS / RESTRICTIONS
       // ==========================================
       lo_f: str('fit_lookout') === 'Fit' ? '☑' : '☐',
       lo_u: str('fit_lookout') === 'Unfit' ? '☑' : '☐',
@@ -326,13 +266,13 @@ export async function POST(request: Request) {
 
       rest_desc:
         str('restrictions') === 'Yes'
-          ? str('rest_desc') || 'No Specific Restrictions'
-          : 'Tidak ada',
+          ? str('rest_desc') || '-'
+          : '-',
 
-      action_taken: str('action_taken') || 'Aman',
+      action_taken: str('action_taken') || '-',
 
       // ==========================================
-      // 6. PERSONAL DECLARATION
+      // 7. PERSONAL DECLARATION
       // ==========================================
       day: dobD || '',
       month: dobM || '',
@@ -344,147 +284,64 @@ export async function POST(request: Request) {
       trade_area: str('tradeArea', 'trade_area'),
       department: str('department', 'position', 'ilo_position'),
 
-      q1_y: isY(pick('mh_eye')),
-      q1_n: isN(pick('mh_eye')),
+      q1_y: isY(pick('mh_eye')), q1_n: isN(pick('mh_eye')),
+      q2_y: isY(pick('mh_hbp')), q2_n: isN(pick('mh_hbp')),
+      q3_y: isY(pick('mh_heart')), q3_n: isN(pick('mh_heart')),
+      q4_y: isY(pick('mhcardiacsurgery')), q4_n: isN(pick('mhcardiacsurgery')),
+      q5_y: isY(pick('mh_varicose')), q5_n: isN(pick('mh_varicose')),
+      q6_y: isY(pick('mh_asthma')), q6_n: isN(pick('mh_asthma')),
+      q7_y: isY(pick('mh_blood')), q7_n: isN(pick('mh_blood')),
+      q8_y: isY(pick('mh_diabetes')), q8_n: isN(pick('mh_diabetes')),
+      q9_y: isY(pick('mh_thyroid')), q9_n: isN(pick('mh_thyroid')),
+      q10_y: isY(pick('mh_digestive')), q10_n: isN(pick('mh_digestive')),
+      q11_y: isY(pick('mh_kidney')), q11_n: isN(pick('mh_kidney')),
+      q12_y: isY(pick('mh_skin')), q12_n: isN(pick('mh_skin')),
+      q13_y: isY(pick('mh_allergy_med')), q13_n: isN(pick('mh_allergy_med')),
+      q14_y: isY(pick('mh_infectious')), q14_n: isN(pick('mh_infectious')),
+      q15_y: isY(pick('mh_hernia')), q15_n: isN(pick('mh_hernia')),
+      q16_y: isY(pick('mh_genital')), q16_n: isN(pick('mh_genital')),
+      q17_y: isY(pick('mhpregnancy')),
+q17_n: isN(pick('mhpregnancy')),
+      q18_y: isY(pick('mhsleep')), q18_n: isN(pick('mhsleep')),
+      
+      q19_y: isY(pick('mh_lifestyle', 'q_smoke', 'qsmoke')),
+q19_n: isN(pick('mh_lifestyle', 'q_smoke', 'qsmoke')),
 
-      q2_y: isY(pick('mh_hbp')),
-      q2_n: isN(pick('mh_hbp')),
+      q20_y: isY(pick('mhsurgery')), q20_n: isN(pick('mhsurgery')),
+      q21_y: isY(pick('mh_epilepsy')), q21_n: isN(pick('mh_epilepsy')),
+      q22_y: isY(pick('mhfainting')), q22_n: isN(pick('mhfainting')),
+      q23_y: isY(pick('mh_loss_consc')), q23_n: isN(pick('mh_loss_consc')),
+      q24_y: isY(pick('mh_psychiatric')), q24_n: isN(pick('mh_psychiatric')),
+      q25_y: isY(pick('mh_depression')), q25_n: isN(pick('mh_depression')),
+      q26_y: isY(pick('mh_suicide')), q26_n: isN(pick('mh_suicide')),
+      q27_y: isY(pick('mh_memory')), q27_n: isN(pick('mh_memory')),
+      q28_y: isY(pick('mh_balance')), q28_n: isN(pick('mh_balance')),
+      q29_y: isY(pick('mh_headache')), q29_n: isN(pick('mh_headache')),
+      q30_y: isY(pick('mh_ear')), q30_n: isN(pick('mh_ear')),
+      q31_y: isY(pick('mh_mobility')), q31_n: isN(pick('mh_mobility')),
+      
+      q32_y: isY(pick('mh_back', 'mh_back_joint', 'back_problem')),
+q32_n: isN(pick('mh_back', 'mh_back_joint', 'back_problem')),
 
-      q3_y: isY(pick('mh_heart')),
-      q3_n: isN(pick('mh_heart')),
-
-      q4_y: isY(pick('mhcardiacsurgery')),
-      q4_n: isN(pick('mhcardiacsurgery')),
-
-      q5_y: isY(pick('mh_varicose')),
-      q5_n: isN(pick('mh_varicose')),
-
-      q6_y: isY(pick('mh_asthma')),
-      q6_n: isN(pick('mh_asthma')),
-
-      q7_y: isY(pick('mh_blood')),
-      q7_n: isN(pick('mh_blood')),
-
-      q8_y: isY(pick('mh_diabetes')),
-      q8_n: isN(pick('mh_diabetes')),
-
-      q9_y: isY(pick('mh_thyroid')),
-      q9_n: isN(pick('mh_thyroid')),
-
-      q10_y: isY(pick('mh_digestive')),
-      q10_n: isN(pick('mh_digestive')),
-
-      q11_y: isY(pick('mh_kidney')),
-      q11_n: isN(pick('mh_kidney')),
-
-      q12_y: isY(pick('mh_skin')),
-      q12_n: isN(pick('mh_skin')),
-
-      q13_y: isY(pick('mh_allergy_med')),
-      q13_n: isN(pick('mh_allergy_med')),
-
-      q14_y: isY(pick('mh_infectious')),
-      q14_n: isN(pick('mh_infectious')),
-
-      q15_y: isY(pick('mh_hernia')),
-      q15_n: isN(pick('mh_hernia')),
-
-      q16_y: isY(pick('mh_genital')),
-      q16_n: isN(pick('mh_genital')),
-
-      q17_y: isFemale ? isY(pick('mhpregnancy')) : '☐',
-      q17_n: isFemale ? isN(pick('mhpregnancy')) : '☐',
-
-      q18_y: isY(pick('mhsleep')),
-      q18_n: isN(pick('mhsleep')),
-
-      q19_y:
-        str('qsmoke', 'q_smoke') === 'Yes' || str('qalcohol', 'q_alcohol') === 'Yes' || str('mh_drug') === 'Yes'
-          ? '☑'
-          : '☐',
-      q19_n:
-        str('qsmoke', 'q_smoke') === 'No' && str('qalcohol', 'q_alcohol') === 'No' && str('mh_drug') !== 'Yes'
-          ? '☑'
-          : '☐',
-
-      q20_y: isY(pick('mhsurgery')),
-      q20_n: isN(pick('mhsurgery')),
-
-      q21_y: isY(pick('mh_epilepsy')),
-      q21_n: isN(pick('mh_epilepsy')),
-
-      q22_y: isY(pick('mhfainting')),
-      q22_n: isN(pick('mhfainting')),
-
-      q23_y: isY(pick('mh_loss_consc')),
-      q23_n: isN(pick('mh_loss_consc')),
-
-      q24_y: isY(pick('mh_psychiatric')),
-      q24_n: isN(pick('mh_psychiatric')),
-
-      q25_y: isY(pick('mh_depression')),
-      q25_n: isN(pick('mh_depression')),
-
-      q26_y: isY(pick('mh_suicide')),
-      q26_n: isN(pick('mh_suicide')),
-
-      q27_y: isY(pick('mh_memory')),
-      q27_n: isN(pick('mh_memory')),
-
-      q28_y: isY(pick('mh_balance')),
-      q28_n: isN(pick('mh_balance')),
-
-      q29_y: isY(pick('mh_headache')),
-      q29_n: isN(pick('mh_headache')),
-
-      q30_y: isY(pick('mh_ear')),
-      q30_n: isN(pick('mh_ear')),
-
-      q31_y: isY(pick('mh_mobility')),
-      q31_n: isN(pick('mh_mobility')),
-
-      q32_y:
-        str('mh_back') === 'Yes' || str('mh_rheumatism') === 'Yes' ? '☑' : '☐',
-      q32_n:
-        str('mh_back') === 'No' && str('mh_rheumatism') === 'No' ? '☑' : '☐',
-
-      q33_y: isY(pick('mh_amputation')),
-      q33_n: isN(pick('mh_amputation')),
-
-      q34_y: isY(pick('mh_accident')),
-      q34_n: isN(pick('mh_accident')),
-
-      q35_y: isY(pick('qmedevac', 'q_medevac')),
-      q35_n: isN(pick('qmedevac', 'q_medevac')),
-
-      q36_y: isY(pick('qillness', 'q_illness')),
-      q36_n: isN(pick('qillness', 'q_illness')),
-
-      q37_y: isY(pick('qomfc', 'q_omfc')),
-      q37_n: isN(pick('qomfc', 'q_omfc')),
-
-      q38_y: isY(pick('qcertrevoked', 'q_cert_revoked')),
-      q38_n: isN(pick('qcertrevoked', 'q_cert_revoked')),
-
-      q39_y: isY(pick('qawaremedical', 'q_aware_medical')),
-      q39_n: isN(pick('qawaremedical', 'q_aware_medical')),
-
-      q40_y: isY(pick('qfit', 'q_fit')),
-      q40_n: isN(pick('qfit', 'q_fit')),
-
-      q41_y: isY(pick('mh_allergy_med')),
-      q41_n: isN(pick('mh_allergy_med')),
-
-      q42_y: isY(pick('qmeds', 'q_meds')),
-      q42_n: isN(pick('qmeds', 'q_meds')),
+      q33_y: isY(pick('mh_amputation')), q33_n: isN(pick('mh_amputation')),
+      q34_y: isY(pick('mh_accident')), q34_n: isN(pick('mh_accident')),
+      q35_y: isY(pick('qmedevac', 'q_medevac')), q35_n: isN(pick('qmedevac', 'q_medevac')),
+      q36_y: isY(pick('qillness', 'q_illness')), q36_n: isN(pick('qillness', 'q_illness')),
+      q37_y: isY(pick('qomfc', 'q_omfc')), q37_n: isN(pick('qomfc', 'q_omfc')),
+      q38_y: isY(pick('qcertrevoked', 'q_cert_revoked')), q38_n: isN(pick('qcertrevoked', 'q_cert_revoked')),
+      q39_y: isY(pick('qawaremedical', 'q_aware_medical')), q39_n: isN(pick('qawaremedical', 'q_aware_medical')),
+      q40_y: isY(pick('qfit', 'q_fit')), q40_n: isN(pick('qfit', 'q_fit')),
+      q41_y: isY(pick('mh_allergy_med')), q41_n: isN(pick('mh_allergy_med')),
+      q42_y: isY(pick('qmeds', 'q_meds')), q42_n: isN(pick('qmeds', 'q_meds')),
 
       epd_comments: str('comments'),
       meds_text: str('qmedstext', 'q_meds_text'),
 
       // ==========================================
-      // 7. FINAL DECLARATION
+      // 8. FINAL DECLARATION
       // ==========================================
       eps: str('eps'),
+      hospital: str('hospital'),
     };
 
     doc.render(renderData);

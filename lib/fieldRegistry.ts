@@ -1,5 +1,3 @@
-// lib/fieldRegistry.ts
-
 import type { SelectedFormat } from '@/components/forms/FormConstants';
 
 export type FieldDefinition = {
@@ -8,9 +6,6 @@ export type FieldDefinition = {
 };
 
 export const fieldRegistry: Record<string, FieldDefinition> = {
-  // ==========================================
-  // 1. IDENTITAS & PEKERJAAN
-  // ==========================================
   firstName: { label: 'First Name', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'qatarenergy', 'marshall'] },
   middleName: { label: 'Middle Name', formats: ['chevron', 'adnoc', 'qatarenergy', 'marshall'] },
   familyName: { label: 'Family Name', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'qatarenergy', 'marshall'] },
@@ -36,9 +31,6 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   seaman_book: { label: 'Seaman Book', formats: ['mlc', 'ilo'] },
   reason_exam: { label: 'Reason for Exam', formats: ['adnoc', 'ilo', 'mlc'] },
 
-  // ==========================================
-  // 2. BIOMETRIK & PENGLIHATAN
-  // ==========================================
   height: { label: 'Height', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'qatarenergy', 'marshall'] },
   weight: { label: 'Weight', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'qatarenergy', 'marshall'] },
   bmi: { label: 'BMI', formats: ['chevron', 'adnoc', 'qatarenergy', 'marshall'] },
@@ -51,12 +43,14 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   bloodGroupRh: { label: 'Rhesus', formats: ['chevron', 'adnoc', 'qatarenergy'] },
   chest_exp: { label: 'Chest Expansion', formats: ['adnoc'] },
   gen_app: { label: 'General Appearance', formats: ['adnoc', 'marshall', 'ilo', 'mlc'] },
-  
+
   disr_unc: { label: 'Distance Vision Right Uncorrected', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall', 'qatarenergy'] },
   disl_unc: { label: 'Distance Vision Left Uncorrected', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall', 'qatarenergy'] },
   nearr_unc: { label: 'Near Vision Right Uncorrected', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall', 'qatarenergy'] },
   nearl_unc: { label: 'Near Vision Left Uncorrected', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall', 'qatarenergy'] },
   bv_unc: { label: 'Binocular Vision Uncorrected', formats: ['chevron', 'ilo', 'mlc', 'qatarenergy'] },
+  vf_r: { label: 'Visual Field Right', formats: ['ilo', 'mlc'] },
+  vf_l: { label: 'Visual Field Left', formats: ['ilo', 'mlc'] },
   disr_cor: { label: 'Distance Vision Right Corrected', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall', 'qatarenergy'] },
   disl_cor: { label: 'Distance Vision Left Corrected', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall', 'qatarenergy'] },
   nearr_cor: { label: 'Near Vision Right Corrected', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall', 'qatarenergy'] },
@@ -70,7 +64,7 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   color_r: { label: 'Color Red', formats: ['ilo', 'mlc'] },
   color_g: { label: 'Color Green', formats: ['ilo', 'mlc'] },
   color_b: { label: 'Color Blue', formats: ['ilo', 'mlc'] },
-  
+
   hear_r: { label: 'Hearing Right', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall'] },
   hear_l: { label: 'Hearing Left', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'marshall'] },
   hr_stcw: { label: 'STCW Hearing', formats: ['ilo', 'mlc'] },
@@ -79,10 +73,6 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   col_stcw: { label: 'STCW Color', formats: ['ilo', 'mlc'] },
   glasses_nec: { label: 'Glasses Necessary', formats: ['ilo', 'mlc'] },
 
-  // ==========================================
-  // 3. KUISIONER MEDIS & GAYA HIDUP
-  // ==========================================
-  // --- RIWAYAT PENYAKIT (Medical History 1 - 34 untuk ILO & MLC) ---
   mh_eye: { label: 'Eye/vision', formats: ['ilo', 'mlc', 'chevron', 'qatarenergy'] },
   mh_hbp: { label: 'High BP', formats: ['ilo', 'mlc', 'chevron', 'qatarenergy', 'adnoc'] },
   mh_heart: { label: 'Heart disease', formats: ['ilo', 'mlc', 'chevron', 'qatarenergy', 'adnoc'] },
@@ -117,9 +107,16 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   mh_amputation: { label: 'Amputation', formats: ['ilo', 'mlc'] },
   mh_accident: { label: 'Fractures', formats: ['ilo', 'mlc', 'chevron', 'qatarenergy', 'adnoc'] },
 
-  // ==========================================
-  // 4. PEMERIKSAAN FISIK
-  // ==========================================
+  qmedevac: { label: 'Medical evacuation', formats: ['ilo', 'mlc'] },
+  qillness: { label: 'Illness/injury aboard ship', formats: ['ilo', 'mlc'] },
+  qomfc: { label: 'Medical form refused/limited', formats: ['ilo', 'mlc'] },
+  qcertrevoked: { label: 'Certificate revoked', formats: ['ilo', 'mlc'] },
+  qawaremedical: { label: 'Aware of condition', formats: ['ilo', 'mlc'] },
+  qfit: { label: 'Declared fit', formats: ['ilo', 'mlc'] },
+  qmeds: { label: 'Taking medication', formats: ['ilo', 'mlc'] },
+  qsmoke: { label: 'Smoking', formats: ['ilo', 'mlc'] },
+  qmedstext: { label: 'Medication details', formats: ['ilo', 'mlc'] },
+
   cv_pulse: { label: 'CV Pulse', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc'] },
   cv_bp: { label: 'CV BP', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc'] },
   cv_apex: { label: 'CV Apex', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc'] },
@@ -127,7 +124,7 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   cv_murmurs: { label: 'CV Murmurs', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc'] },
   cv_varicose: { label: 'CV Varicose', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc'] },
   cv_comm: { label: 'CV Comments', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
-  
+
   rs_nasal: { label: 'RS Nasal', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
   rs_thyroid: { label: 'RS Thyroid', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
   rs_trachea: { label: 'RS Trachea', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
@@ -171,18 +168,6 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   ns_intel: { label: 'NS Intellect', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc'] },
   ns_emot: { label: 'NS Emotion', formats: ['chevron', 'adnoc'] },
   ns_comm: { label: 'NS Comments', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc'] },
-  r_bl_r: { label: 'Reflex Biceps R', formats: ['adnoc'] },
-  r_tl_r: { label: 'Reflex Triceps R', formats: ['adnoc'] },
-  r_sup_r: { label: 'Reflex Supinator R', formats: ['adnoc'] },
-  r_kn_r: { label: 'Reflex Knee R', formats: ['adnoc'] },
-  r_an_r: { label: 'Reflex Ankle R', formats: ['adnoc'] },
-  r_pl_r: { label: 'Reflex Plantar R', formats: ['adnoc'] },
-  r_bl_l: { label: 'Reflex Biceps L', formats: ['adnoc'] },
-  r_tl_l: { label: 'Reflex Triceps L', formats: ['adnoc'] },
-  r_sup_l: { label: 'Reflex Supinator L', formats: ['adnoc'] },
-  r_kn_l: { label: 'Reflex Knee L', formats: ['adnoc'] },
-  r_an_l: { label: 'Reflex Ankle L', formats: ['adnoc'] },
-  r_pl_l: { label: 'Reflex Plantar L', formats: ['adnoc'] },
 
   ea_meatus: { label: 'EA Meatus', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
   ea_drums: { label: 'EA Drums', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
@@ -198,15 +183,12 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   ey_fundi: { label: 'EY Fundi', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
   ey_comm: { label: 'EY Comments', formats: ['chevron', 'adnoc', 'qatarenergy', 'ilo', 'mlc', 'marshall'] },
 
-  // ==========================================
-  // 5. LABORATORIUM & PENUNJANG
-  // ==========================================
   ft_fvc: { label: 'FVC', formats: ['chevron', 'qatarenergy', 'adnoc', 'ilo', 'mlc'] },
   pre_fvc: { label: 'Predicted FVC', formats: ['chevron', 'qatarenergy'] },
   ft_fev1: { label: 'FEV1', formats: ['chevron', 'qatarenergy', 'adnoc', 'ilo', 'mlc'] },
   pre_fev1: { label: 'Predicted FEV1', formats: ['chevron', 'qatarenergy'] },
   ev1_vc: { label: 'FEV1/FVC', formats: ['chevron', 'qatarenergy', 'ilo', 'mlc'] },
-  
+
   l05: { label: 'Audio L05', formats: ['chevron', 'qatarenergy', 'ilo', 'mlc'] },
   l1: { label: 'Audio L1', formats: ['chevron', 'qatarenergy', 'ilo', 'mlc'] },
   l2: { label: 'Audio L2', formats: ['chevron', 'qatarenergy', 'ilo', 'mlc'] },
@@ -279,9 +261,9 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   only_cg: { label: 'Other Stool Tests', formats: ['chevron', 'qatarenergy'] },
   detail_af: { label: 'Abnormal Detail', formats: ['chevron', 'qatarenergy'] },
 
-  // ==========================================
-  // 6. KESIMPULAN & ADMINISTRASI (CONCLUSION)
-  // ==========================================
+  vaccinated: { label: 'Vaccinated', formats: ['marshall', 'ilo', 'mlc'] },
+  vac_details: { label: 'Vaccination Details', formats: ['ilo', 'mlc'] },
+
   fit_lookout: { label: 'Fitness Lookout', formats: ['ilo', 'mlc', 'adnoc', 'marshall'] },
   fit_deck: { label: 'Fitness Deck', formats: ['ilo', 'mlc'] },
   fit_engine: { label: 'Fitness Engine', formats: ['ilo', 'mlc'] },
@@ -293,7 +275,7 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   action_taken: { label: 'Action Taken', formats: ['ilo', 'mlc'] },
   id_checked: { label: 'ID Checked', formats: ['ilo', 'mlc'] },
   watch_able: { label: 'Watchkeeping Able', formats: ['ilo', 'mlc'] },
-  
+
   date: { label: 'Exam Date', formats: ['chevron', 'adnoc', 'ilo', 'mlc', 'qatarenergy', 'marshall'] },
   exp_date: { label: 'Expiry Date', formats: ['ilo', 'mlc', 'marshall'] },
   eps: { label: 'Examining Physician Stamp', formats: ['chevron', 'ilo', 'mlc', 'adnoc', 'marshall', 'qatarenergy'] },
@@ -304,12 +286,228 @@ export const fieldRegistry: Record<string, FieldDefinition> = {
   suggestion: { label: 'Suggestion', formats: ['chevron', 'qatarenergy'] },
 };
 
+const iloOnlyFields: string[] = [
+  'firstName',
+  'familyName',
+  'idPassport',
+  'dob',
+  'gender',
+  'nationality',
+  'reason_exam',
+  'address',
+  'pob_city',
+  'pob_country',
+  'seaman_book',
+  'ilo_position',
+  'typeOfShip',
+  'tradeArea',
+
+  'vaccinated', 'vac_details',
+
+  'height',
+  'weight',
+  'pulse',
+  'bloodPressure',
+  'gen_app',
+
+  'disr_unc',
+  'disl_unc',
+  'bv_unc',
+  'disr_cor',
+  'disl_cor',
+  'bv_cor',
+  'nearr_unc',
+  'nearl_unc',
+  'near_bv_unc',
+  'nearr_cor',
+  'nearl_cor',
+  'near_bv_cor',
+  'vf_r', 'vf_l',
+  'color_vision',
+  'color_test_type',
+  'color_y',
+  'color_r',
+  'color_g',
+  'color_b',
+  'vis_stcw',
+  'col_stcw',
+  'glasses_nec',
+
+  'hear_r',
+  'hear_l',
+  'r05',
+  'r1',
+  'r2',
+  'r3',
+  'r4',
+  'r6',
+  'l05',
+  'l1',
+  'l2',
+  'l3',
+  'l4',
+  'l6',
+  'hr_stcw',
+  'hr_unaid',
+
+  'cv_pulse',
+  'cv_bp',
+  'cv_apex',
+  'cv_sounds',
+  'cv_murmurs',
+  'cv_varicose',
+  'cv_comm',
+
+  'rs_nasal',
+  'rs_thyroid',
+  'rs_trachea',
+  'rs_chest',
+  'rs_perc',
+  'rs_air',
+  'rs_breath',
+  'rs_advent',
+  'rs_comm',
+
+  'al_teeth',
+  'al_tongue',
+  'al_abd',
+  'al_liver',
+  'al_spleen',
+  'al_lymph',
+  'al_hernia',
+  'al_anus',
+  'al_comm',
+
+  'gu_kidney',
+  'gu_gen',
+  'gu_comm',
+
+  'in_hair',
+  'in_skin',
+  'in_nails',
+  'in_comm',
+
+  'ms_hands',
+  'ms_limbs',
+  'ms_back',
+  'ms_joints',
+  'ms_inj',
+  'ms_comm',
+
+  'ns_power',
+  'ns_tone',
+  'ns_coord',
+  'ns_sens',
+  'ns_intel',
+  'ns_comm',
+
+  'ea_meatus',
+  'ea_drums',
+  'ea_comm',
+
+  'ey_light',
+  'ey_accom',
+  'ey_nyst',
+  'ey_fundi',
+  'ey_comm',
+
+  'mh_eye',
+  'mh_hbp',
+  'mh_heart',
+  'mhcardiacsurgery',
+  'mh_varicose',
+  'mh_asthma',
+  'mh_blood',
+  'mh_diabetes',
+  'mh_thyroid',
+  'mh_digestive',
+  'mh_kidney',
+  'mh_skin',
+  'mh_allergy_med',
+  'mh_infectious',
+  'mh_hernia',
+  'mh_genital',
+  'mhpregnancy',
+  'mhsleep',
+  'qsmoke',
+  'mhsurgery',
+  'mh_epilepsy',
+  'mhfainting',
+  'mh_loss_consc',
+  'mh_psychiatric',
+  'mh_depression',
+  'mh_suicide',
+  'mh_memory',
+  'mh_balance',
+  'mh_headache',
+  'mh_ear',
+  'mh_mobility',
+  'mh_back',
+  'mh_amputation',
+  'mh_accident',
+  'qmedevac',
+  'qillness',
+  'qomfc',
+  'qcertrevoked',
+  'qawaremedical',
+  'qfit',
+  'mh_drug',
+  'qmeds',
+  'qmedstext',
+
+  'ft_fvc',
+  'ft_fev1',
+  'ev1_vc',
+  'l8',
+  'r8',
+  'rhyt',
+  'diag',
+  'xray',
+  'date_xray',
+  'des_abnor',
+  'lab_hb',
+  'albumin',
+  'ur_sugar',
+  'lab_sr',
+  'hiv_res',
+  'vdrl_res',
+  'stool_bact',
+  'stool_para',
+
+  'hep_b_ab',
+  'hep_b_ag',
+
+  'fit_lookout',
+  'fit_deck',
+  'fit_engine',
+  'fit_catering',
+  'fit_other',
+  'restrictions',
+  'free_cond',
+  'rest_desc',
+  'action_taken',
+  'id_checked',
+  'watch_able',
+  'date',
+  'exp_date',
+  'eps',
+  'hospital',
+  'cert_auth',
+  'comments',
+];
+
+function getFieldsByFormat(format: SelectedFormat): string[] {
+  return Object.entries(fieldRegistry)
+    .filter(([, config]) => config.formats.includes(format))
+    .map(([fieldName]) => fieldName);
+}
+
 export function getVisibleFields(selectedFormats: SelectedFormat[]): string[] {
   if (selectedFormats.length === 0) return [];
 
-  return Object.entries(fieldRegistry)
-    .filter(([, config]) =>
-      config.formats.some((format) => selectedFormats.includes(format))
-    )
-    .map(([fieldName]) => fieldName);
+  if (selectedFormats.length === 1 && selectedFormats[0] === 'ilo') {
+    return iloOnlyFields.filter((field) => fieldRegistry[field]);
+  }
+
+  return [...new Set(selectedFormats.flatMap((format) => getFieldsByFormat(format)))];
 }

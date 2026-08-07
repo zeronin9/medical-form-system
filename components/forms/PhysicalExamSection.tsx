@@ -7,6 +7,9 @@ import {
   cardContentClass,
   labelClass,
   inputClass,
+  radioGroupClass,
+  radioClass,
+  BadgeILO,
 } from './FormConstants';
 
 interface PhysicalExamSectionProps {
@@ -16,6 +19,34 @@ interface PhysicalExamSectionProps {
   activeFields: string[];
 }
 
+// 24 Item Pemeriksaan Fisik Khusus ILO
+const iloPhysicalFields = [
+  { id: 'ilo_head', label: 'Head' },
+  { id: 'ilo_ent', label: 'Sinuses, nose, throat' },
+  { id: 'ilo_oral', label: 'Mouth/teeth' },
+  { id: 'ilo_ear', label: 'Ears (general)' },
+  { id: 'ilo_tymp', label: 'Tympanic membrane' },
+  { id: 'ilo_eye', label: 'Eyes' },
+  { id: 'ilo_oph', label: 'Opthalmoscopy' },
+  { id: 'ilo_pupil', label: 'Pupils' },
+  { id: 'ilo_eyem', label: 'Eye movement' },
+  { id: 'ilo_lung', label: 'Lungs and chest' },
+  { id: 'ilo_breast', label: 'Breast examination' },
+  { id: 'ilo_heart', label: 'Heart' },
+  { id: 'ilo_var', label: 'Varicose veins' },
+  { id: 'ilo_vasc', label: 'Vascular (inc. pedal pulses)' },
+  { id: 'ilo_abd', label: 'Abdomen and viscera' },
+  { id: 'ilo_hern', label: 'Hernia' },
+  { id: 'ilo_anus', label: 'Anus (not rectal exam)' },
+  { id: 'ilo_gu', label: 'G-U system' },
+  { id: 'ilo_ext', label: 'Upper and lower extremities' },
+  { id: 'ilo_spine', label: 'Spine (C/S, T/S and L/S)' },
+  { id: 'ilo_neuro', label: 'Neurologic (full brief)' },
+  { id: 'ilo_psych', label: 'Psychiatric' },
+  { id: 'ilo_gen', label: 'General appearance' },
+  { id: 'ilo_skin', label: 'Skin' },
+];
+
 export default function PhysicalExamSection({
   formData,
   handleChange,
@@ -24,92 +55,16 @@ export default function PhysicalExamSection({
 }: PhysicalExamSectionProps) {
   const isActive = (fieldName: string) => activeFields.includes(fieldName);
 
-  const showCardiovascular =
-    isActive('cv_pulse') ||
-    isActive('cv_bp') ||
-    isActive('cv_apex') ||
-    isActive('cv_sounds') ||
-    isActive('cv_murmurs') ||
-    isActive('cv_varicose') ||
-    isActive('cv_comm');
-
-  const showRespiratory =
-    isActive('rs_nasal') ||
-    isActive('rs_thyroid') ||
-    isActive('rs_trachea') ||
-    isActive('rs_chest') ||
-    isActive('rs_perc') ||
-    isActive('rs_air') ||
-    isActive('rs_breath') ||
-    isActive('rs_advent') ||
-    isActive('rs_comm');
-
-  const showAbdominal =
-    isActive('al_teeth') ||
-    isActive('al_tongue') ||
-    isActive('al_abd') ||
-    isActive('al_liver') ||
-    isActive('al_spleen') ||
-    isActive('al_lymph') ||
-    isActive('al_hernia') ||
-    isActive('al_anus') ||
-    isActive('al_comm');
-
-  const showGenitourinary =
-    isActive('gu_kidney') ||
-    isActive('gu_gen') ||
-    isActive('gu_comm');
-
-  const showIntegument =
-    isActive('in_hair') ||
-    isActive('in_skin') ||
-    isActive('in_nails') ||
-    isActive('in_comm');
-
-  const showMusculoskeletal =
-    isActive('ms_hands') ||
-    isActive('ms_limbs') ||
-    isActive('ms_back') ||
-    isActive('ms_joints') ||
-    isActive('ms_inj') ||
-    isActive('ms_comm');
-
-  const showNeurological =
-    isActive('ns_power') ||
-    isActive('ns_tone') ||
-    isActive('ns_coord') ||
-    isActive('ns_sens') ||
-    isActive('ns_intel') ||
-    isActive('ns_emot') ||
-    isActive('ns_comm') ||
-    isActive('r_bl_r') ||
-    isActive('r_tl_r') ||
-    isActive('r_sup_r') ||
-    isActive('r_kn_r') ||
-    isActive('r_an_r') ||
-    isActive('r_pl_r') ||
-    isActive('r_bl_l') ||
-    isActive('r_tl_l') ||
-    isActive('r_sup_l') ||
-    isActive('r_kn_l') ||
-    isActive('r_an_l') ||
-    isActive('r_pl_l');
-
-  const showEar =
-    isActive('ea_meatus') ||
-    isActive('ea_drums') ||
-    isActive('ea_comm') ||
-    isActive('ea_wr_r') ||
-    isActive('ea_wr_l') ||
-    isActive('ea_hr_r') ||
-    isActive('ea_hr_l');
-
-  const showEye =
-    isActive('ey_light') ||
-    isActive('ey_accom') ||
-    isActive('ey_nyst') ||
-    isActive('ey_fundi') ||
-    isActive('ey_comm');
+  const showCardiovascular = isActive('cv_pulse') || isActive('cv_bp') || isActive('cv_apex') || isActive('cv_sounds') || isActive('cv_murmurs') || isActive('cv_varicose') || isActive('cv_comm');
+  const showRespiratory = isActive('rs_nasal') || isActive('rs_thyroid') || isActive('rs_trachea') || isActive('rs_chest') || isActive('rs_perc') || isActive('rs_air') || isActive('rs_breath') || isActive('rs_advent') || isActive('rs_comm');
+  const showAbdominal = isActive('al_teeth') || isActive('al_tongue') || isActive('al_abd') || isActive('al_liver') || isActive('al_spleen') || isActive('al_lymph') || isActive('al_hernia') || isActive('al_anus') || isActive('al_comm');
+  const showGenitourinary = isActive('gu_kidney') || isActive('gu_gen') || isActive('gu_comm');
+  const showIntegument = isActive('in_hair') || isActive('in_skin') || isActive('in_nails') || isActive('in_comm');
+  const showMusculoskeletal = isActive('ms_hands') || isActive('ms_limbs') || isActive('ms_back') || isActive('ms_joints') || isActive('ms_inj') || isActive('ms_comm');
+  const showNeurological = isActive('ns_power') || isActive('ns_tone') || isActive('ns_coord') || isActive('ns_sens') || isActive('ns_intel') || isActive('ns_emot') || isActive('ns_comm') || isActive('r_bl_r') || isActive('r_tl_r') || isActive('r_sup_r') || isActive('r_kn_r') || isActive('r_an_r') || isActive('r_pl_r') || isActive('r_bl_l') || isActive('r_tl_l') || isActive('r_sup_l') || isActive('r_kn_l') || isActive('r_an_l') || isActive('r_pl_l');
+  const showEar = isActive('ea_meatus') || isActive('ea_drums') || isActive('ea_comm') || isActive('ea_wr_r') || isActive('ea_wr_l') || isActive('ea_hr_r') || isActive('ea_hr_l');
+  const showEye = isActive('ey_light') || isActive('ey_accom') || isActive('ey_nyst') || isActive('ey_fundi') || isActive('ey_comm');
+  const isIlo = selectedFormats.includes('ilo');
 
   return (
     <div className={cardClass}>
@@ -121,6 +76,33 @@ export default function PhysicalExamSection({
       </div>
 
       <div className={cardContentClass}>
+        
+        {/* TABEL KHUSUS ILO (24 ITEM) TAMPIL DI SINI */}
+        {isIlo && (
+          <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50/30 p-5 shadow-sm animate-in fade-in zoom-in duration-300">
+            <h4 className="text-sm font-bold text-blue-900 border-b border-blue-100 pb-2 mb-4">
+              Pemeriksaan Fisik Khusus ILO <BadgeILO />
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {iloPhysicalFields.map((item) => (
+                <div key={item.id} className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+                  <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                  <div className="flex gap-3">
+                    <label className={radioGroupClass}>
+                      <input type="radio" name={item.id} value="Normal" checked={formData[item.id] === 'Normal'} onChange={handleChange} className={radioClass} />
+                      <span className="text-xs">Normal</span>
+                    </label>
+                    <label className={radioGroupClass}>
+                      <input type="radio" name={item.id} value="Abnormal" checked={formData[item.id] === 'Abnormal'} onChange={handleChange} className={radioClass} />
+                      <span className="text-xs">Abnormal</span>
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {showCardiovascular && (
             <div className="rounded-lg border border-slate-200 p-5 shadow-sm space-y-4">
@@ -133,25 +115,13 @@ export default function PhysicalExamSection({
                   {isActive('cv_pulse') && (
                     <div>
                       <label className={labelClass}>Pulse</label>
-                      <input
-                        type="text"
-                        name="cv_pulse"
-                        value={formData.cv_pulse || ''}
-                        onChange={handleChange}
-                        className={inputClass}
-                      />
+                      <input type="text" name="cv_pulse" value={formData.cv_pulse || ''} onChange={handleChange} className={inputClass} />
                     </div>
                   )}
                   {isActive('cv_bp') && (
                     <div>
                       <label className={labelClass}>Blood Pressure</label>
-                      <input
-                        type="text"
-                        name="cv_bp"
-                        value={formData.cv_bp || ''}
-                        onChange={handleChange}
-                        className={inputClass}
-                      />
+                      <input type="text" name="cv_bp" value={formData.cv_bp || ''} onChange={handleChange} className={inputClass} />
                     </div>
                   )}
                 </div>
@@ -162,25 +132,13 @@ export default function PhysicalExamSection({
                   {isActive('cv_apex') && (
                     <div>
                       <label className={labelClass}>Apex Beat</label>
-                      <input
-                        type="text"
-                        name="cv_apex"
-                        value={formData.cv_apex || ''}
-                        onChange={handleChange}
-                        className={inputClass}
-                      />
+                      <input type="text" name="cv_apex" value={formData.cv_apex || ''} onChange={handleChange} className={inputClass} />
                     </div>
                   )}
                   {isActive('cv_sounds') && (
                     <div>
                       <label className={labelClass}>Heart Sounds</label>
-                      <input
-                        type="text"
-                        name="cv_sounds"
-                        value={formData.cv_sounds || ''}
-                        onChange={handleChange}
-                        className={inputClass}
-                      />
+                      <input type="text" name="cv_sounds" value={formData.cv_sounds || ''} onChange={handleChange} className={inputClass} />
                     </div>
                   )}
                 </div>
@@ -191,25 +149,13 @@ export default function PhysicalExamSection({
                   {isActive('cv_murmurs') && (
                     <div>
                       <label className={labelClass}>Murmurs</label>
-                      <input
-                        type="text"
-                        name="cv_murmurs"
-                        value={formData.cv_murmurs || ''}
-                        onChange={handleChange}
-                        className={inputClass}
-                      />
+                      <input type="text" name="cv_murmurs" value={formData.cv_murmurs || ''} onChange={handleChange} className={inputClass} />
                     </div>
                   )}
                   {isActive('cv_varicose') && (
                     <div>
                       <label className={labelClass}>Varicose Veins</label>
-                      <input
-                        type="text"
-                        name="cv_varicose"
-                        value={formData.cv_varicose || ''}
-                        onChange={handleChange}
-                        className={inputClass}
-                      />
+                      <input type="text" name="cv_varicose" value={formData.cv_varicose || ''} onChange={handleChange} className={inputClass} />
                     </div>
                   )}
                 </div>
@@ -218,13 +164,7 @@ export default function PhysicalExamSection({
               {isActive('cv_comm') && (
                 <div>
                   <label className={labelClass}>Komentar</label>
-                  <input
-                    type="text"
-                    name="cv_comm"
-                    value={formData.cv_comm || ''}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                  <input type="text" name="cv_comm" value={formData.cv_comm || ''} onChange={handleChange} className={inputClass} />
                 </div>
               )}
             </div>
